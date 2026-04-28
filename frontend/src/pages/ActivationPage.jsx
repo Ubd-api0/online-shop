@@ -16,7 +16,7 @@ const ActivationPage = () => {
             activation_token,
           });
           setTimeout(() => {
-            navigate('/');
+            navigate('/login');
           }, 2000);
           console.log(res.data.message);
         } catch (err) {
