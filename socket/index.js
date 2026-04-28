@@ -9,7 +9,36 @@ const dotenv = require('dotenv');
 // config
 dotenv.config();
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:3030',
+  'https://eb24-182-177-144-64.ngrok-free.app',
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      console.log('Origin:', origin);
+
+      if (!origin) {
+        console.log('a');
+        // allow Postman / mobile / server requests
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        console.log('b');
+        return callback(null, true);
+      }
+
+      console.log('c');
+      return callback(null, true); // 🔥 TEMP: allow all (for debugging)
+      // return callback(new Error("CORS blocked"));
+    },
+  })
+);
+
+console.log('socket server');
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
