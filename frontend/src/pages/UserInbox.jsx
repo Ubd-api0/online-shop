@@ -9,7 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlineArrowRight, AiOutlineSend } from 'react-icons/ai';
 import { TfiGallery } from 'react-icons/tfi';
 import styles from '../styles/styles';
-const ENDPOINT = 'https://socket-production-8a77.up.railway.app/';
+const ENDPOINT = 'https://online-shop-production-fefa.up.railway.app/';
+//const ENDPOINT = 'http://localhost:4000/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
 
 const UserInbox = () => {

@@ -9,7 +9,8 @@ import styles from '../../styles/styles';
 import { TfiGallery } from 'react-icons/tfi';
 import socketIO from 'socket.io-client';
 import { format } from 'timeago.js';
-const ENDPOINT = 'https://socket-production-8a77.up.railway.app/';
+const ENDPOINT = 'https://online-shop-production-fefa.up.railway.app/';
+//const ENDPOINT = 'http://localhost:4000/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
 
 const DashboardMessages = () => {
