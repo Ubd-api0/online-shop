@@ -9,10 +9,6 @@ const dotenv = require('dotenv');
 // config
 dotenv.config();
 
-require('dotenv').config({
-  path: './.env',
-});
-
 app.use(cors());
 app.use(express.json());
 
