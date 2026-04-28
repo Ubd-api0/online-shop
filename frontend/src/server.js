@@ -1,6 +1,8 @@
-export const server = 'https://9077-182-177-144-64.ngrok-free.app/api/v2';
+export const server =
+  'https://online-shop-production-ef53.up.railway.app/api/v2';
 
-export const backend_url = 'https://9077-182-177-144-64.ngrok-free.app/';
+export const backend_url =
+  'https://online-shop-production-ef53.up.railway.app/';
 
 /* export const server = "http://localhost:8000/api/v2";
 
