@@ -1,20 +1,23 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+// config
+dotenv.config();
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Please enter your name!"],
+    required: [true, 'Please enter your name!'],
   },
   email: {
     type: String,
-    required: [true, "Please enter your email!"],
+    required: [true, 'Please enter your email!'],
   },
   password: {
     type: String,
-    required: [true, "Please enter your password"],
-    minLength: [4, "Password should be greater than 4 characters"],
+    required: [true, 'Please enter your password'],
+    minLength: [4, 'Password should be greater than 4 characters'],
     select: false,
   },
   phoneNumber: {
@@ -44,7 +47,7 @@ const userSchema = new mongoose.Schema({
   ],
   role: {
     type: String,
-    default: "user",
+    default: 'user',
   },
   avatar: {
     type: String,
@@ -59,8 +62,8 @@ const userSchema = new mongoose.Schema({
 });
 
 //  Hash password
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     next();
   }
 
@@ -79,4 +82,4 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);

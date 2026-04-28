@@ -7,13 +7,11 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const dotenv = require('dotenv');
 
 // config
-if (process.env.NODE_ENV !== 'PRODUCTION') {
-  require('dotenv').config({
-    path: 'config/.env',
-  });
-}
+dotenv.config();
+
 // connect db
 connectDatabase();
 
@@ -84,11 +82,13 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 // bodyparser is used to parse the data from the body of the request to the server (POST, PUT, DELETE, etc.)
 
 // config
-if (process.env.NODE_ENV !== 'PRODUCTION') {
-  require('dotenv').config({
+/* if (process.env.NODE_ENV !== 'PRODUCTION') {
+  dot.config({
     path: 'config/.env',
   });
-}
+} else {
+  dotenv.config();
+} */
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

@@ -9,6 +9,9 @@ const sendMail = require('../utils/sendMail');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
+const dotenv = require('dotenv');
+// config
+dotenv.config();
 
 const router = express.Router();
 
