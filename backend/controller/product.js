@@ -98,7 +98,6 @@ router.delete(
 router.get(
   '/get-all-products',
   catchAsyncErrors(async (req, res, next) => {
-    console.log('here');
     try {
       const products = await Product.find().sort({ createdAt: -1 });
 

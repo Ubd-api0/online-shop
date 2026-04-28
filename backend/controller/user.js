@@ -45,8 +45,9 @@ router.post('/create-user', upload.single('file'), async (req, res, next) => {
     };
 
     const activationToken = createActivationToken(user);
+    const origin = req.headers.origin;
 
-    const activationUrl = `${req.headers.origin}/activation/${activationToken}`;
+    const activationUrl = `${origin}/activation/${activationToken}`;
 
     // send email to user
     try {

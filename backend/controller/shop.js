@@ -48,7 +48,8 @@ router.post('/create-shop', upload.single('file'), async (req, res, next) => {
 
     const activationToken = createActivationToken(seller);
 
-    const activationUrl = `${req.headers.origin}/seller/activation/${activationToken}`;
+    const origin = req.headers.origin;
+    const activationUrl = `${origin}/seller/activation/${activationToken}`;
 
     try {
       await sendMail({
@@ -175,11 +176,13 @@ router.get(
   '/logout',
   catchAsyncErrors(async (req, res, next) => {
     try {
-      res.cookie('seller_token', null, {
-        expires: new Date(Date.now()),
+      res.clearCookie('token', {
         httpOnly: true,
+        sameSite: 'none', // MUST match login
+        secure: true, // MUST match login (HTTPS)
       });
-      res.status(201).json({
+
+      res.status(200).json({
         success: true,
         message: 'Log out successful!',
       });
