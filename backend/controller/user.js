@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const User = require('../model/user');
-const { upload } = require('../multer');
 const ErrorHandler = require('../utils/ErrorHandler');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
@@ -10,32 +9,30 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
 const dotenv = require('dotenv');
+const Cloudinary = require('../cloudinary');
 // config
 dotenv.config();
 
 const router = express.Router();
 
-router.post('/create-user', upload.single('file'), async (req, res, next) => {
+router.post('/create-user', async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
     const userEmail = await User.findOne({ email });
 
     if (userEmail) {
-      // if user already exits account is not create and file is deleted
-      const filename = req.file.filename;
-      const filePath = `uploads/${filename}`;
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: 'Error deleting file' });
-        }
-      });
-
       return next(new ErrorHandler('User already exits', 400));
     }
 
-    const filename = req.file.filename;
-    const fileUrl = path.join(filename);
+    let fileUrl = null;
+
+    if (req.body.file) {
+      const imageURL = await Cloudinary.upload(req.body.file, 'avatar', {
+        height: 160,
+        width: 160,
+      });
+      fileUrl = imageURL;
+    }
 
     const user = {
       name: name,
@@ -230,16 +227,23 @@ compare the provided password with the stored password for authentication purpos
 router.put(
   '/update-avatar',
   isAuthenticated,
-  upload.single('image'),
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const existsUser = await User.findById(req.user.id);
+      //const existsUser = await User.findById(req.user.id);
 
-      const existAvatarPath = `uploads/${existsUser.avatar}`;
+      //const existAvatarPath = `uploads/${existsUser.avatar}`;
 
-      fs.unlinkSync(existAvatarPath); // Delete Priviuse Image
+      //fs.unlinkSync(existAvatarPath); // Delete Priviuse Image
 
-      const fileUrl = path.join(req.file.filename); // new image
+      let fileUrl = null;
+
+      if (req.body.file) {
+        const imageURL = await Cloudinary.upload(req.body.file, 'avatar', {
+          height: 160,
+          width: 160,
+        });
+        fileUrl = imageURL;
+      }
 
       /* The code `const user = await User.findByIdAndUpdate(req.user.id, { avatar: fileUrl });` is
         updating the avatar field of the user with the specified `req.user.id`. It uses the

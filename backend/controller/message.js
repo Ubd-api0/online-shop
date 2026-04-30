@@ -1,23 +1,27 @@
-const Messages = require("../model/messages");
-const ErrorHandler = require("../utils/ErrorHandler");
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const express = require("express");
-const { upload } = require("../multer");
+const Messages = require('../model/messages');
+const ErrorHandler = require('../utils/ErrorHandler');
+const catchAsyncErrors = require('../middleware/catchAsyncErrors');
+const express = require('express');
 const router = express.Router();
-const path = require("path");
+const Cloudinary = require('../cloudinary');
 
 // create new message
 router.post(
-  "/create-new-message",
-  upload.single("images"),
+  '/create-new-message',
   catchAsyncErrors(async (req, res, next) => {
     try {
       const messageData = req.body;
 
-      if (req.file) {
-        const filename = req.file.filename;
-        const fileUrl = path.join(filename);
-        messageData.images = fileUrl;
+      if (messageData.images) {
+        const imageURL = await Cloudinary.upload(
+          messageData.images,
+          'messages',
+          {
+            height: 160,
+            width: 160,
+          }
+        );
+        messageData.images = imageURL;
       }
 
       messageData.conversationId = req.body.conversationId;
@@ -45,7 +49,7 @@ router.post(
 
 // get all messages with conversation id
 router.get(
-  "/get-all-messages/:id",
+  '/get-all-messages/:id',
   catchAsyncErrors(async (req, res, next) => {
     try {
       const messages = await Messages.find({

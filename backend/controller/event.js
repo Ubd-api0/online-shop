@@ -1,30 +1,40 @@
-const express = require("express");
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const { upload } = require("../multer");
-const Shop = require("../model/shop");
-const Event = require("../model/event");
-const Order = require("../model/order");
-const ErrorHandler = require("../utils/ErrorHandler");
-const { isSeller, isAdmin, isAuthenticated } = require("../middleware/auth");
+const express = require('express');
+const catchAsyncErrors = require('../middleware/catchAsyncErrors');
+const Shop = require('../model/shop');
+const Event = require('../model/event');
+const Order = require('../model/order');
+const ErrorHandler = require('../utils/ErrorHandler');
+const { isSeller, isAdmin, isAuthenticated } = require('../middleware/auth');
 const router = express.Router();
-const fs = require("fs");
+const fs = require('fs');
+const Cloudinary = require('../cloudinary');
 
 // create event
 router.post(
-  "/create-event",
-  upload.array("images"),
+  '/create-event',
   catchAsyncErrors(async (req, res, next) => {
     try {
       const shopId = req.body.shopId;
+
       const shop = await Shop.findById(shopId);
       if (!shop) {
-        return next(new ErrorHandler("Shop Id is invalid!", 400));
+        return next(new ErrorHandler('Shop Id is invalid!', 400));
       } else {
-        const files = req.files;
-        const imageUrls = files.map((file) => `${file.filename}`);
-
         const eventData = req.body;
-        eventData.images = imageUrls;
+
+        if (eventData.images && eventData.images.length > 0) {
+          const imageURLs = await Promise.all(
+            eventData.images.map(async (img) => {
+              const result = await Cloudinary.upload(img, 'events', {
+                height: 160,
+                width: 160,
+              });
+              return result;
+            })
+          );
+
+          eventData.images = imageURLs;
+        }
         eventData.shop = shop;
 
         const product = await Event.create(eventData);
@@ -41,7 +51,7 @@ router.post(
 );
 
 // get all events
-router.get("/get-all-events", async (req, res, next) => {
+router.get('/get-all-events', async (req, res, next) => {
   try {
     const events = await Event.find();
     res.status(201).json({
@@ -55,7 +65,7 @@ router.get("/get-all-events", async (req, res, next) => {
 
 // get all events of a shop
 router.get(
-  "/get-all-events/:id",
+  '/get-all-events/:id',
   catchAsyncErrors(async (req, res, next) => {
     try {
       const events = await Event.find({ shopId: req.params.id });
@@ -72,13 +82,13 @@ router.get(
 
 // delete event of a shop
 router.delete(
-  "/delete-shop-event/:id",
+  '/delete-shop-event/:id',
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const productId = req.params.id;
 
-      const eventData = await Event.findById(productId);
+      /* const eventData = await Event.findById(productId);
 
       eventData.images.forEach((imageUrl) => {
         const filename = imageUrl;
@@ -89,17 +99,17 @@ router.delete(
             console.log(err);
           }
         });
-      });
+      }); */
 
       const event = await Event.findByIdAndDelete(productId);
 
       if (!event) {
-        return next(new ErrorHandler("Event not found with this id!", 500));
+        return next(new ErrorHandler('Event not found with this id!', 500));
       }
 
       res.status(201).json({
         success: true,
-        message: "Event Deleted successfully!",
+        message: 'Event Deleted successfully!',
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
@@ -109,9 +119,9 @@ router.delete(
 
 // all events --- for admin
 router.get(
-  "/admin-all-events",
+  '/admin-all-events',
   isAuthenticated,
-  isAdmin("Admin"),
+  isAdmin('Admin'),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const events = await Event.find().sort({
@@ -129,7 +139,7 @@ router.get(
 
 // review for a Event
 router.put(
-  "/create-new-review-event",
+  '/create-new-review-event',
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
@@ -170,13 +180,13 @@ router.put(
 
       await Order.findByIdAndUpdate(
         orderId,
-        { $set: { "cart.$[elem].isReviewed": true } },
-        { arrayFilters: [{ "elem._id": productId }], new: true }
+        { $set: { 'cart.$[elem].isReviewed': true } },
+        { arrayFilters: [{ 'elem._id': productId }], new: true }
       );
 
       res.status(200).json({
         success: true,
-        message: "Reviwed succesfully!",
+        message: 'Reviwed succesfully!',
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));

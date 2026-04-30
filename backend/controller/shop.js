@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const sendMail = require('../utils/sendMail');
 const Shop = require('../model/shop');
 const { isAuthenticated, isSeller, isAdmin } = require('../middleware/auth');
-const { upload } = require('../multer');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const ErrorHandler = require('../utils/ErrorHandler');
 const dotenv = require('dotenv');
@@ -14,27 +13,27 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const sendShopToken = require('../utils/shopToken');
+const Cloudinary = require('../cloudinary');
 
 // create shop
-router.post('/create-shop', upload.single('file'), async (req, res, next) => {
+router.post('/create-shop', async (req, res, next) => {
   try {
     const { email } = req.body;
     const sellerEmail = await Shop.findOne({ email });
 
     if (sellerEmail) {
-      const filename = req.file.filename;
-      const filePath = `uploads/${filename}`;
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: 'Error deleting file' });
-        }
-      });
       return next(new ErrorHandler('User already exists', 400));
     }
 
-    const filename = req.file.filename;
-    const fileUrl = path.join(filename);
+    let fileUrl = null;
+
+    if (req.body.file) {
+      const imageURL = await Cloudinary.upload(req.body.file, 'shop', {
+        height: 160,
+        width: 160,
+      });
+      fileUrl = imageURL;
+    }
 
     const seller = {
       name: req.body.name,
@@ -212,16 +211,23 @@ router.get(
 router.put(
   '/update-shop-avatar',
   isSeller,
-  upload.single('image'),
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const existsUser = await Shop.findById(req.seller._id);
+      //const existsUser = await Shop.findById(req.seller._id);
 
-      const existAvatarPath = `uploads/${existsUser.avatar}`;
+      //const existAvatarPath = `uploads/${existsUser.avatar}`;
 
-      fs.unlinkSync(existAvatarPath);
+      //fs.unlinkSync(existAvatarPath);
 
-      const fileUrl = path.join(req.file.filename);
+      let fileUrl = null;
+
+      if (req.body.file) {
+        const imageURL = await Cloudinary.upload(req.body.file, 'shop', {
+          height: 160,
+          width: 160,
+        });
+        fileUrl = imageURL;
+      }
 
       const seller = await Shop.findByIdAndUpdate(req.seller._id, {
         avatar: fileUrl,
