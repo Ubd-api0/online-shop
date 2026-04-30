@@ -36,17 +36,14 @@ app.use(
       console.log('Origin:', origin);
 
       if (!origin) {
-        console.log('a');
         // allow Postman / mobile / server requests
         return callback(null, true);
       }
 
       if (allowedOrigins.includes(origin)) {
-        console.log('b');
         return callback(null, true);
       }
 
-      console.log('c');
       return callback(null, true); // 🔥 TEMP: allow all (for debugging)
       // return callback(new Error("CORS blocked"));
     },
@@ -116,7 +113,6 @@ app.use('/api/v2/shop', shop);
 app.use(
   '/api/v2/product',
   (req, res, next) => {
-    console.log('wqwq');
     next();
   },
   product

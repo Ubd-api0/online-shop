@@ -1,4 +1,4 @@
-const multer = require("multer");
+/* const multer = require("multer");
 const path = require("path");
 
 const storage = multer.diskStorage({
@@ -13,3 +13,13 @@ const storage = multer.diskStorage({
 });
 
 exports.upload = multer({ storage: storage });
+ */
+
+const multer = require('multer');
+
+const storage = multer.memoryStorage(); // 🔥 store in RAM, not disk
+
+exports.upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // optional (5MB)
+});
