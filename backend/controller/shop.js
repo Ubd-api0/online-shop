@@ -14,60 +14,72 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const sendShopToken = require('../utils/shopToken');
+const Cloudinary = require('../cloudinary');
 
 // create shop
-router.post('/create-shop', upload.single('file'), async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    const sellerEmail = await Shop.findOne({ email });
-
-    if (sellerEmail) {
-      const filename = req.file.filename;
-      const filePath = `uploads/${filename}`;
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: 'Error deleting file' });
-        }
-      });
-      return next(new ErrorHandler('User already exists', 400));
-    }
-
-    const filename = req.file.filename;
-    const fileUrl = path.join(filename);
-
-    const seller = {
-      name: req.body.name,
-      email: email,
-      password: req.body.password,
-      avatar: fileUrl,
-      address: req.body.address,
-      phoneNumber: req.body.phoneNumber,
-      zipCode: req.body.zipCode,
-    };
-
-    const activationToken = createActivationToken(seller);
-
-    const origin = req.headers.origin;
-    const activationUrl = `${origin}/seller/activation/${activationToken}`;
-
+router.post(
+  '/create-shop',
+  /* upload.single('file'), */ async (req, res, next) => {
     try {
-      await sendMail({
-        email: seller.email,
-        subject: 'Activate your Shop',
-        message: `Hello ${seller.name}, please click on the link to activate your shop: ${activationUrl}`,
-      });
-      res.status(201).json({
-        success: true,
-        message: `please check your email:- ${seller.email} to activate your shop!`,
-      });
+      const { email, file } = req.body;
+      const sellerEmail = await Shop.findOne({ email });
+
+      if (sellerEmail) {
+        /* const filename = req.file.filename;
+        const filePath = `uploads/${filename}`;
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.log(err);
+            res.status(500).json({ message: 'Error deleting file' });
+          }
+        }); */
+        return next(new ErrorHandler('User already exists', 400));
+      }
+
+      /* const filename = req.file.filename;
+      const fileUrl = path.join(filename); */
+
+      let fileUrl = '';
+      if (file) {
+        fileUrl = await Cloudinary.upload(file, 'avatar', {
+          height: 160,
+          width: 160,
+        });
+      }
+
+      const seller = {
+        name: req.body.name,
+        email: email,
+        password: req.body.password,
+        avatar: fileUrl,
+        address: req.body.address,
+        phoneNumber: req.body.phoneNumber,
+        zipCode: req.body.zipCode,
+      };
+
+      const activationToken = createActivationToken(seller);
+
+      const origin = req.headers.origin;
+      const activationUrl = `${origin}/seller/activation/${activationToken}`;
+
+      try {
+        await sendMail({
+          email: seller.email,
+          subject: 'Activate your Shop',
+          message: `Hello ${seller.name}, please click on the link to activate your shop: ${activationUrl}`,
+        });
+        res.status(201).json({
+          success: true,
+          message: `please check your email:- ${seller.email} to activate your shop!`,
+        });
+      } catch (error) {
+        return next(new ErrorHandler(error.message, 500));
+      }
     } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+      return next(new ErrorHandler(error.message, 400));
     }
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 400));
   }
-});
+);
 
 // create activation token
 const createActivationToken = (seller) => {
@@ -212,17 +224,25 @@ router.get(
 router.put(
   '/update-shop-avatar',
   isSeller,
-  upload.single('image'),
+  /* upload.single('image'), */
   catchAsyncErrors(async (req, res, next) => {
     try {
       const existsUser = await Shop.findById(req.seller._id);
 
-      const existAvatarPath = `uploads/${existsUser.avatar}`;
+      /* const existAvatarPath = `uploads/${existsUser.avatar}`;
 
       fs.unlinkSync(existAvatarPath);
 
       const fileUrl = path.join(req.file.filename);
+ */
 
+      let fileUrl = '';
+      if (req.body?.image) {
+        fileUrl = await Cloudinary.upload(req.body?.image, 'avatar', {
+          height: 160,
+          width: 160,
+        });
+      }
       const seller = await Shop.findByIdAndUpdate(req.seller._id, {
         avatar: fileUrl,
       });

@@ -22,7 +22,7 @@ const Signup = () => {
     setAvatar(file);
   };
 
-  const handleSubmit = (e) => {
+  const _handleSubmit = (e) => {
     e.preventDefault();
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
     // meaning of uper line is that we are creating a new object with the name of config and the value of config is {headers:{'Content-Type':'multipart/form-data'}}
@@ -48,6 +48,44 @@ const Signup = () => {
       .catch((error) => {
         toast.error(error.response.data.message);
       });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // convert file → base64
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        if (!file) return resolve(null);
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+
+    try {
+      const base64Image = await toBase64(avatar);
+
+      const res = await axios.post(`${server}/user/create-user`, {
+        file: base64Image, // 👈 JSON now
+        name,
+        email,
+        password,
+      });
+
+      toast.success(res.data.message);
+
+      setName('');
+      setEmail('');
+      setPassword('');
+      setAvatar();
+
+      navigate('/login');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error');
+    }
   };
 
   return (

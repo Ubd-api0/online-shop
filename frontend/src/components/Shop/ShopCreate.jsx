@@ -18,7 +18,7 @@ const ShopCreate = () => {
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const _handleSubmit = async (e) => {
     e.preventDefault();
 
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
@@ -53,6 +53,48 @@ const ShopCreate = () => {
       });
     //navigate('/shop-login');
     //window.location.reload();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // convert file → base64
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        if (!file) return resolve(null);
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+
+    try {
+      const base64Image = await toBase64(avatar);
+
+      const res = await axios.post(`${server}/shop/create-shop`, {
+        file: base64Image, // 👈 now JSON
+        name,
+        email,
+        password,
+        zipCode,
+        address,
+        phoneNumber,
+      });
+
+      toast.success(res.data.message);
+
+      setName('');
+      setEmail('');
+      setPassword('');
+      setAvatar();
+      setZipCode();
+      setAddress('');
+      setPhoneNumber();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error');
+    }
   };
   // File upload
   const handleFileInputChange = (e) => {

@@ -1,72 +1,84 @@
 const express = require('express');
 const path = require('path');
 const User = require('../model/user');
-const { upload } = require('../multer');
+//const { upload } = require('../multer');
 const ErrorHandler = require('../utils/ErrorHandler');
-const fs = require('fs');
+//const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const sendMail = require('../utils/sendMail');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
 const dotenv = require('dotenv');
+const Cloudinary = require('../cloudinary');
 // config
 dotenv.config();
 
 const router = express.Router();
 
-router.post('/create-user', upload.single('file'), async (req, res, next) => {
-  try {
-    const { name, email, password } = req.body;
-    const userEmail = await User.findOne({ email });
-
-    if (userEmail) {
-      // if user already exits account is not create and file is deleted
-      const filename = req.file.filename;
-      const filePath = `uploads/${filename}`;
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: 'Error deleting file' });
-        }
-      });
-
-      return next(new ErrorHandler('User already exits', 400));
-    }
-
-    const filename = req.file.filename;
-    const fileUrl = path.join(filename);
-
-    const user = {
-      name: name,
-      email: email,
-      password: password,
-      avatar: fileUrl,
-    };
-
-    const activationToken = createActivationToken(user);
-    const origin = req.headers.origin;
-
-    const activationUrl = `${origin}/activation/${activationToken}`;
-
-    // send email to user
+router.post(
+  '/create-user',
+  /* upload.single('file'), */ async (req, res, next) => {
     try {
-      await sendMail({
-        email: user.email,
-        subject: 'Activate your account',
-        message: `Hello  ${user.name}, please click on the link to activate your account ${activationUrl} `,
-      });
-      res.status(201).json({
-        success: true,
-        message: `please check your email:- ${user.email} to activate your account!`,
-      });
+      const { name, email, password, file } = req.body;
+      const userEmail = await User.findOne({ email });
+
+      if (userEmail) {
+        // if user already exits account is not create and file is deleted
+        /* const filename = req.file.filename;
+        const filePath = `uploads/${filename}`;
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.log(err);
+            res.status(500).json({ message: 'Error deleting file' });
+          }
+        }); */
+
+        return next(new ErrorHandler('User already exits', 400));
+      }
+
+      /* const filename = req.file.filename;
+      const fileUrl = path.join(filename); */
+
+      let fileUrl = '';
+      if (file) {
+        fileUrl = await Cloudinary.upload(file, 'avatar', {
+          height: 160,
+          width: 160,
+        });
+      }
+
+      const user = {
+        name: name,
+        email: email,
+        password: password,
+        avatar: fileUrl,
+      };
+
+      const activationToken = createActivationToken(user);
+      const origin = req.headers.origin;
+
+      const activationUrl = `${origin}/activation/${activationToken}`;
+
+      // send email to user
+      try {
+        await sendMail({
+          email: user.email,
+          subject: 'Activate your account',
+          message: `Hello  ${user.name}, please click on the link to activate your account ${activationUrl} `,
+        });
+        res.status(201).json({
+          success: true,
+          message: `please check your email:- ${user.email} to activate your account!`,
+        });
+      } catch (err) {
+        return next(new ErrorHandler(err.message, 500));
+      }
     } catch (err) {
-      return next(new ErrorHandler(err.message, 500));
+      return next(new ErrorHandler(err.message, 400));
     }
-  } catch (err) {
-    return next(new ErrorHandler(err.message, 400));
   }
-});
+);
 
 // create activation token
 const createActivationToken = (user) => {
@@ -230,21 +242,30 @@ compare the provided password with the stored password for authentication purpos
 router.put(
   '/update-avatar',
   isAuthenticated,
-  upload.single('image'),
+  /* upload.single('image'), */
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const existsUser = await User.findById(req.user.id);
+      /*const existsUser = await User.findById(req.user.id);
 
-      const existAvatarPath = `uploads/${existsUser.avatar}`;
+       const existAvatarPath = `uploads/${existsUser.avatar}`;
 
       fs.unlinkSync(existAvatarPath); // Delete Priviuse Image
 
-      const fileUrl = path.join(req.file.filename); // new image
+      const fileUrl = path.join(req.file.filename); // new image */
 
       /* The code `const user = await User.findByIdAndUpdate(req.user.id, { avatar: fileUrl });` is
         updating the avatar field of the user with the specified `req.user.id`. It uses the
         `User.findByIdAndUpdate()` method to find the user by their id and update the avatar field
         with the new `fileUrl` value. The updated user object is then stored in the `user` variable. */
+
+      let fileUrl = '';
+      if (req.body?.image) {
+        fileUrl = await Cloudinary.upload(req.body?.image, 'avatar', {
+          height: 160,
+          width: 160,
+        });
+      }
+
       const user = await User.findByIdAndUpdate(req.user.id, {
         avatar: fileUrl,
       });

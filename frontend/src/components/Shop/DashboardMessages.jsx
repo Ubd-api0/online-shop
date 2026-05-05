@@ -157,7 +157,7 @@ const DashboardMessages = () => {
     imageSendingHandler(file);
   };
 
-  const imageSendingHandler = async (e) => {
+  const _imageSendingHandler = async (e) => {
     const formData = new FormData();
 
     formData.append('images', e);
@@ -187,6 +187,49 @@ const DashboardMessages = () => {
           setMessages([...messages, res.data.message]);
           updateLastMessageForImage();
         });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const imageSendingHandler = async (file) => {
+    // convert file → base64
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+
+    try {
+      const base64Image = await toBase64(file);
+
+      const receiverId = currentChat.members.find(
+        (member) => member !== seller._id
+      );
+
+      // 🔥 socket send (use base64 instead of file)
+      socketId.emit('sendMessage', {
+        senderId: seller._id,
+        receiverId,
+        images: base64Image,
+        text: newMessage,
+        conversationId: currentChat._id,
+      });
+
+      // 🔥 API call (JSON)
+      const res = await axios.post(`${server}/message/create-new-message`, {
+        images: base64Image,
+        sender: seller._id,
+        text: newMessage,
+        conversationId: currentChat._id,
+      });
+
+      setImages();
+      setMessages([...messages, res.data.message]);
+      updateLastMessageForImage();
     } catch (error) {
       console.log(error);
     }

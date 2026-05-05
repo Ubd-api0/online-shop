@@ -5,14 +5,15 @@ const router = express.Router();
 const Product = require('../model/product');
 const Order = require('../model/order');
 const Shop = require('../model/shop');
-const { upload } = require('../multer');
+//const { upload } = require('../multer');
 const ErrorHandler = require('../utils/ErrorHandler');
-const fs = require('fs');
+//const fs = require('fs');
+const Cloudinary = require('../cloudinary');
 
 // create product
 router.post(
   '/create-product',
-  upload.array('images'),
+  /* upload.array('images'), */
   catchAsyncErrors(async (req, res, next) => {
     try {
       const shopId = req.body.shopId;
@@ -20,11 +21,29 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler('Shop Id is invalid!', 400));
       } else {
-        const files = req.files;
-        const imageUrls = files.map((file) => `${file.filename}`);
+        /* const files = req.files;
+        const imageUrls = files.map((file) => `${file.filename}`); */
 
         const productData = req.body;
-        productData.images = imageUrls;
+
+        if (productData.images?.length) {
+          const imageUrls = await Promise.all(
+            productData.images.map(async (img) => {
+              const res = await Cloudinary.upload(img, 'events', {
+                height: 160,
+                width: 160,
+              });
+
+              return {
+                url: res.secure_url,
+                public_id: res.public_id,
+              };
+            })
+          );
+
+          productData.images = imageUrls;
+        }
+        //productData.images = imageUrls;
         productData.shop = shop;
 
         const product = await Product.create(productData);
@@ -65,7 +84,7 @@ router.delete(
     try {
       const productId = req.params.id;
 
-      const productData = await Product.findById(productId);
+      /*  const productData = await Product.findById(productId);
 
       productData.images.forEach((imageUrl) => {
         const filename = imageUrl;
@@ -76,7 +95,7 @@ router.delete(
             console.log(err);
           }
         });
-      });
+      }); */
 
       const product = await Product.findByIdAndDelete(productId);
 
