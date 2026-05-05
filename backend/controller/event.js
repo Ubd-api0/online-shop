@@ -29,10 +29,7 @@ router.post(
         if (eventData.images?.length) {
           const imageUrls = await Promise.all(
             eventData.images.map(async (img) => {
-              const res = await Cloudinary.upload(img, 'events', {
-                height: 160,
-                width: 160,
-              });
+              const res = await Cloudinary.upload(img, 'events');
 
               return {
                 url: res.secure_url,

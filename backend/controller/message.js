@@ -24,11 +24,7 @@ router.post(
       if (req.body?.images) {
         messageData.images = await Cloudinary.upload(
           req.body?.images,
-          'messages',
-          {
-            height: 160,
-            width: 160,
-          }
+          'messages'
         );
       }
 

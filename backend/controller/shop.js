@@ -238,10 +238,7 @@ router.put(
 
       let fileUrl = '';
       if (req.body?.image) {
-        fileUrl = await Cloudinary.upload(req.body?.image, 'avatar', {
-          height: 160,
-          width: 160,
-        });
+        fileUrl = await Cloudinary.upload(req.body?.image, 'avatar');
       }
       const seller = await Shop.findByIdAndUpdate(req.seller._id, {
         avatar: fileUrl,
