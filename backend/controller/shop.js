@@ -41,10 +41,12 @@ router.post(
 
       let fileUrl = '';
       if (file) {
+        console.log('file uploading');
         fileUrl = await Cloudinary.upload(file, 'avatar', {
           height: 160,
           width: 160,
         });
+        console.log('file uploaded: ', fileUrl);
       }
 
       const seller = {
