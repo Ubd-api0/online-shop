@@ -21,12 +21,12 @@ router.post(
         messageData.images = fileUrl;
       } */
 
-      if (req.body?.images) {
+      /* if (req.body?.images) {
         messageData.images = await Cloudinary.upload(
           req.body?.images,
           'messages'
         );
-      }
+      } */
 
       messageData.conversationId = req.body.conversationId;
       messageData.sender = req.body.sender;

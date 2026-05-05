@@ -6,6 +6,7 @@ import axios from 'axios';
 import { server } from '../../server';
 import { toast } from 'react-toastify';
 import { RxAvatar } from 'react-icons/rx';
+import Cloudinary from '../../cloudinary';
 
 const ShopCreate = () => {
   const navigate = useNavigate();
@@ -58,23 +59,17 @@ const ShopCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // convert file → base64
-    const toBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        if (!file) return resolve(null);
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-
     try {
-      const base64Image = await toBase64(avatar);
+      let imageUrl = null;
 
+      // 1. upload image to Cloudinary if exists
+      if (avatar) {
+        imageUrl = await Cloudinary.upload(avatar, 'shops');
+      }
+
+      // 2. send only URL to backend
       const res = await axios.post(`${server}/shop/create-shop`, {
-        file: base64Image, // 👈 now JSON
+        image: imageUrl,
         name,
         email,
         password,
@@ -85,13 +80,14 @@ const ShopCreate = () => {
 
       toast.success(res.data.message);
 
+      // reset form
       setName('');
       setEmail('');
       setPassword('');
-      setAvatar();
-      setZipCode();
+      setAvatar(null);
+      setZipCode('');
       setAddress('');
-      setPhoneNumber();
+      setPhoneNumber('');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error');
     }

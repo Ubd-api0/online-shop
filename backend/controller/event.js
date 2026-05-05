@@ -26,7 +26,7 @@ router.post(
 
         const eventData = req.body;
 
-        if (eventData.images?.length) {
+        /*  if (eventData.images?.length) {
           const imageUrls = await Promise.all(
             eventData.images.map(async (img) => {
               const res = await Cloudinary.upload(img, 'events');
@@ -39,7 +39,7 @@ router.post(
           );
 
           eventData.images = imageUrls;
-        }
+        }  */
         //eventData.images = imageUrls;
         eventData.shop = shop;
 

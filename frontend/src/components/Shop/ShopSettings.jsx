@@ -6,6 +6,7 @@ import styles from '../../styles/styles';
 import axios from 'axios';
 import { loadSeller } from '../../redux/actions/user';
 import { toast } from 'react-toastify';
+import Cloudinary from '../../cloudinary';
 
 const ShopSettings = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -47,30 +48,18 @@ const ShopSettings = () => {
   };
 
   const handleImage = async (e) => {
-    e.preventDefault();
-
     const file = e.target.files[0];
     setAvatar(file);
 
-    // convert file → base64
-    const toBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        if (!file) return resolve(null);
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-
     try {
-      const base64Image = await toBase64(file);
+      // 1. upload directly to Cloudinary
+      const imageUrl = await Cloudinary.upload(file, 'shop-avatar');
 
-      const res = await axios.put(
+      // 2. send only URL to backend
+      await axios.put(
         `${server}/shop/update-shop-avatar`,
         {
-          image: base64Image, // 👈 JSON now
+          image: imageUrl,
         },
         {
           withCredentials: true,

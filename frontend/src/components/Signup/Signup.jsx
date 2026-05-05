@@ -6,6 +6,7 @@ import { RxAvatar } from 'react-icons/rx';
 import axios from 'axios';
 import { server } from '../../server';
 import { toast } from 'react-toastify';
+import Cloudinary from '../../cloudinary';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -53,23 +54,17 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // convert file → base64
-    const toBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        if (!file) return resolve(null);
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-
     try {
-      const base64Image = await toBase64(avatar);
+      let imageUrl = null;
 
+      // 1. upload image if exists
+      if (avatar) {
+        imageUrl = await Cloudinary.upload(avatar, 'users');
+      }
+
+      // 2. send ONLY URL to backend
       const res = await axios.post(`${server}/user/create-user`, {
-        file: base64Image, // 👈 JSON now
+        image: imageUrl,
         name,
         email,
         password,
@@ -80,7 +75,7 @@ const Signup = () => {
       setName('');
       setEmail('');
       setPassword('');
-      setAvatar();
+      setAvatar(null);
 
       navigate('/login');
     } catch (error) {

@@ -26,7 +26,7 @@ router.post(
 
         const productData = req.body;
 
-        if (productData.images?.length) {
+        /* if (productData.images?.length) {
           const imageUrls = await Promise.all(
             productData.images.map(async (img) => {
               const res = await Cloudinary.upload(img, 'products');
@@ -39,7 +39,7 @@ router.post(
           );
 
           productData.images = imageUrls;
-        }
+        } */
         //productData.images = imageUrls;
         productData.shop = shop;
 

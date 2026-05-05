@@ -40,19 +40,19 @@ router.post(
       /* const filename = req.file.filename;
       const fileUrl = path.join(filename); */
 
-      let fileUrl = '';
+      /* let fileUrl = '';
       if (file) {
         fileUrl = await Cloudinary.upload(file, 'avatar', {
           height: 160,
           width: 160,
         });
-      }
+      } */
 
       const user = {
         name: name,
         email: email,
         password: password,
-        avatar: fileUrl,
+        avatar: file,
       };
 
       const activationToken = createActivationToken(user);
@@ -260,13 +260,13 @@ router.put(
         `User.findByIdAndUpdate()` method to find the user by their id and update the avatar field
         with the new `fileUrl` value. The updated user object is then stored in the `user` variable. */
 
-      let fileUrl = '';
+      /* let fileUrl = '';
       if (req.body?.image) {
         fileUrl = await Cloudinary.upload(req.body?.image, 'avatar');
-      }
+      } */
 
       const user = await User.findByIdAndUpdate(req.user.id, {
-        avatar: fileUrl,
+        avatar: req.body?.image,
       });
 
       res.status(200).json({

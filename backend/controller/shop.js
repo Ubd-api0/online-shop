@@ -39,6 +39,7 @@ router.post(
       /* const filename = req.file.filename;
       const fileUrl = path.join(filename); */
 
+      /* console.log('creating');
       let fileUrl = '';
       if (file) {
         console.log('file uploading');
@@ -47,13 +48,13 @@ router.post(
           width: 160,
         });
         console.log('file uploaded: ', fileUrl);
-      }
+      } */
 
       const seller = {
         name: req.body.name,
         email: email,
         password: req.body.password,
-        avatar: fileUrl,
+        avatar: file,
         address: req.body.address,
         phoneNumber: req.body.phoneNumber,
         zipCode: req.body.zipCode,
@@ -238,12 +239,12 @@ router.put(
       const fileUrl = path.join(req.file.filename);
  */
 
-      let fileUrl = '';
+      /* let fileUrl = '';
       if (req.body?.image) {
         fileUrl = await Cloudinary.upload(req.body?.image, 'avatar');
-      }
+      } */
       const seller = await Shop.findByIdAndUpdate(req.seller._id, {
-        avatar: fileUrl,
+        avatar: req.body?.image,
       });
 
       res.status(200).json({

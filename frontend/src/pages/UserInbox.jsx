@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlineArrowRight, AiOutlineSend } from 'react-icons/ai';
 import { TfiGallery } from 'react-icons/tfi';
 import styles from '../styles/styles';
+import Cloudinary from '../cloudinary';
 const ENDPOINT = 'https://online-shop-production-fefa.up.railway.app/';
 //const ENDPOINT = 'http://localhost:4000/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
@@ -189,43 +190,34 @@ const UserInbox = () => {
     }
   };
   const imageSendingHandler = async (file) => {
-    // convert file → base64
-    const toBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        if (!file) return resolve(null);
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-
     try {
-      const base64Image = await toBase64(file);
+      // 1. upload image to Cloudinary
+      const imageUrl = await Cloudinary.upload(file, 'chat');
 
       const receiverId = currentChat.members.find(
         (member) => member !== user._id
       );
 
-      // 🔥 SOCKET (send base64 instead of file)
-      socketId.emit('sendMessage', {
+      const messageData = {
         senderId: user._id,
         receiverId,
-        images: base64Image,
+        images: imageUrl,
         text: newMessage,
         conversationId: currentChat._id,
-      });
+      };
 
-      // 🔥 API CALL (JSON)
+      // 2. SOCKET (send URL only)
+      socketId.emit('sendMessage', messageData);
+
+      // 3. API CALL (send URL only)
       const res = await axios.post(`${server}/message/create-new-message`, {
-        images: base64Image,
+        images: imageUrl,
         sender: user._id,
         text: newMessage,
         conversationId: currentChat._id,
       });
 
-      setImages();
+      setImages(null);
       setMessages([...messages, res.data.message]);
       updateLastMessageForImage();
     } catch (error) {

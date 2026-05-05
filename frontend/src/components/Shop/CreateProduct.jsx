@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { createProduct } from '../../redux/actions/product';
 import { categoriesData } from '../../static/data';
 import { toast } from 'react-toastify';
+import Cloudinary from '../../cloudinary';
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -63,25 +64,15 @@ const CreateProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const toBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        if (!file) return resolve(null);
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-
     try {
-      // convert all images → base64
-      const base64Images = await Promise.all(
-        images.map((img) => toBase64(img))
+      // 1. upload all images to Cloudinary
+      const imageUrls = await Promise.all(
+        images.map((img) => Cloudinary.upload(img, 'products'))
       );
 
+      // 2. send only URLs to backend
       const payload = {
-        images: base64Images,
+        images: imageUrls,
         name,
         description,
         category,
@@ -92,7 +83,7 @@ const CreateProduct = () => {
         shopId: seller._id,
       };
 
-      dispatch(createProduct(payload)); // JSON instead of FormData
+      dispatch(createProduct(payload));
     } catch (error) {
       console.log(error);
     }

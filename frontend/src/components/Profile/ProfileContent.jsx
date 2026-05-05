@@ -22,6 +22,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Country, State } from 'country-state-city';
 import { getAllOrdersOfUser } from '../../redux/actions/order';
+import Cloudinary from '../../cloudinary';
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -78,23 +79,15 @@ const ProfileContent = ({ active }) => {
     const file = e.target.files[0];
     setAvatar(file);
 
-    // convert file → base64
-    const toBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-
     try {
-      const base64Image = await toBase64(file);
+      // 1. upload directly to Cloudinary
+      const imageUrl = await Cloudinary.upload(file, 'avatars');
 
+      // 2. send ONLY URL to backend
       await axios.put(
         `${server}/user/update-avatar`,
         {
-          image: base64Image, // 👈 now JSON
+          image: imageUrl,
         },
         {
           withCredentials: true,
@@ -102,7 +95,7 @@ const ProfileContent = ({ active }) => {
       );
 
       dispatch(loadUser());
-      toast.success('avatar updated successfully!');
+      toast.success('Avatar updated successfully!');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Upload failed');
     }
