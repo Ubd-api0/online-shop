@@ -1,46 +1,56 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from "react-redux";
-import { productData } from '../../static/data'
-import styles from "../../styles/styles";
-import ProductCard from "../Route/ProductCard/ProductCard"
-
-
-
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from '../../styles/styles';
+import ProductCard from '../Route/ProductCard/ProductCard';
 
 const SuggestedProduct = ({ data }) => {
-    const [products, setProducts] = useState([])
-    const { allProducts } = useSelector((state) => state.products);
-    const [productData, setProductData] = useState();
+  const { allProducts } = useSelector((state) => state.products);
+  const [productData, setProductData] = useState([]);
 
-    // Proudect is filter when the cataegory is same as the current product when page is loaded
-    useEffect(() => {
-        const d = allProducts && allProducts.filter((i) => i.category === data.category)
-        setProductData(d)
-    }, [])
+  useEffect(() => {
+    if (!data || !allProducts) return;
 
-    return (
-        <div>
-            {
-                data ? (
-                    <div
-                        className={`p-4 ${styles.section}`}>
-                        <h2
-                            className={`${styles.heading} text-[25px] font-[500] border-b mb-5`}
-                        >
-                            Related Products
-                        </h2>
-                        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12">
-                            {
-                                productData && productData.map((i, index) => (
-                                    <ProductCard data={i} key={index} />
-                                ))
-                            }
-                        </div>
-                    </div>
-                ) : null
-            }
-        </div>
-    )
-}
+    const filtered = allProducts.filter(
+      (item) => item.category === data.category && item._id !== data._id
+    );
 
-export default SuggestedProduct
+    setProductData(filtered);
+  }, [data, allProducts]);
+
+  if (!data || productData.length === 0) return null;
+
+  return (
+    <div className={`${styles.section} mt-6 px-2 sm:px-0`}>
+      {/* Header */}
+      <div className='flex justify-between items-center border-b pb-2 mb-4'>
+        <h2 className='text-lg md:text-xl font-semibold text-gray-800'>
+          Related Products
+        </h2>
+
+        <span className='text-sm text-orange-500 cursor-pointer hover:underline'>
+          View More
+        </span>
+      </div>
+
+      {/* Products Grid (Daraz style) */}
+      <div
+        className='
+        grid grid-cols-2 gap-3
+        sm:grid-cols-2 sm:gap-4
+        md:grid-cols-3
+        lg:grid-cols-4
+        xl:grid-cols-5
+      '
+      >
+        {productData.slice(0, 10).map((item, index) => (
+          <ProductCard
+            data={item}
+            key={index}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default SuggestedProduct;

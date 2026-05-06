@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { backend_url } from '../../server';
-import styles from '../../styles/styles';
 import CountDown from './CountDown';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,77 +17,92 @@ const EventCard = ({ data }) => {
   const addToCartHandler = () => {
     const exists = cart?.some((i) => i._id === data._id);
 
-    if (exists) {
-      toast.error('Item already in cart!');
-    } else if (data.stock < 1) {
-      toast.error('Product stock limited!');
-    } else {
-      dispatch(addTocart({ ...data, qty: 1 }));
-      toast.success('Item added successfully!');
-    }
+    if (exists) return toast.error('Already in cart');
+    if (data.stock < 1) return toast.error('Out of stock');
+
+    dispatch(addTocart({ ...data, qty: 1 }));
+    toast.success('Added to cart');
   };
 
   return (
-    <div className='w-full bg-white rounded-lg shadow-sm p-3 lg:flex gap-5'>
-      {/* Image */}
-      <div className='w-full lg:w-1/2 flex justify-center items-center'>
+    <div className='w-full bg-white rounded-md shadow-sm hover:shadow-md transition p-4 flex flex-col lg:flex-row gap-6'>
+      {/* LEFT IMAGE */}
+      <div className='relative lg:w-[45%] flex justify-center items-center'>
+        {/* 🔥 Badge */}
+        <span className='absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded'>
+          🔥 Deal
+        </span>
+
         <img
           src={`${backend_url}${data.images?.[0]}`}
           alt='event'
-          className='w-full max-h-[250px] sm:max-h-[300px] object-contain rounded-md'
+          className='w-full h-[220px] sm:h-[300px] object-contain'
         />
       </div>
 
-      {/* Content */}
-      <div className='w-full lg:w-1/2 flex flex-col justify-center mt-4 lg:mt-0'>
-        {/* Title */}
-        <h2 className={`${styles.productTitle} text-lg sm:text-xl`}>
-          {data.name}
-        </h2>
+      {/* RIGHT CONTENT */}
+      <div className='lg:w-[55%] flex flex-col justify-between'>
+        {/* TITLE */}
+        <div>
+          <h2 className='text-lg sm:text-2xl font-semibold text-gray-800'>
+            {data.name}
+          </h2>
 
-        {/* Description */}
-        <p className='text-sm sm:text-base text-gray-600 mt-2 line-clamp-3'>
-          {data.description}
-        </p>
-
-        {/* Price */}
-        <div className='flex items-center justify-between mt-3 flex-wrap gap-2'>
-          <div className='flex items-center gap-3'>
-            <h5 className='text-red-500 line-through text-sm sm:text-base'>
-              {data.originalPrice}$
-            </h5>
-            <h5 className='font-bold text-lg sm:text-xl text-gray-800'>
-              {data.discountPrice}$
-            </h5>
-          </div>
-
-          <span className='text-green-600 text-sm sm:text-base'>
-            {data.sold_out} sold
-          </span>
+          {/* DESCRIPTION */}
+          <p className='text-gray-500 mt-2 text-sm sm:text-base line-clamp-3'>
+            {data.description}
+          </p>
         </div>
 
-        {/* Countdown */}
-        <div className='mt-3'>
+        {/* PRICE SECTION */}
+        <div className='mt-4'>
+          <div className='flex items-center gap-3 flex-wrap'>
+            <span className='text-gray-400 line-through text-sm'>
+              {data.originalPrice}$
+            </span>
+
+            <span className='text-2xl font-bold text-orange-600'>
+              {data.discountPrice}$
+            </span>
+
+            {/* Discount % */}
+            <span className='text-green-600 text-sm font-medium'>
+              {Math.round(
+                ((data.originalPrice - data.discountPrice) /
+                  data.originalPrice) *
+                  100
+              )}
+              % OFF
+            </span>
+          </div>
+
+          <p className='text-sm text-green-600 mt-1'>{data.sold_out} sold</p>
+        </div>
+
+        {/* COUNTDOWN */}
+        <div className='mt-3 bg-gray-50 p-3 rounded'>
           <CountDown data={data} />
         </div>
 
-        {/* Buttons */}
-        <div className='flex flex-col sm:flex-row gap-3 mt-4'>
+        {/* BUTTONS */}
+        <div className='mt-5 flex flex-col sm:flex-row gap-3'>
+          {/* DETAILS */}
           <Link
             to={`/product/${data._id}?isEvent=true`}
             className='w-full sm:w-auto'
           >
-            <div className={`${styles.button} text-white w-full text-center`}>
+            <button className='w-full sm:px-6 py-3 border border-orange-500 text-orange-500 rounded hover:bg-orange-50 transition'>
               See Details
-            </div>
+            </button>
           </Link>
 
-          <div
+          {/* ADD TO CART */}
+          <button
             onClick={addToCartHandler}
-            className={`${styles.button} text-white w-full sm:w-auto text-center cursor-pointer`}
+            className='w-full sm:px-6 py-3 bg-orange-500 text-white rounded font-semibold hover:bg-orange-600 transition'
           >
-            Add to cart
-          </div>
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>

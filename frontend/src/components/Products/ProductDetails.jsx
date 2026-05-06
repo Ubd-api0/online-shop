@@ -88,7 +88,7 @@ const ProductDetails = ({ data }) => {
   if (!data) return null;
 
   return (
-    <div className='bg-white pb-20'>
+    <div className='bg-white pb-5'>
       <div className='max-w-6xl mx-auto px-3 md:px-6 py-6'>
         {/* MAIN LAYOUT */}
         <div className='flex flex-col lg:flex-row gap-6'>
