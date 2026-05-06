@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
-import { backend_url } from "../../server";
-import styles from "../../styles/styles";
-import CountDown from "./CountDown";
-import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addTocart } from "../../redux/actions/cart";
-import { toast } from "react-toastify";
+import React, { useEffect } from 'react';
+import { backend_url } from '../../server';
+import styles from '../../styles/styles';
+import CountDown from './CountDown';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTocart } from '../../redux/actions/cart';
+import { toast } from 'react-toastify';
 
-const EventCard = ({ active, data }) => {
+const EventCard = ({ data }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
@@ -15,57 +15,77 @@ const EventCard = ({ active, data }) => {
     window.scrollTo(0, 0);
   }, []);
 
-  const addToCartHandler = (data) => {
-    const isItemExists = cart && cart.find((i) => i._id === data._id);
-    if (isItemExists) {
-      toast.error("Item alredy in cart!");
+  const addToCartHandler = () => {
+    const exists = cart?.some((i) => i._id === data._id);
+
+    if (exists) {
+      toast.error('Item already in cart!');
+    } else if (data.stock < 1) {
+      toast.error('Product stock limited!');
     } else {
-      if (data.stock < 1) {
-        toast.error("Product stock limited!");
-      } else {
-        const cartData = { ...data, qty: 1 };
-        dispatch(addTocart(cartData));
-        toast.success("item added to cart successfully!");
-      }
+      dispatch(addTocart({ ...data, qty: 1 }));
+      toast.success('Item added successfully!');
     }
   };
 
   return (
-    <div
-      className={`w-full block bg-white rounded-lg ${
-        active ? "unset" : "mb-12"
-      } lg:flex p-2`}
-    >
-      <div className="w-full lg:w-[50%] m-auto">
-        <img src={`${backend_url}${data.images[0]}`} alt="" />
+    <div className='w-full bg-white rounded-lg shadow-sm p-3 lg:flex gap-5'>
+      {/* Image */}
+      <div className='w-full lg:w-1/2 flex justify-center items-center'>
+        <img
+          src={`${backend_url}${data.images?.[0]}`}
+          alt='event'
+          className='w-full max-h-[250px] sm:max-h-[300px] object-contain rounded-md'
+        />
       </div>
 
-      <div className="w-full lg:[w-50%] flex flex-col justify-center">
-        <h2 className={`${styles.productTitle}`}>{data.name}</h2>
-        <p>{data.description}</p>
+      {/* Content */}
+      <div className='w-full lg:w-1/2 flex flex-col justify-center mt-4 lg:mt-0'>
+        {/* Title */}
+        <h2 className={`${styles.productTitle} text-lg sm:text-xl`}>
+          {data.name}
+        </h2>
 
-        <div className="flex py-2 justify-between">
-          <div className="flex">
-            <h5 className="font-[500] text-[18px] text-[#d55b45] pr-3 line-through">
+        {/* Description */}
+        <p className='text-sm sm:text-base text-gray-600 mt-2 line-clamp-3'>
+          {data.description}
+        </p>
+
+        {/* Price */}
+        <div className='flex items-center justify-between mt-3 flex-wrap gap-2'>
+          <div className='flex items-center gap-3'>
+            <h5 className='text-red-500 line-through text-sm sm:text-base'>
               {data.originalPrice}$
             </h5>
-            <h5 className="font-bold text-[20px] text-[#333] font-Roboto">
+            <h5 className='font-bold text-lg sm:text-xl text-gray-800'>
               {data.discountPrice}$
             </h5>
           </div>
-          <span className="pr-3 font-[400] text-[17px] text-[#44a55e]">
+
+          <span className='text-green-600 text-sm sm:text-base'>
             {data.sold_out} sold
           </span>
         </div>
-        <CountDown data={data} />
-        <br />
-        <div className="flex items-center">
-          <Link to={`/product/${data._id}?isEvent=true`}>
-            <div className={`${styles.button} text-[#fff]`}>See Details</div>
+
+        {/* Countdown */}
+        <div className='mt-3'>
+          <CountDown data={data} />
+        </div>
+
+        {/* Buttons */}
+        <div className='flex flex-col sm:flex-row gap-3 mt-4'>
+          <Link
+            to={`/product/${data._id}?isEvent=true`}
+            className='w-full sm:w-auto'
+          >
+            <div className={`${styles.button} text-white w-full text-center`}>
+              See Details
+            </div>
           </Link>
+
           <div
-            className={`${styles.button} text-[#fff] ml-5`}
-            onClick={() => addToCartHandler(data)}
+            onClick={addToCartHandler}
+            className={`${styles.button} text-white w-full sm:w-auto text-center cursor-pointer`}
           >
             Add to cart
           </div>
