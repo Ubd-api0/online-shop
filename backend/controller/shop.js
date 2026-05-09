@@ -193,8 +193,9 @@ router.get(
     try {
       res.clearCookie('token', {
         httpOnly: true,
-        sameSite: 'none', // MUST match login
         secure: true, // MUST match login (HTTPS)
+        sameSite: 'None', // MUST match login
+        path: '/',
       });
 
       res.status(200).json({
