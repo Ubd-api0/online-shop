@@ -66,3 +66,38 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* ===================== DARK MODE: MUI DataGrid ===================== */
+.dark .MuiDataGrid-root {
+  color: var(--content);
+  border-color: var(--border);
+}
+.dark .MuiDataGrid-columnsContainer,
+.dark .MuiDataGrid-columnHeaders {
+  background: var(--surface-alt);
+  border-color: var(--border);
+}
+.dark .MuiDataGrid-cell,
+.dark .MuiDataGrid-columnHeader,
+.dark .MuiDataGrid-columnSeparator {
+  border-color: var(--border) !important;
+  color: var(--content);
+}
+.dark .MuiDataGrid-footerContainer,
+.dark .MuiTablePagination-root {
+  background: var(--surface-alt);
+  color: var(--content);
+  border-color: var(--border);
+}
+.dark .MuiDataGrid-row:hover {
+  background: var(--surface-alt);
+}
+.dark .MuiSvgIcon-root {
+  color: var(--muted);
+}
+.greenColor {
+  color: #16a34a;
+}
+.redColor {
+  color: #dc2626;
+}

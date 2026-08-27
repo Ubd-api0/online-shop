@@ -137,7 +137,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className='bg-[#f5f5f5] min-h-screen py-6'>
+    <div className='bg-surface-alt min-h-screen py-6'>
       <div className='max-w-7xl mx-auto px-3 lg:px-5'>
         <div className='flex flex-col lg:flex-row gap-5'>
           {/* LEFT */}
@@ -201,7 +201,7 @@ const ShippingInfo = ({
   setZipCode,
 }) => {
   return (
-    <div className='bg-white rounded-md shadow-sm p-5'>
+    <div className='bg-surface rounded-md shadow-sm p-5'>
       <div className='flex items-center gap-2 border-b pb-4 mb-5'>
         <FiMapPin
           className='text-orange-500'
@@ -387,7 +387,7 @@ const CartData = ({
   paymentSubmit,
 }) => {
   return (
-    <div className='bg-white rounded-md shadow-sm p-5 sticky top-24'>
+    <div className='bg-surface rounded-md shadow-sm p-5 sticky top-24'>
       <h2 className='text-[20px] font-semibold border-b pb-4 mb-5'>
         Order Summary
       </h2>
@@ -473,7 +473,7 @@ const PaymentMethodPicker = ({
   };
 
   return (
-    <div className='bg-white rounded-md shadow-sm p-5'>
+    <div className='bg-surface rounded-md shadow-sm p-5'>
       <div className='flex items-center gap-2 border-b pb-4 mb-4'>
         <FiCreditCard className='text-orange-500' size={20} />
         <h2 className='text-[20px] font-semibold text-gray-800'>Payment Method</h2>

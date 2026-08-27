@@ -103,7 +103,7 @@ const WithdrawMoney = () => {
 
   return (
     <div className="w-full h-[90vh] p-8">
-      <div className="w-full bg-white h-full rounded flex items-center justify-center flex-col">
+      <div className="w-full bg-surface h-full rounded flex items-center justify-center flex-col">
         <h5 className="text-[20px] pb-4">
           Available Balance: ${availableBalance}
         </h5>
@@ -117,7 +117,7 @@ const WithdrawMoney = () => {
       {open && (
         <div className="w-full h-screen z-[9999] fixed top-0 left-0 flex items-center justify-center bg-[#0000004e]">
           <div
-            className={`w-[95%] 800px:w-[50%] bg-white shadow rounded ${
+            className={`w-[95%] 800px:w-[50%] bg-surface shadow rounded ${
               paymentMethod ? "h-[80vh] overflow-y-scroll" : "h-[unset]"
             } min-h-[40vh] p-3`}
           >

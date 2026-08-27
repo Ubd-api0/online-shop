@@ -9,7 +9,7 @@ import { CgProfile } from 'react-icons/cg';
 import { IoIosArrowDown } from 'react-icons/io';
 import { useSelector } from 'react-redux';
 import { backend_url } from '../../server';
-import { categoriesData } from '../../static/data';
+import { categoriesData, navItems } from '../../static/data';
 import Cart from '../cart/Cart';
 import Wishlist from '../Wishlist/Wishlist';
 import ThemeToggle from './ThemeToggle';
@@ -79,12 +79,12 @@ const Header = () => {
     <>
       {/* HEADER */}
       <header
-        className={`relative w-full bg-white z-[999] ${
+        className={`relative w-full bg-surface text-content z-[999] ${
           sticky ? 'fixed top-0 shadow-md' : ''
         }`}
       >
         {/* TOP BAR */}
-        <div className='border-b'>
+        <div className='border-b border-border'>
           <div className='max-w-7xl mx-auto px-3 py-3 flex items-center justify-between gap-4'>
             {/* LOGO */}
             <Link
@@ -99,7 +99,7 @@ const Header = () => {
               {/* CATEGORY */}
               <div
                 onClick={() => setMobileCatOpen(!mobileCatOpen)}
-                className='px-3 py-2 bg-gray-100 flex items-center gap-1 cursor-pointer'
+                className='px-3 py-2 bg-surface-alt flex items-center gap-1 cursor-pointer'
               >
                 <span className='text-sm'>{selectedCat}</span>
                 <IoIosArrowDown size={14} />
@@ -173,6 +173,23 @@ const Header = () => {
             </div>
           </div>
         </div>
+
+        {/* NAV STRIP */}
+        <div className='hidden md:block border-b border-border bg-surface'>
+          <div className='max-w-7xl mx-auto px-3'>
+            <nav className='flex items-center gap-6 h-11'>
+              {navItems.map((i) => (
+                <Link
+                  key={i.title}
+                  to={i.url}
+                  className='text-sm font-medium text-muted hover:text-brand transition'
+                >
+                  {i.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
       </header>
 
       {/* ---------------- MOBILE CATEGORY DRAWER ---------------- */}
@@ -181,7 +198,7 @@ const Header = () => {
           className='fixed inset-0 bg-black/40 z-[9999]'
           onClick={() => setMobileCatOpen(!mobileCatOpen)}
         >
-          <div className='w-[75%] max-w-[300px] bg-white h-full p-4 overflow-y-auto'>
+          <div className='w-[75%] max-w-[300px] bg-surface h-full p-4 overflow-y-auto'>
             <h3 className='font-semibold mb-3'>Categories</h3>
 
             {categoriesData.map((c) => (
@@ -202,7 +219,7 @@ const Header = () => {
       )}
 
       {/* ---------------- MOBILE BOTTOM NAV ---------------- */}
-      <div className='fixed bottom-0 left-0 w-full bg-white border-t flex justify-around py-2 md:hidden z-[999]'>
+      <div className='fixed bottom-0 left-0 w-full bg-surface border-t flex justify-around py-2 md:hidden z-[999]'>
         <Link
           to='/'
           className='text-xs text-center'
@@ -285,12 +302,12 @@ const Header = () => {
       )}
       {/* SEARCH RESULTS */}
       {search.length > 2 && results.length > 0 && (
-        <div className='absolute left-0 w-full bg-white shadow-lg max-h-[300px] overflow-y-auto z-[9999] border mt-1 rounded-md'>
+        <div className='absolute left-0 w-full bg-surface shadow-lg max-h-[300px] overflow-y-auto z-[9999] border mt-1 rounded-md'>
           {results.map((p) => (
             <Link
               key={p._id}
               to={`/product/${p._id}`}
-              className='flex items-center gap-2 p-2 hover:bg-gray-100'
+              className='flex items-center gap-2 p-2 hover:bg-surface-alt'
             >
               <img
                 src={`${backend_url}${p.images?.[0]}`}
