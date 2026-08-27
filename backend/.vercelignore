@@ -1,0 +1,5 @@
+node_modules
+uploads
+_server.js
+seed
+*.log
