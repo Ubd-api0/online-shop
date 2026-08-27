@@ -5,6 +5,8 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const sendMail = require('../utils/sendMail');
 const Shop = require('../model/shop');
+const User = require('../model/user');
+const sendToken = require('../utils/jwtToken');
 const { isAuthenticated, isSeller, isAdmin } = require('../middleware/auth');
 const { upload } = require('../multer');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
@@ -21,6 +23,13 @@ router.post(
   '/create-shop',
   /* upload.single('file'), */ async (req, res, next) => {
     try {
+      // Single-vendor: only one store may ever exist.
+      if ((await Shop.countDocuments()) > 0) {
+        return next(
+          new ErrorHandler('A store already exists for this application', 400)
+        );
+      }
+
       const { email, file } = req.body;
       const sellerEmail = await Shop.findOne({ email });
 
@@ -106,6 +115,12 @@ router.post(
       if (!newSeller) {
         return next(new ErrorHandler('Invalid token', 400));
       }
+
+      // Single-vendor: refuse if a store already exists.
+      if ((await Shop.countDocuments()) > 0) {
+        return next(new ErrorHandler('A store already exists', 400));
+      }
+
       const { name, email, password, avatar, zipCode, address, phoneNumber } =
         newSeller;
 
@@ -125,42 +140,51 @@ router.post(
         phoneNumber,
       });
 
-      sendShopToken(seller, 201, res);
+      // Link (or create) the business-owner user account for this store.
+      let owner = await User.findOne({ email });
+      if (owner) {
+        owner.role = 'business_owner';
+        owner.shop = seller._id;
+        await owner.save();
+      } else {
+        owner = await User.create({
+          name,
+          email,
+          password,
+          avatar,
+          phoneNumber,
+          role: 'business_owner',
+          shop: seller._id,
+        });
+      }
+
+      // Issue the *user* token so the owner is authenticated as their user account.
+      sendToken(owner, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
   })
 );
 
-// login shop
+// whether the single store has been set up yet (used by the frontend to gate /shop-create)
+router.get(
+  '/exists',
+  catchAsyncErrors(async (req, res, next) => {
+    const count = await Shop.countDocuments();
+    res.status(200).json({ success: true, exists: count > 0 });
+  })
+);
+
+// login shop (deprecated in single-vendor mode — owners log in via /user/login-user)
 router.post(
   '/login-shop',
   catchAsyncErrors(async (req, res, next) => {
-    try {
-      const { email, password } = req.body;
-
-      if (!email || !password) {
-        return next(new ErrorHandler('Please provide the all fields!', 400));
-      }
-
-      const user = await Shop.findOne({ email }).select('+password');
-
-      if (!user) {
-        return next(new ErrorHandler("User doesn't exists!", 400));
-      }
-
-      const isPasswordValid = await user.comparePassword(password);
-
-      if (!isPasswordValid) {
-        return next(
-          new ErrorHandler('Please provide the correct information', 400)
-        );
-      }
-
-      sendShopToken(user, 201, res);
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
+    return next(
+      new ErrorHandler(
+        'Shop login is disabled. Please sign in with your owner account.',
+        400
+      )
+    );
   })
 );
 
@@ -290,11 +314,65 @@ router.put(
   })
 );
 
+// update store payment settings --- business owner
+router.put(
+  '/update-payment-settings',
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { paymentSettings } = req.body;
+      if (!paymentSettings) {
+        return next(new ErrorHandler('paymentSettings is required', 400));
+      }
+
+      const {
+        codEnabled,
+        onlineFullEnabled,
+        partialAdvanceEnabled,
+        advancePercent,
+        gateways = {},
+      } = paymentSettings;
+
+      if (!codEnabled && !onlineFullEnabled && !partialAdvanceEnabled) {
+        return next(
+          new ErrorHandler('At least one payment method must be enabled', 400)
+        );
+      }
+
+      const pct = Number(advancePercent);
+      if (partialAdvanceEnabled && (!Number.isFinite(pct) || pct < 1 || pct > 100)) {
+        return next(
+          new ErrorHandler('Advance percent must be between 1 and 100', 400)
+        );
+      }
+
+      const shop = await Shop.findById(req.seller._id);
+      shop.paymentSettings = {
+        codEnabled: !!codEnabled,
+        onlineFullEnabled: !!onlineFullEnabled,
+        partialAdvanceEnabled: !!partialAdvanceEnabled,
+        advancePercent: Number.isFinite(pct) ? Math.round(pct) : 20,
+        gateways: {
+          stripe: !!gateways.stripe,
+          paypal: !!gateways.paypal,
+          easypaisa: !!gateways.easypaisa,
+          jazzcash: !!gateways.jazzcash,
+        },
+      };
+      await shop.save();
+
+      res.status(200).json({ success: true, shop });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 // all sellers --- for admin
 router.get(
   '/admin-all-sellers',
   isAuthenticated,
-  isAdmin('Admin'),
+  isAdmin('business_owner'),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const sellers = await Shop.find().sort({
@@ -314,7 +392,7 @@ router.get(
 router.delete(
   '/delete-seller/:id',
   isAuthenticated,
-  isAdmin('Admin'),
+  isAdmin('business_owner'),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const seller = await Shop.findById(req.params.id);

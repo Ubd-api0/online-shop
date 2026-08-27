@@ -68,6 +68,15 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  // Optional per-product payment rules. When `enabled`, these are intersected
+  // with the store's paymentSettings for any cart containing this product.
+  paymentOverride: {
+    enabled: { type: Boolean, default: false },
+    codEnabled: { type: Boolean, default: true },
+    onlineFullEnabled: { type: Boolean, default: true },
+    partialAdvanceEnabled: { type: Boolean, default: true },
+    advancePercent: { type: Number, min: 1, max: 100 },
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

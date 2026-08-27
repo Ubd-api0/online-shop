@@ -37,7 +37,7 @@ const CheckoutSteps = ({ active }) => {
                 className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
                   active >= step.id
                     ? 'bg-orange-500 border-orange-500 text-white'
-                    : 'bg-white border-gray-300 text-gray-400'
+                    : 'bg-surface border-gray-300 text-gray-400'
                 }`}
               >
                 {active > step.id ? <AiOutlineCheck size={20} /> : step.icon}

@@ -6,35 +6,85 @@ const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
 const Order = require("../model/order");
 const Shop = require("../model/shop");
 const Product = require("../model/product");
+const { effectivePolicy, isMethodAllowed } = require("../utils/paymentPolicy");
 
 // create new order
 router.post(
   "/create-order",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { cart, shippingAddress, user, totalPrice, paymentInfo } = req.body;
+      const {
+        cart,
+        shippingAddress,
+        user,
+        totalPrice,
+        paymentInfo = {},
+        paymentMethod = "cod",
+      } = req.body;
 
-      //   group cart items by shopId
+      if (!cart || cart.length === 0) {
+        return next(new ErrorHandler("Cart is empty", 400));
+      }
+
+      // ---- validate the chosen payment method against store/product criteria ----
+      const shop = await Shop.findOne();
+      const productIds = [...new Set(cart.map((i) => i._id))];
+      const products = await Product.find({ _id: { $in: productIds } });
+      const policy = effectivePolicy(shop, products);
+
+      if (!isMethodAllowed(policy, paymentMethod)) {
+        return next(
+          new ErrorHandler(
+            `Payment method "${paymentMethod}" is not available for this order`,
+            400
+          )
+        );
+      }
+
+      // ---- derive amounts server-side (never trust the client math) ----
+      let advanceAmount = 0;
+      let remainingAmount = 0;
+      let paymentStatus;
+
+      if (paymentMethod === "partial_advance") {
+        advanceAmount = Math.round((totalPrice * policy.advancePercent) / 100);
+        remainingAmount = Math.round(totalPrice - advanceAmount);
+        paymentStatus = "advance_paid";
+      } else if (paymentMethod === "online_full") {
+        paymentStatus = "succeeded";
+      } else {
+        // cod
+        remainingAmount = Math.round(totalPrice);
+        paymentStatus = "pending_cod";
+      }
+
+      const finalPaymentInfo = {
+        id: paymentInfo.id,
+        type:
+          paymentInfo.type ||
+          (paymentMethod === "cod" ? "Cash On Delivery" : "Online"),
+        status: paymentInfo.status || paymentStatus,
+      };
+
+      //   group cart items by shopId (single-vendor: normally one group)
       const shopItemsMap = new Map();
-
       for (const item of cart) {
         const shopId = item.shopId;
-        if (!shopItemsMap.has(shopId)) {
-          shopItemsMap.set(shopId, []);
-        }
+        if (!shopItemsMap.has(shopId)) shopItemsMap.set(shopId, []);
         shopItemsMap.get(shopId).push(item);
       }
 
-      // create an order for each shop
       const orders = [];
-
-      for (const [shopId, items] of shopItemsMap) {
+      for (const [, items] of shopItemsMap) {
         const order = await Order.create({
           cart: items,
           shippingAddress,
           user,
           totalPrice,
-          paymentInfo,
+          paymentMethod,
+          advanceAmount,
+          remainingAmount,
+          paymentInfo: finalPaymentInfo,
         });
         orders.push(order);
       }
@@ -215,7 +265,7 @@ router.put(
 router.get(
   "/admin-all-orders",
   isAuthenticated,
-  isAdmin("Admin"),
+  isAdmin("business_owner"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const orders = await Order.find().sort({

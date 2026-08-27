@@ -6,14 +6,37 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
+/* ===================== THEME TOKENS ===================== */
+:root {
+  --surface: #ffffff;
+  --surface-alt: #f6f6f5;
+  --content: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --brand: #f63b60;
+  --brand-hover: #e02a4f;
+}
+.dark {
+  --surface: #1e2029;
+  --surface-alt: #15161d;
+  --content: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #343746;
+  --brand: #f63b60;
+  --brand-hover: #ff5c7c;
+  color-scheme: dark;
+}
+
 * {
   scroll-behavior: smooth;
 }
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background: #f6f6f5;
+  background: var(--surface-alt);
+  color: var(--content);
   scroll-behavior: smooth;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 input,
 select {
@@ -42,4 +65,39 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* ===================== DARK MODE: MUI DataGrid ===================== */
+.dark .MuiDataGrid-root {
+  color: var(--content);
+  border-color: var(--border);
+}
+.dark .MuiDataGrid-columnsContainer,
+.dark .MuiDataGrid-columnHeaders {
+  background: var(--surface-alt);
+  border-color: var(--border);
+}
+.dark .MuiDataGrid-cell,
+.dark .MuiDataGrid-columnHeader,
+.dark .MuiDataGrid-columnSeparator {
+  border-color: var(--border) !important;
+  color: var(--content);
+}
+.dark .MuiDataGrid-footerContainer,
+.dark .MuiTablePagination-root {
+  background: var(--surface-alt);
+  color: var(--content);
+  border-color: var(--border);
+}
+.dark .MuiDataGrid-row:hover {
+  background: var(--surface-alt);
+}
+.dark .MuiSvgIcon-root {
+  color: var(--muted);
+}
+.greenColor {
+  color: #16a34a;
+}
+.redColor {
+  color: #dc2626;
 }

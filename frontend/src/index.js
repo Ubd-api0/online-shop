@@ -5,10 +5,13 @@ import reportWebVitals from "./reportWebVitals";
 
 import { Provider } from "react-redux";
 import Store from "./redux/store";
+import { ThemeProvider } from "./context/ThemeContext";
 
 ReactDOM.render(
   <Provider store={Store}>
-    <App />
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
   </Provider>,
   document.getElementById("root")
 );

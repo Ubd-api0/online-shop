@@ -21,6 +21,13 @@ const CreateProduct = () => {
   const [originalPrice, setOriginalPrice] = useState();
   const [discountPrice, setDiscountPrice] = useState();
   const [stock, setStock] = useState();
+  const [override, setOverride] = useState({
+    enabled: false,
+    codEnabled: true,
+    onlineFullEnabled: true,
+    partialAdvanceEnabled: true,
+    advancePercent: '',
+  });
 
   useEffect(() => {
     if (error) {
@@ -81,6 +88,17 @@ const CreateProduct = () => {
         discountPrice,
         stock,
         shopId: seller._id,
+        paymentOverride: override.enabled
+          ? {
+              enabled: true,
+              codEnabled: override.codEnabled,
+              onlineFullEnabled: override.onlineFullEnabled,
+              partialAdvanceEnabled: override.partialAdvanceEnabled,
+              ...(override.advancePercent
+                ? { advancePercent: Number(override.advancePercent) }
+                : {}),
+            }
+          : { enabled: false },
       };
 
       dispatch(createProduct(payload));
@@ -90,7 +108,7 @@ const CreateProduct = () => {
   };
 
   return (
-    <div className='w-[90%] 800px:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll'>
+    <div className='w-[90%] 800px:w-[50%] bg-surface  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll'>
       <h5 className='text-[30px] font-Poppins text-center'>Create Product</h5>
       {/* create product form */}
       <form onSubmit={handleSubmit}>
@@ -198,6 +216,80 @@ const CreateProduct = () => {
             onChange={(e) => setStock(e.target.value)}
             placeholder='Enter your product stock...'
           />
+        </div>
+        <br />
+        <div className='border border-gray-200 rounded-[4px] p-3'>
+          <label className='flex items-center gap-2 font-medium'>
+            <input
+              type='checkbox'
+              checked={override.enabled}
+              onChange={(e) =>
+                setOverride((o) => ({ ...o, enabled: e.target.checked }))
+              }
+            />
+            Custom payment rules for this product
+          </label>
+          {override.enabled && (
+            <div className='mt-3 pl-1 space-y-2 text-sm'>
+              <p className='text-gray-500'>
+                Unchecked options are blocked for any cart containing this
+                product (intersected with the store settings).
+              </p>
+              <label className='flex items-center gap-2'>
+                <input
+                  type='checkbox'
+                  checked={override.codEnabled}
+                  onChange={(e) =>
+                    setOverride((o) => ({ ...o, codEnabled: e.target.checked }))
+                  }
+                />
+                Allow Cash on Delivery
+              </label>
+              <label className='flex items-center gap-2'>
+                <input
+                  type='checkbox'
+                  checked={override.onlineFullEnabled}
+                  onChange={(e) =>
+                    setOverride((o) => ({
+                      ...o,
+                      onlineFullEnabled: e.target.checked,
+                    }))
+                  }
+                />
+                Allow full online payment
+              </label>
+              <label className='flex items-center gap-2'>
+                <input
+                  type='checkbox'
+                  checked={override.partialAdvanceEnabled}
+                  onChange={(e) =>
+                    setOverride((o) => ({
+                      ...o,
+                      partialAdvanceEnabled: e.target.checked,
+                    }))
+                  }
+                />
+                Allow partial advance
+              </label>
+              <div className='flex items-center gap-2'>
+                <span>Minimum advance %</span>
+                <input
+                  type='number'
+                  min={1}
+                  max={100}
+                  placeholder='store default'
+                  value={override.advancePercent}
+                  onChange={(e) =>
+                    setOverride((o) => ({
+                      ...o,
+                      advancePercent: e.target.value,
+                    }))
+                  }
+                  className='w-[110px] border border-gray-300 rounded px-2 h-[30px]'
+                />
+              </div>
+            </div>
+          )}
         </div>
         <br />
         <div>

@@ -46,6 +46,19 @@ const shopSchema = new mongoose.Schema({
   withdrawMethod: {
     type: Object,
   },
+  // Store-wide payment criteria shown to customers at checkout.
+  paymentSettings: {
+    codEnabled: { type: Boolean, default: true },
+    onlineFullEnabled: { type: Boolean, default: true },
+    partialAdvanceEnabled: { type: Boolean, default: false },
+    advancePercent: { type: Number, default: 20, min: 1, max: 100 },
+    gateways: {
+      stripe: { type: Boolean, default: true },
+      paypal: { type: Boolean, default: true },
+      easypaisa: { type: Boolean, default: false },
+      jazzcash: { type: Boolean, default: false },
+    },
+  },
   availableBalance: {
     type: Number,
     default: 0,

@@ -53,7 +53,7 @@ router.post(
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
-  })
+  }),
 );
 
 // get all events
@@ -83,7 +83,7 @@ router.get(
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
-  })
+  }),
 );
 
 // delete event of a shop
@@ -120,14 +120,14 @@ router.delete(
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
-  })
+  }),
 );
 
 // all events --- for admin
 router.get(
   '/admin-all-events',
   isAuthenticated,
-  isAdmin('Admin'),
+  isAdmin('business_owner'),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const events = await Event.find().sort({
@@ -140,7 +140,7 @@ router.get(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
-  })
+  }),
 );
 
 // review for a Event
@@ -161,13 +161,13 @@ router.put(
       };
 
       const isReviewed = event.reviews.find(
-        (rev) => rev.user._id === req.user._id
+        (rev) => rev.user._id === req.user._id,
       );
 
       if (isReviewed) {
         event.reviews.forEach((rev) => {
           if (rev.user._id === req.user._id) {
-            (rev.rating = rating), (rev.comment = comment), (rev.user = user);
+            ((rev.rating = rating), (rev.comment = comment), (rev.user = user));
           }
         });
       } else {
@@ -187,7 +187,7 @@ router.put(
       await Order.findByIdAndUpdate(
         orderId,
         { $set: { 'cart.$[elem].isReviewed': true } },
-        { arrayFilters: [{ 'elem._id': productId }], new: true }
+        { arrayFilters: [{ 'elem._id': productId }], new: true },
       );
 
       res.status(200).json({
@@ -197,7 +197,7 @@ router.put(
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
-  })
+  }),
 );
 
 module.exports = router;

@@ -109,7 +109,7 @@ const AllEvents = () => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="w-full mx-8 pt-1 mt-10 bg-white">
+        <div className="w-full pt-1 mt-6 bg-surface border border-border rounded-md overflow-hidden">
           <DataGrid
             rows={row}
             columns={columns}

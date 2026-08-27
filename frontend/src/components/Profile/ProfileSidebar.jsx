@@ -34,7 +34,7 @@ const ProfileSidebar = ({ active, setActive }) => {
   };
 
   return (
-    <div className="w-full bg-white shadow-sm rounded-[10px] p-4 pt-8">
+    <div className="w-full bg-surface shadow-sm rounded-[10px] p-4 pt-8">
       <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(1)}
@@ -134,8 +134,8 @@ const ProfileSidebar = ({ active, setActive }) => {
         </span>
       </div>
 
-      {user && user?.role === "Admin" && (
-        <Link to="/admin/dashboard">
+      {user && user?.role === "business_owner" && (
+        <Link to="/dashboard">
           <div
             className="flex items-center cursor-pointer w-full mb-8"
             onClick={() => setActive(8)}
@@ -149,7 +149,7 @@ const ProfileSidebar = ({ active, setActive }) => {
                 active === 8 ? "text-[red]" : ""
               } 800px:block hidden`}
             >
-              Admin Dashboard
+              Store Dashboard
             </span>
           </div>
         </Link>

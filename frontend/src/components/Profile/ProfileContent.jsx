@@ -82,7 +82,7 @@ const ProfileContent = ({ active }) => {
     <div className='w-full'>
       {/* PROFILE */}
       {active === 1 && (
-        <div className='bg-white rounded-md p-5 shadow-sm'>
+        <div className='bg-surface rounded-md p-5 shadow-sm'>
           <div className='flex justify-center'>
             <div className='relative'>
               <img
@@ -241,7 +241,7 @@ const OrderTable = ({ rows, track = false }) => {
   ];
 
   return (
-    <div className='bg-white p-4 rounded-md shadow-sm'>
+    <div className='bg-surface border border-border p-4 rounded-md overflow-x-auto'>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -359,7 +359,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className='bg-white rounded-md p-5 shadow-sm'>
+    <div className='bg-surface rounded-md p-5 shadow-sm'>
       <h2 className='text-2xl font-semibold text-center mb-6'>
         Change Password
       </h2>
@@ -474,7 +474,7 @@ const Address = () => {
         {user?.addresses?.map((item, index) => (
           <div
             key={index}
-            className='bg-white rounded-md p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4'
+            className='bg-surface rounded-md p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4'
           >
             <div>
               <h4 className='font-semibold'>{item.addressType}</h4>

@@ -19,6 +19,8 @@ exports.isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   next();
 });
 
+// Single-vendor: the store is resolved from the logged-in user's token.
+// Only a `business_owner` user (linked to the one Shop via `user.shop`) may pass.
 exports.isSeller = catchAsyncErrors(async (req, res, next) => {
   const { token } = req.cookies;
   if (!token) {
@@ -27,7 +29,18 @@ exports.isSeller = catchAsyncErrors(async (req, res, next) => {
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-  req.seller = await Shop.findById(decoded.id);
+  const user = await User.findById(decoded.id);
+
+  if (!user || user.role !== 'business_owner' || !user.shop) {
+    return next(new ErrorHandler('Business owner access only', 403));
+  }
+
+  req.user = user;
+  req.seller = await Shop.findById(user.shop);
+
+  if (!req.seller) {
+    return next(new ErrorHandler('Store not found', 404));
+  }
 
   next();
 });

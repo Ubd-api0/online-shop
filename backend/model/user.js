@@ -47,7 +47,13 @@ const userSchema = new mongoose.Schema({
   ],
   role: {
     type: String,
-    default: 'user',
+    enum: ['customer', 'business_owner'],
+    default: 'customer',
+  },
+  // Set only for the single business owner: links the owner account to the store.
+  shop: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Shop',
   },
   avatar: {
     type: String,

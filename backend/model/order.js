@@ -21,10 +21,25 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: "Processing",
   },
+  // How the customer chose to pay: 'cod' | 'online_full' | 'partial_advance'
+  paymentMethod: {
+    type: String,
+    default: "cod",
+  },
+  // For partial_advance orders (0 for the others).
+  advanceAmount: {
+    type: Number,
+    default: 0,
+  },
+  remainingAmount: {
+    type: Number,
+    default: 0,
+  },
   paymentInfo: {
     id: {
       type: String,
     },
+    // 'succeeded' | 'advance_paid' | 'pending_cod'
     status: {
       type: String,
     },
