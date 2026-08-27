@@ -6,7 +6,8 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { server } from '../../server';
 import { toast } from 'react-toastify';
-import { FiMapPin, FiTag } from 'react-icons/fi';
+import { FiMapPin, FiTag, FiCreditCard } from 'react-icons/fi';
+import { effectivePolicy, availableMethods } from '../../utils/paymentPolicy';
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
@@ -24,11 +25,27 @@ const Checkout = () => {
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [discountPrice, setDiscountPrice] = useState(null);
 
+  const [paymentSettings, setPaymentSettings] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('');
+
   const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    axios
+      .get(`${server}/payment/config`)
+      .then((res) => setPaymentSettings(res.data.paymentSettings))
+      .catch(() => setPaymentSettings(null));
   }, []);
+
+  const policy = effectivePolicy(paymentSettings, cart);
+  const methods = availableMethods(policy);
+
+  useEffect(() => {
+    if (methods.length && !methods.find((m) => m.key === paymentMethod)) {
+      setPaymentMethod(methods[0].key);
+    }
+  }, [methods, paymentMethod]);
 
   const subTotalPrice = cart.reduce(
     (acc, item) => acc + item.qty * item.discountPrice,
@@ -48,6 +65,10 @@ const Checkout = () => {
       toast.error('Please fill shipping address!');
       return;
     }
+    if (!paymentMethod) {
+      toast.error('Please choose a payment method!');
+      return;
+    }
 
     const shippingAddress = {
       address1,
@@ -65,6 +86,8 @@ const Checkout = () => {
       discountPrice,
       shippingAddress,
       user,
+      paymentMethod,
+      advancePercent: policy.advancePercent,
     };
 
     localStorage.setItem('latestOrder', JSON.stringify(orderData));
@@ -118,7 +141,7 @@ const Checkout = () => {
       <div className='max-w-7xl mx-auto px-3 lg:px-5'>
         <div className='flex flex-col lg:flex-row gap-5'>
           {/* LEFT */}
-          <div className='w-full lg:w-[68%]'>
+          <div className='w-full lg:w-[68%] space-y-5'>
             <ShippingInfo
               user={user}
               country={country}
@@ -133,6 +156,13 @@ const Checkout = () => {
               setAddress2={setAddress2}
               zipCode={zipCode}
               setZipCode={setZipCode}
+            />
+            <PaymentMethodPicker
+              methods={methods}
+              paymentMethod={paymentMethod}
+              setPaymentMethod={setPaymentMethod}
+              policy={policy}
+              totalPrice={totalPrice}
             />
           </div>
 
@@ -421,6 +451,65 @@ const CartData = ({
       >
         Proceed to Payment
       </button>
+    </div>
+  );
+};
+
+const PaymentMethodPicker = ({
+  methods,
+  paymentMethod,
+  setPaymentMethod,
+  policy,
+  totalPrice,
+}) => {
+  const advance = Math.round((Number(totalPrice) * policy.advancePercent) / 100);
+
+  const describe = (key) => {
+    if (key === 'cod') return 'Pay the full amount in cash when your order arrives.';
+    if (key === 'online_full') return 'Pay the full amount now via card or wallet.';
+    if (key === 'partial_advance')
+      return `Pay ${policy.advancePercent}% (Rs. ${advance}) now, the rest on delivery.`;
+    return '';
+  };
+
+  return (
+    <div className='bg-white rounded-md shadow-sm p-5'>
+      <div className='flex items-center gap-2 border-b pb-4 mb-4'>
+        <FiCreditCard className='text-orange-500' size={20} />
+        <h2 className='text-[20px] font-semibold text-gray-800'>Payment Method</h2>
+      </div>
+
+      {methods.length === 0 ? (
+        <p className='text-sm text-gray-500'>
+          No payment method is available for the items in your cart. Please
+          contact the store.
+        </p>
+      ) : (
+        <div className='space-y-3'>
+          {methods.map((m) => (
+            <label
+              key={m.key}
+              className={`flex items-start gap-3 border rounded-md p-3 cursor-pointer transition ${
+                paymentMethod === m.key
+                  ? 'border-orange-500 bg-orange-50'
+                  : 'hover:border-orange-300'
+              }`}
+            >
+              <input
+                type='radio'
+                name='paymentMethod'
+                className='mt-1'
+                checked={paymentMethod === m.key}
+                onChange={() => setPaymentMethod(m.key)}
+              />
+              <div>
+                <div className='font-medium text-gray-800'>{m.label}</div>
+                <div className='text-sm text-gray-500'>{describe(m.key)}</div>
+              </div>
+            </label>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

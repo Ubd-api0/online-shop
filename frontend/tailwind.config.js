@@ -2,6 +2,7 @@
 module.exports = {
   content: ["./src/**/*.{html,js,jsx}"],
   mode: "jit",
+  darkMode: "class",
   theme: {
     fontFamily: {
       Roboto: ["Roboto", "sans-serif"],
@@ -14,6 +15,17 @@ module.exports = {
         "800px": "800px",
         "1300px": "1300px",
         "400px": "400px",
+      },
+      colors: {
+        surface: "var(--surface)",
+        "surface-alt": "var(--surface-alt)",
+        content: "var(--content)",
+        muted: "var(--muted)",
+        border: "var(--border)",
+        brand: {
+          DEFAULT: "var(--brand)",
+          hover: "var(--brand-hover)",
+        },
       },
     },
   },

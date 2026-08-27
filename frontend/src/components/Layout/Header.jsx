@@ -12,6 +12,7 @@ import { backend_url } from '../../server';
 import { categoriesData } from '../../static/data';
 import Cart from '../cart/Cart';
 import Wishlist from '../Wishlist/Wishlist';
+import ThemeToggle from './ThemeToggle';
 import { Avatar } from '@material-ui/core';
 
 /* ------------------ Debounce Hook ------------------ */
@@ -121,6 +122,7 @@ const Header = () => {
             {/* ICONS */}
             <div className='md:block hidden'>
               <div className='flex items-center gap-4'>
+                <ThemeToggle size={20} />
                 {/* Wishlist */}
                 <div
                   onClick={() => setOpenWishlist(true)}
@@ -142,6 +144,16 @@ const Header = () => {
                     {cart?.length}
                   </span>
                 </div>
+
+                {/* Owner dashboard shortcut */}
+                {isAuthenticated && user?.role === 'business_owner' && (
+                  <Link
+                    to='/dashboard'
+                    className='text-sm font-semibold text-orange-500 hover:text-orange-600'
+                  >
+                    Dashboard
+                  </Link>
+                )}
 
                 {/* Profile */}
                 {isAuthenticated ? (
@@ -206,6 +218,11 @@ const Header = () => {
           📂
           <div>Category</div>
         </button>
+
+        <div className='text-xs flex flex-col items-center'>
+          <ThemeToggle size={20} />
+          <div>Theme</div>
+        </div>
 
         <button
           onClick={() => setOpenCart(true)}

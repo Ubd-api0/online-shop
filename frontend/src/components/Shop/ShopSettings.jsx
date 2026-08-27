@@ -212,7 +212,129 @@ const ShopSettings = () => {
             />
           </div>
         </form>
+
+        <PaymentSettingsPanel seller={seller} onSaved={() => dispatch(loadSeller())} />
       </div>
+    </div>
+  );
+};
+
+const DEFAULT_PS = {
+  codEnabled: true,
+  onlineFullEnabled: true,
+  partialAdvanceEnabled: false,
+  advancePercent: 20,
+  gateways: { stripe: true, paypal: true, easypaisa: false, jazzcash: false },
+};
+
+const PaymentSettingsPanel = ({ seller, onSaved }) => {
+  const [ps, setPs] = useState({
+    ...DEFAULT_PS,
+    ...(seller?.paymentSettings || {}),
+    gateways: {
+      ...DEFAULT_PS.gateways,
+      ...((seller?.paymentSettings && seller.paymentSettings.gateways) || {}),
+    },
+  });
+  const [saving, setSaving] = useState(false);
+
+  const setFlag = (k) => (e) => setPs((p) => ({ ...p, [k]: e.target.checked }));
+  const setGw = (k) => (e) =>
+    setPs((p) => ({ ...p, gateways: { ...p.gateways, [k]: e.target.checked } }));
+
+  const save = async () => {
+    if (!ps.codEnabled && !ps.onlineFullEnabled && !ps.partialAdvanceEnabled) {
+      return toast.error('Enable at least one payment method');
+    }
+    setSaving(true);
+    try {
+      await axios.put(
+        `${server}/shop/update-payment-settings`,
+        { paymentSettings: { ...ps, advancePercent: Number(ps.advancePercent) } },
+        { withCredentials: true }
+      );
+      toast.success('Payment settings updated!');
+      onSaved && onSaved();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not save');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const Check = ({ label, checked, onChange, hint }) => (
+    <label className="flex items-start gap-3 py-2 cursor-pointer">
+      <input type="checkbox" className="mt-1" checked={!!checked} onChange={onChange} />
+      <span>
+        <span className="block text-content">{label}</span>
+        {hint && <span className="block text-sm text-muted">{hint}</span>}
+      </span>
+    </label>
+  );
+
+  return (
+    <div className="w-full 800px:w-[70%] mx-auto mt-10 bg-surface border border-border rounded-md p-6">
+      <h3 className="text-[18px] font-[600] text-content border-b border-border pb-3 mb-3">
+        Payment Criteria
+      </h3>
+      <p className="text-sm text-muted mb-4">
+        Choose how customers may pay. These options are shown at checkout; a
+        product can further restrict them via its own override.
+      </p>
+
+      <Check
+        label="Cash on Delivery"
+        checked={ps.codEnabled}
+        onChange={setFlag('codEnabled')}
+        hint="Customer pays the full amount on delivery."
+      />
+      <Check
+        label="Full online payment"
+        checked={ps.onlineFullEnabled}
+        onChange={setFlag('onlineFullEnabled')}
+        hint="Customer pays the whole order online before dispatch."
+      />
+      <Check
+        label="Partial advance"
+        checked={ps.partialAdvanceEnabled}
+        onChange={setFlag('partialAdvanceEnabled')}
+        hint="Customer pays a percentage online now, the rest on delivery."
+      />
+
+      {ps.partialAdvanceEnabled && (
+        <div className="flex items-center gap-3 py-2 pl-7">
+          <label className="text-sm text-muted">Advance percentage</label>
+          <input
+            type="number"
+            min={1}
+            max={100}
+            value={ps.advancePercent}
+            onChange={(e) =>
+              setPs((p) => ({ ...p, advancePercent: e.target.value }))
+            }
+            className="w-[90px] border border-border rounded px-2 py-1 bg-surface text-content"
+          />
+          <span className="text-sm text-muted">%</span>
+        </div>
+      )}
+
+      <h4 className="text-[15px] font-[600] text-content mt-5 mb-1">
+        Online gateways
+      </h4>
+      <div className="grid grid-cols-2 gap-x-6">
+        <Check label="Stripe (card)" checked={ps.gateways.stripe} onChange={setGw('stripe')} />
+        <Check label="PayPal" checked={ps.gateways.paypal} onChange={setGw('paypal')} />
+        <Check label="EasyPaisa" checked={ps.gateways.easypaisa} onChange={setGw('easypaisa')} />
+        <Check label="JazzCash" checked={ps.gateways.jazzcash} onChange={setGw('jazzcash')} />
+      </div>
+
+      <button
+        onClick={save}
+        disabled={saving}
+        className="mt-5 h-[42px] px-6 rounded-md bg-brand text-white font-[600] disabled:opacity-60"
+      >
+        {saving ? 'Saving…' : 'Save payment settings'}
+      </button>
     </div>
   );
 };
