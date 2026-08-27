@@ -3,13 +3,13 @@ import { AiOutlinePlusCircle } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createProduct } from '../../redux/actions/product';
-import { categoriesData } from '../../static/data';
 import { toast } from 'react-toastify';
 import Cloudinary from '../../cloudinary';
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
   const { success, error } = useSelector((state) => state.products);
+  const { categories } = useSelector((state) => state.storefront);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -158,17 +158,18 @@ const CreateProduct = () => {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
-            <option value='Choose a category'>Choose a category</option>
-            {categoriesData &&
-              categoriesData.map((i) => (
-                <option
-                  value={i.title}
-                  key={i.title}
-                >
-                  {i.title}
-                </option>
-              ))}
+            <option value=''>Choose a category</option>
+            {(categories || []).map((c) => (
+              <option value={c.name} key={c._id}>
+                {c.name}
+              </option>
+            ))}
           </select>
+          {(categories || []).length === 0 && (
+            <p className='text-xs text-red-500 mt-1'>
+              No categories yet — add them under Dashboard → Categories.
+            </p>
+          )}
         </div>
         <br />
         <div>

@@ -9,7 +9,7 @@ import { CgProfile } from 'react-icons/cg';
 import { IoIosArrowDown } from 'react-icons/io';
 import { useSelector } from 'react-redux';
 import { backend_url } from '../../server';
-import { categoriesData, navItems } from '../../static/data';
+import { navItems } from '../../static/data';
 import Cart from '../cart/Cart';
 import Wishlist from '../Wishlist/Wishlist';
 import ThemeToggle from './ThemeToggle';
@@ -33,6 +33,7 @@ const Header = () => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { allProducts } = useSelector((state) => state.products);
+  const { categories } = useSelector((state) => state.storefront);
 
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
@@ -198,20 +199,30 @@ const Header = () => {
           className='fixed inset-0 bg-black/40 z-[9999]'
           onClick={() => setMobileCatOpen(!mobileCatOpen)}
         >
-          <div className='w-[75%] max-w-[300px] bg-surface h-full p-4 overflow-y-auto'>
+          <div className='w-[75%] max-w-[300px] bg-surface text-content h-full p-4 overflow-y-auto'>
             <h3 className='font-semibold mb-3'>Categories</h3>
 
-            {categoriesData.map((c) => (
+            <div
+              onClick={() => {
+                setSelectedCat('All');
+                navigate('/products');
+                setMobileCatOpen(false);
+              }}
+              className='p-2 border-b border-border cursor-pointer'
+            >
+              All
+            </div>
+            {(categories || []).map((c) => (
               <div
-                key={c.title}
+                key={c._id}
                 onClick={() => {
-                  setSelectedCat(c.title);
-                  navigate(`/products?category=${c.title}`);
+                  setSelectedCat(c.name);
+                  navigate(`/products?category=${encodeURIComponent(c.name)}`);
                   setMobileCatOpen(false);
                 }}
-                className='p-2 border-b cursor-pointer'
+                className='p-2 border-b border-border cursor-pointer'
               >
-                {c.title}
+                {c.name}
               </div>
             ))}
           </div>

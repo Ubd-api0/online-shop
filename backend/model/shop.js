@@ -5,6 +5,10 @@ const dotenv = require('dotenv');
 // config
 dotenv.config();
 
+// Single-vendor: this document is the ONE store's configuration.
+// It is NOT an authentication identity — all login/auth is on the User model
+// (a User with role 'business_owner' whose `shop` points here). The legacy
+// email/password fields are kept only so old data doesn't break.
 const shopSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -12,12 +16,9 @@ const shopSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'Please enter your shop email address'],
   },
   password: {
     type: String,
-    required: [true, 'Please enter your password'],
-    minLength: [6, 'Password should be greater than 6 characters'],
     select: false,
   },
   description: {
@@ -25,11 +26,9 @@ const shopSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    required: true,
   },
   phoneNumber: {
     type: Number,
-    required: true,
   },
   role: {
     type: String,
@@ -37,11 +36,9 @@ const shopSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    required: true,
   },
   zipCode: {
     type: Number,
-    required: true,
   },
   withdrawMethod: {
     type: Object,
@@ -59,27 +56,40 @@ const shopSchema = new mongoose.Schema({
       jazzcash: { type: Boolean, default: false },
     },
   },
+  // Owner-editable storefront content (home page).
+  storefront: {
+    hero: {
+      title: { type: String, default: 'Best Collection for Home Decoration' },
+      subtitle: {
+        type: String,
+        default:
+          'Discover modern furniture and decoration items at best prices.',
+      },
+      ctaText: { type: String, default: 'Shop Now' },
+      ctaLink: { type: String, default: '/products' },
+      image: { type: String, default: '' },
+    },
+    featureTiles: {
+      type: [
+        {
+          title: { type: String },
+          description: { type: String },
+          icon: { type: String, default: 'truck' },
+        },
+      ],
+      default: undefined,
+    },
+  },
   availableBalance: {
     type: Number,
     default: 0,
   },
   transections: [
     {
-      amount: {
-        type: Number,
-        required: true,
-      },
-      status: {
-        type: String,
-        default: 'Processing',
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now(),
-      },
-      updatedAt: {
-        type: Date,
-      },
+      amount: { type: Number, required: true },
+      status: { type: String, default: 'Processing' },
+      createdAt: { type: Date, default: Date.now() },
+      updatedAt: { type: Date },
     },
   ],
   createdAt: {
@@ -90,22 +100,19 @@ const shopSchema = new mongoose.Schema({
   resetPasswordTime: Date,
 });
 
-// Hash password
+// Hash password only if one is actually set/changed (legacy support).
 shopSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    next();
-  }
+  if (!this.isModified('password') || !this.password) return next();
   this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
-// jwt token
 shopSchema.methods.getJwtToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES,
   });
 };
 
-// comapre password
 shopSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
