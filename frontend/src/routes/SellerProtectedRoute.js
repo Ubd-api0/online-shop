@@ -2,16 +2,23 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import Loader from "../components/Layout/Loader";
 
+// Single-vendor: the store dashboard is available only to the business owner.
 const SellerProtectedRoute = ({ children }) => {
-  const { isLoading, isSeller } = useSelector((state) => state.seller);
-  if (isLoading === true) {
+  const { loading, isAuthenticated, user } = useSelector((state) => state.user);
+
+  if (loading || loading === undefined) {
     return <Loader />;
-  } else {
-    if (!isSeller) {
-      return <Navigate to={`/shop-login`} replace />;
-    }
-    return children;
   }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== "business_owner") {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 };
 
 export default SellerProtectedRoute;

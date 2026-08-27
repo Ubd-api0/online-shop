@@ -25,8 +25,9 @@ const Login = () => {
                 },
                 { withCredentials: true }
             ).then((res) => {
-                toast.success("Login Sucess!")
-                navigate("/")
+                toast.success("Login Success!")
+                const isOwner = res.data?.user?.role === "business_owner";
+                navigate(isOwner ? "/dashboard" : "/")
                 window.location.reload(true);
             })
             .catch((err) => {
