@@ -2,40 +2,28 @@ const socketIO = require('socket.io');
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
-const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
 const dotenv = require('dotenv');
 // config
 dotenv.config();
 
-const allowedOrigins = [
-  'http://localhost:3030',
-  'https://eb24-182-177-144-64.ngrok-free.app',
-];
+const app = express();
+const server = http.createServer(app);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      console.log('Origin:', origin);
+// CLIENT_URL is a comma-separated allow-list; empty -> allow any origin.
+const allowedOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
 
-      if (!origin) {
-        console.log('a');
-        // allow Postman / mobile / server requests
-        return callback(null, true);
-      }
+const corsOrigin = allowedOrigins.length ? allowedOrigins : true;
 
-      if (allowedOrigins.includes(origin)) {
-        console.log('b');
-        return callback(null, true);
-      }
+// Socket.io v4 needs its own CORS config for the handshake (express cors is
+// not enough).
+const io = socketIO(server, {
+  cors: { origin: corsOrigin, credentials: true },
+});
 
-      console.log('c');
-      return callback(null, true); // 🔥 TEMP: allow all (for debugging)
-      // return callback(new Error("CORS blocked"));
-    },
-  })
-);
+app.use(cors({ origin: corsOrigin, credentials: true }));
 
 console.log('socket server');
 
@@ -136,6 +124,14 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(process.env.PORT || 4000, () => {
-  console.log(`server is running on port ${process.env.PORT || 4000}`);
-});
+// Only bind a port when run directly (local dev / Render / Railway).
+// On Vercel the module is imported by api/index.js and never listens —
+// note that Socket.io itself does not work reliably on Vercel serverless
+// (see README.md); a real host is strongly recommended.
+if (require.main === module) {
+  server.listen(process.env.PORT || 4000, () => {
+    console.log(`server is running on port ${process.env.PORT || 4000}`);
+  });
+}
+
+module.exports = app;

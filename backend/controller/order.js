@@ -30,7 +30,26 @@ router.post(
       const shop = await Shop.findOne();
       const productIds = [...new Set(cart.map((i) => i._id))];
       const products = await Product.find({ _id: { $in: productIds } });
+      const productById = new Map(products.map((p) => [String(p._id), p]));
       const policy = effectivePolicy(shop, products);
+
+      // ---- stock / availability check ----
+      let hasMadeToOrder = false;
+      for (const item of cart) {
+        const product = productById.get(String(item._id));
+        if (!product) {
+          return next(new ErrorHandler("A product in your cart no longer exists", 400));
+        }
+        if (product.fulfillment === "made_to_order") {
+          hasMadeToOrder = true;
+          continue; // always orderable
+        }
+        if ((product.stock || 0) < item.qty) {
+          return next(
+            new ErrorHandler(`"${product.name}" is currently unavailable`, 400)
+          );
+        }
+      }
 
       if (!isMethodAllowed(policy, paymentMethod)) {
         return next(
@@ -84,6 +103,7 @@ router.post(
           paymentMethod,
           advanceAmount,
           remainingAmount,
+          hasMadeToOrder,
           paymentInfo: finalPaymentInfo,
         });
         orders.push(order);
@@ -174,8 +194,12 @@ router.put(
 
       async function updateOrder(id, qty) {
         const product = await Product.findById(id);
+        if (!product) return;
 
-        product.stock -= qty;
+        // Made-to-order products are produced per order — never decrement stock.
+        if (product.fulfillment !== "made_to_order") {
+          product.stock = Math.max(0, (product.stock || 0) - qty);
+        }
         product.sold_out += qty;
 
         await product.save({ validateBeforeSave: false });
@@ -249,9 +273,12 @@ router.put(
 
       async function updateOrder(id, qty) {
         const product = await Product.findById(id);
+        if (!product) return;
 
-        product.stock += qty;
-        product.sold_out -= qty;
+        if (product.fulfillment !== "made_to_order") {
+          product.stock += qty;
+        }
+        product.sold_out = Math.max(0, product.sold_out - qty);
 
         await product.save({ validateBeforeSave: false });
       }

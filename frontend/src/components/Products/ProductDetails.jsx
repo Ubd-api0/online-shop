@@ -16,6 +16,12 @@ import {
 import { addTocart } from '../../redux/actions/cart';
 import { toast } from 'react-toastify';
 import Ratings from './Ratings';
+import {
+  isMadeToOrder,
+  isAvailable,
+  maxQty,
+  availabilityLabel,
+} from '../../utils/productAvailability';
 import axios from 'axios';
 
 const ProductDetails = ({ data }) => {
@@ -55,7 +61,9 @@ const ProductDetails = ({ data }) => {
     const exists = cart?.some((i) => i._id === data._id);
 
     if (exists) return toast.error('Already in cart');
-    if (data.stock < 1) return toast.error('Out of stock');
+    if (!isAvailable(data)) return toast.error('Currently unavailable');
+    if (count > maxQty(data))
+      return toast.error(`Only ${data.stock} in stock`);
 
     dispatch(addTocart({ ...data, qty: count }));
     toast.success('Added to cart');
@@ -158,6 +166,17 @@ const ProductDetails = ({ data }) => {
                 </span>
               </div>
               <p className='text-sm text-gray-500 mt-1'>{data.sold_out} sold</p>
+              <p
+                className={`text-sm mt-1 font-medium ${
+                  isMadeToOrder(data)
+                    ? 'text-blue-600'
+                    : isAvailable(data)
+                    ? 'text-green-600'
+                    : 'text-red-500'
+                }`}
+              >
+                {availabilityLabel(data)}
+              </p>
             </div>
 
             {/* Description */}
@@ -177,7 +196,7 @@ const ProductDetails = ({ data }) => {
               <span className='px-4'>{count}</span>
 
               <button
-                onClick={() => setCount(count + 1)}
+                onClick={() => setCount(Math.min(maxQty(data), count + 1))}
                 className='px-3 py-1 bg-gray-200'
               >
                 +
@@ -188,9 +207,10 @@ const ProductDetails = ({ data }) => {
             <div className='mt-6 flex flex-col sm:flex-row gap-3'>
               <button
                 onClick={addToCartHandler}
-                className='flex-1 bg-orange-500 text-white py-3 rounded-md font-semibold'
+                disabled={!isAvailable(data)}
+                className='flex-1 bg-orange-500 text-white py-3 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
               >
-                Add to Cart
+                {isAvailable(data) ? 'Add to Cart' : 'Unavailable'}
               </button>
 
               <button
@@ -229,9 +249,10 @@ const ProductDetails = ({ data }) => {
 
         <button
           onClick={addToCartHandler}
-          className='w-2/5 bg-orange-500 text-white font-semibold'
+          disabled={!isAvailable(data)}
+          className='w-2/5 bg-orange-500 text-white font-semibold disabled:opacity-50'
         >
-          Add to Cart
+          {isAvailable(data) ? 'Add to Cart' : 'Unavailable'}
         </button>
 
         <button

@@ -102,8 +102,10 @@ const Cart = ({ openCart, setOpenCart }) => {
 const CartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const [value, setValue] = useState(data.qty);
 
+  const madeToOrder = data.fulfillment === 'made_to_order';
+
   const increment = () => {
-    if (data.stock <= value) {
+    if (!madeToOrder && data.stock <= value) {
       toast.error('Stock limited');
       return;
     }
@@ -152,6 +154,11 @@ const CartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
       {/* Info */}
       <Box className='flex-1'>
         <Typography variant='body2'>{data.name}</Typography>
+        {madeToOrder && (
+          <Typography variant='caption' sx={{ color: '#2563eb', display: 'block' }}>
+            Made to order{data.leadTimeDays ? ` · ~${data.leadTimeDays}d` : ''}
+          </Typography>
+        )}
         <Typography variant='caption'>
           ${data.discountPrice} × {value}
         </Typography>

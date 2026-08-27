@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { backend_url, server } from '../../server';
+import { backend_url, server, socketServer } from '../../server';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineArrowRight, AiOutlineSend } from 'react-icons/ai';
@@ -10,9 +10,7 @@ import { TfiGallery } from 'react-icons/tfi';
 import socketIO from 'socket.io-client';
 import { format } from 'timeago.js';
 import Cloudinary from '../../cloudinary';
-const ENDPOINT = 'https://online-shop-production-fefa.up.railway.app/';
-//const ENDPOINT = 'http://localhost:4000/';
-const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
+const socketId = socketIO(socketServer, { transports: ['websocket', 'polling'] });
 
 const DashboardMessages = () => {
   const { seller } = useSelector((state) => state.seller);

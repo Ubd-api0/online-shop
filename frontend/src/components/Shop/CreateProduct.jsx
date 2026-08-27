@@ -21,6 +21,9 @@ const CreateProduct = () => {
   const [originalPrice, setOriginalPrice] = useState();
   const [discountPrice, setDiscountPrice] = useState();
   const [stock, setStock] = useState();
+  const [fulfillment, setFulfillment] = useState('in_stock');
+  const [leadTimeDays, setLeadTimeDays] = useState('');
+  const madeToOrder = fulfillment === 'made_to_order';
   const [override, setOverride] = useState({
     enabled: false,
     codEnabled: true,
@@ -86,7 +89,9 @@ const CreateProduct = () => {
         tags,
         originalPrice,
         discountPrice,
-        stock,
+        stock: madeToOrder ? 0 : stock,
+        fulfillment,
+        leadTimeDays: madeToOrder ? Number(leadTimeDays) || 0 : 0,
         shopId: seller._id,
         paymentOverride: override.enabled
           ? {
@@ -206,17 +211,52 @@ const CreateProduct = () => {
         <br />
         <div>
           <label className='pb-2'>
-            Product Stock <span className='text-red-500'>*</span>
+            Fulfillment <span className='text-red-500'>*</span>
           </label>
-          <input
-            type='number'
-            name='price'
-            value={stock}
-            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
-            onChange={(e) => setStock(e.target.value)}
-            placeholder='Enter your product stock...'
-          />
+          <select
+            className='w-full mt-2 border h-[35px] rounded-[5px]'
+            value={fulfillment}
+            onChange={(e) => setFulfillment(e.target.value)}
+          >
+            <option value='in_stock'>In stock (sell from inventory)</option>
+            <option value='made_to_order'>
+              Made to order (manufacture after purchase)
+            </option>
+          </select>
+          <p className='text-xs text-gray-500 mt-1'>
+            {madeToOrder
+              ? 'Customers can always order; the item is produced per order and stock is not tracked.'
+              : 'Customers see "Currently unavailable" once stock reaches 0.'}
+          </p>
         </div>
+        <br />
+        {madeToOrder ? (
+          <div>
+            <label className='pb-2'>Lead time (days)</label>
+            <input
+              type='number'
+              min={0}
+              value={leadTimeDays}
+              className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+              onChange={(e) => setLeadTimeDays(e.target.value)}
+              placeholder='e.g. 7 — shown to customers as "ships in ~7 days"'
+            />
+          </div>
+        ) : (
+          <div>
+            <label className='pb-2'>
+              Product Stock <span className='text-red-500'>*</span>
+            </label>
+            <input
+              type='number'
+              name='price'
+              value={stock}
+              className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+              onChange={(e) => setStock(e.target.value)}
+              placeholder='Enter your product stock...'
+            />
+          </div>
+        )}
         <br />
         <div className='border border-gray-200 rounded-[4px] p-3'>
           <label className='flex items-center gap-2 font-medium'>

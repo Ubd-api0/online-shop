@@ -16,6 +16,10 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from '../../../redux/actions/wishlist';
+import {
+  isAvailable,
+  isMadeToOrder,
+} from '../../../utils/productAvailability';
 
 const ProductDetailsCard = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
@@ -43,7 +47,9 @@ const ProductDetailsCard = ({ setOpen, data }) => {
     if (isItemExists) {
       toast.error('item already in cart!');
     } else {
-      if (data.stock < count) {
+      if (!isAvailable(data)) {
+        toast.error('Currently unavailable');
+      } else if (!isMadeToOrder(data) && data.stock < count) {
         toast.error('Product stock limited!');
       } else {
         const cartData = { ...data, qty: count };
