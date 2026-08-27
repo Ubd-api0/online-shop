@@ -1,5 +1,9 @@
 # Deploying to Vercel
 
+All three `package.json` files pin `"engines": { "node": "24.x" }` (Vercel's
+current supported major). Set the Node.js version in each Vercel project's
+Settings → General to **24.x** as well if it isn't picked up automatically.
+
 Three separate Vercel projects from this one repo (set the **Root Directory**
 for each in Project Settings → General).
 
