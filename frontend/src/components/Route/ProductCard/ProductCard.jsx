@@ -10,6 +10,11 @@ import {
 import { addTocart } from '../../../redux/actions/cart';
 import { backend_url } from '../../../server';
 import { toast } from 'react-toastify';
+import {
+  isAvailable,
+  isMadeToOrder,
+  availabilityBadge,
+} from '../../../utils/productAvailability';
 
 const ProductCard = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -38,10 +43,13 @@ const ProductCard = ({ data }) => {
     const exists = cart?.find((i) => i._id === data._id);
 
     if (exists) return toast.error('Already in cart!');
+    if (!isAvailable(data)) return toast.error('Currently unavailable');
 
     dispatch(addTocart({ ...data, qty: 1 }));
     toast.success('Added to cart!');
   };
+
+  const badge = availabilityBadge(data);
 
   return (
     <div className='relative bg-white border rounded-md p-3 hover:shadow-md transition w-full'>
@@ -59,6 +67,18 @@ const ProductCard = ({ data }) => {
           <AiOutlineHeart size={20} />
         )}
       </div>
+
+      {badge && (
+        <span
+          className={`absolute top-2 left-2 z-10 text-[10px] font-semibold px-2 py-0.5 rounded ${
+            isMadeToOrder(data)
+              ? 'bg-blue-100 text-blue-700'
+              : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {badge}
+        </span>
+      )}
 
       {/* PRODUCT IMAGE */}
       <Link to={`/product/${data._id}`}>
@@ -86,9 +106,10 @@ const ProductCard = ({ data }) => {
       {/* ADD TO CART */}
       <button
         onClick={addToCartHandler}
-        className='w-full mt-2 bg-orange-500 text-white py-1 rounded-md text-sm'
+        disabled={!isAvailable(data)}
+        className='w-full mt-2 bg-orange-500 text-white py-1 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed'
       >
-        Add to Cart
+        {isAvailable(data) ? 'Add to Cart' : 'Unavailable'}
       </button>
     </div>
   );

@@ -26,6 +26,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: "cod",
   },
+  // True when any cart item is a made_to_order product (drives the order lifecycle).
+  hasMadeToOrder: {
+    type: Boolean,
+    default: false,
+  },
   // For partial_advance orders (0 for the others).
   advanceAmount: {
     type: Number,

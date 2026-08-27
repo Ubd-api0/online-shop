@@ -144,38 +144,47 @@ const OrderDetails = () => {
       <br />
 
       <h4 className="pt-3 text-[20px] font-[600]">Order status:</h4>
+      {data?.hasMadeToOrder && (
+        <p className="text-sm text-blue-600 pt-1">
+          This order contains made-to-order items.
+        </p>
+      )}
       {data?.status !== "Processing refund" &&
-        data?.status !== "Refund Success" && (
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
-          >
-            {[
-              "Processing",
-              "Transferred to delivery partner",
-              "Shipping",
-              "Received",
-              "On the way",
-              "Delivered",
-            ]
-              .slice(
-                [
-                  "Processing",
-                  "Transferred to delivery partner",
-                  "Shipping",
-                  "Received",
-                  "On the way",
-                  "Delivered",
-                ].indexOf(data?.status)
-              )
-              .map((option, index) => (
+        data?.status !== "Refund Success" &&
+        (() => {
+          const stages = data?.hasMadeToOrder
+            ? [
+                "Processing",
+                "Manufacturing",
+                "Ready to ship",
+                "Transferred to delivery partner",
+                "Received",
+                "On the way",
+                "Delivered",
+              ]
+            : [
+                "Processing",
+                "Transferred to delivery partner",
+                "Shipping",
+                "Received",
+                "On the way",
+                "Delivered",
+              ];
+          const from = Math.max(0, stages.indexOf(data?.status));
+          return (
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-[220px] mt-2 border h-[35px] rounded-[5px]"
+            >
+              {stages.slice(from).map((option, index) => (
                 <option value={option} key={index}>
                   {option}
                 </option>
               ))}
-          </select>
-        )}
+            </select>
+          );
+        })()}
 
       {data?.status === "Processing refund" ||
       data?.status === "Refund Success" ? (

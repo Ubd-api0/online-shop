@@ -27,6 +27,19 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please enter your product stock!"],
   },
+  // How the product is fulfilled:
+  //  - in_stock:      sold from existing stock; unavailable when stock <= 0
+  //  - made_to_order: manufactured after the order is placed; always orderable
+  fulfillment: {
+    type: String,
+    enum: ["in_stock", "made_to_order"],
+    default: "in_stock",
+  },
+  // Estimated days to manufacture + dispatch a made_to_order product (0 = not shown).
+  leadTimeDays: {
+    type: Number,
+    default: 0,
+  },
   images: [
     {
       type: String,
