@@ -1,28 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styles from '../../../styles/styles';
+import { useSelector } from 'react-redux';
+
+const DEFAULT_IMG =
+  'https://themes.rslahmed.dev/rafcart/assets/images/banner-2.jpg';
 
 const Hero = () => {
+  const { hero } = useSelector((state) => state.storefront);
+
+  const title = hero?.title || 'Best Collection for Home Decoration';
+  const subtitle =
+    hero?.subtitle ||
+    'Discover modern furniture and decoration items at best prices.';
+  const ctaText = hero?.ctaText || 'Shop Now';
+  const ctaLink = hero?.ctaLink || '/products';
+  const image = hero?.image || DEFAULT_IMG;
+
   return (
     <div
       className='w-full min-h-[60vh] sm:min-h-[70vh] flex items-center bg-cover bg-center px-4'
-      style={{
-        backgroundImage:
-          'url(https://themes.rslahmed.dev/rafcart/assets/images/banner-2.jpg)',
-      }}
+      style={{ backgroundImage: `url(${image})` }}
     >
-      <div className='max-w-xl'>
-        <h1 className='text-2xl sm:text-4xl font-bold text-gray-800'>
-          Best Collection for Home Decoration
-        </h1>
-
-        <p className='text-sm sm:text-base text-gray-600 mt-3'>
-          Discover modern furniture and decoration items at best prices.
-        </p>
-
-        <Link to={'/products'}>
-          <button className='mt-5 bg-orange-500 text-white px-5 py-2 rounded-md'>
-            Shop Now
+      <div className='max-w-xl bg-black/10 backdrop-blur-[1px] rounded-lg p-4'>
+        <h1 className='text-2xl sm:text-4xl font-bold text-gray-900'>{title}</h1>
+        <p className='text-sm sm:text-base text-gray-700 mt-3'>{subtitle}</p>
+        <Link to={ctaLink}>
+          <button className='mt-5 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-md'>
+            {ctaText}
           </button>
         </Link>
       </div>

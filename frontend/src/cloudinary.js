@@ -1,5 +1,10 @@
-const CLOUD_NAME = 'dobivtrqy';
-const UPLOAD_PRESET = 'modern-interior-and-furnitures';
+const CLOUD_NAME =
+  process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'dobivtrqy';
+const UPLOAD_PRESET =
+  process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET ||
+  'modern-interior-and-furnitures';
+const UPLOAD_FOLDER =
+  process.env.REACT_APP_CLOUDINARY_FOLDER || 'modern-interior-and-furnitures';
 
 const Cloudinary = {
   upload: async (imageFile, folder = 'products', { width, height } = {}) => {
@@ -7,7 +12,7 @@ const Cloudinary = {
 
     formData.append('file', imageFile);
     formData.append('upload_preset', UPLOAD_PRESET);
-    formData.append('folder', `modern-interior-and-furnitures/${folder}`);
+    formData.append('folder', `${UPLOAD_FOLDER}/${folder}`);
 
     // optional transformations (Cloudinary will handle if preset allows)
     if (width) formData.append('width', width);

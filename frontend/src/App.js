@@ -16,7 +16,6 @@ import {
   OrderSuccessPage,
   ProductDetailsPage,
   ProfilePage,
-  ShopCreatePage,
   OrderDetailsPage,
   TrackOrderPage,
   UserInbox,
@@ -35,6 +34,8 @@ import {
   ShopSettingsPage,
   ShopWithDrawMoneyPage,
   ShopInboxPage,
+  ShopCategoriesPage,
+  ShopStorefrontPage,
 } from "./routes/ShopRoutes";
 
 import {
@@ -47,7 +48,7 @@ import {
   AdminDashboardWithdraw,
 } from "./routes/AdminRoutes";
 
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { loadSeller, loadUser } from "./redux/actions/user";
@@ -57,6 +58,7 @@ import SellerProtectedRoute from "./routes/SellerProtectedRoute";
 import { ShopHomePage } from "./ShopRoutes";
 import { getAllProducts } from "./redux/actions/product";
 import { getAllEvents } from "./redux/actions/event";
+import { getStorefront } from "./redux/actions/storefront";
 import axios from "axios";
 import { server } from "./server";
 import { Elements } from "@stripe/react-stripe-js";
@@ -80,6 +82,7 @@ const App = () => {
     Store.dispatch(loadSeller());
     Store.dispatch(getAllProducts());
     Store.dispatch(getAllEvents());
+    Store.dispatch(getStorefront());
     getPaymentConfig();
   }, []);
 
@@ -173,7 +176,6 @@ const App = () => {
 
         <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
         {/* shop Routes */}
-        <Route path="/shop-create" element={<ShopCreatePage />} />
         <Route
           path="/shop/:id"
           element={
@@ -284,6 +286,22 @@ const App = () => {
           element={
             <SellerProtectedRoute>
               <ShopAllCoupouns />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-categories"
+          element={
+            <SellerProtectedRoute>
+              <ShopCategoriesPage />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-storefront"
+          element={
+            <SellerProtectedRoute>
+              <ShopStorefrontPage />
             </SellerProtectedRoute>
           }
         />

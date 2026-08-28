@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const sendMail = require('../utils/sendMail');
 const Shop = require('../model/shop');
 const User = require('../model/user');
+const Category = require('../model/category');
 const sendToken = require('../utils/jwtToken');
 const { isAuthenticated, isSeller, isAdmin } = require('../middleware/auth');
 const { upload } = require('../multer');
@@ -311,6 +312,56 @@ router.put(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
+  })
+);
+
+// public storefront content (hero, feature tiles, categories, basic store info)
+router.get(
+  '/storefront',
+  catchAsyncErrors(async (req, res) => {
+    const shop = await Shop.findOne().select(
+      'name description phoneNumber address storefront'
+    );
+    const categories = await Category.find().sort({ order: 1, createdAt: 1 });
+    res.status(200).json({
+      success: true,
+      name: shop?.name || 'Shop',
+      description: shop?.description || '',
+      phoneNumber: shop?.phoneNumber,
+      address: shop?.address,
+      hero: shop?.storefront?.hero || {},
+      featureTiles: shop?.storefront?.featureTiles || [],
+      categories,
+    });
+  })
+);
+
+// update storefront content --- business owner
+router.put(
+  '/update-storefront',
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    const { hero, featureTiles } = req.body;
+    const shop = await Shop.findById(req.seller._id);
+    if (!shop) return next(new ErrorHandler('Store not found', 404));
+
+    shop.storefront = shop.storefront || {};
+    if (hero && typeof hero === 'object') {
+      shop.storefront.hero = { ...(shop.storefront.hero || {}), ...hero };
+    }
+    if (Array.isArray(featureTiles)) {
+      shop.storefront.featureTiles = featureTiles
+        .filter((t) => t && (t.title || t.description))
+        .map((t) => ({
+          title: String(t.title || ''),
+          description: String(t.description || ''),
+          icon: String(t.icon || 'truck'),
+        }));
+    }
+    shop.markModified('storefront');
+    await shop.save();
+
+    res.status(200).json({ success: true, shop });
   })
 );
 

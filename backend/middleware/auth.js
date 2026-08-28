@@ -13,9 +13,18 @@ exports.isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   if (!token) {
     return next(new ErrorHandler('Please login to continue', 401));
   }
-  const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  } catch (e) {
+    return next(new ErrorHandler('Session expired, please login again', 401));
+  }
 
   req.user = await User.findById(decoded.id);
+  if (!req.user) {
+    return next(new ErrorHandler('Account not found, please login again', 401));
+  }
   next();
 });
 
@@ -27,7 +36,12 @@ exports.isSeller = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler('Please login to continue', 401));
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  } catch (e) {
+    return next(new ErrorHandler('Session expired, please login again', 401));
+  }
 
   const user = await User.findById(decoded.id);
 

@@ -7,8 +7,9 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import { RxDashboard, RxCross1 } from "react-icons/rx";
 import { VscNewFile } from "react-icons/vsc";
 import { CiMoneyBill, CiSettings } from "react-icons/ci";
-import { BiMessageSquareDetail } from "react-icons/bi";
+import { BiMessageSquareDetail, BiCategory } from "react-icons/bi";
 import { HiOutlineReceiptRefund, HiOutlineUserGroup } from "react-icons/hi";
+import { MdOutlineStorefront } from "react-icons/md";
 
 export const NAV = [
   { key: "dashboard", label: "Dashboard", to: "/dashboard", icon: RxDashboard, group: "store" },
@@ -21,6 +22,8 @@ export const NAV = [
   { key: "inbox", label: "Shop Inbox", to: "/dashboard-messages", icon: BiMessageSquareDetail, group: "store" },
   { key: "coupons", label: "Discount Codes", to: "/dashboard-coupouns", icon: AiOutlineGift, group: "store" },
   { key: "refunds", label: "Refunds", to: "/dashboard-refunds", icon: HiOutlineReceiptRefund, group: "store" },
+  { key: "categories", label: "Categories", to: "/dashboard-categories", icon: BiCategory, group: "store" },
+  { key: "storefront", label: "Storefront", to: "/dashboard-storefront", icon: MdOutlineStorefront, group: "store" },
   { key: "settings", label: "Settings", to: "/settings", icon: CiSettings, group: "store" },
 
   { key: "admin-dashboard", label: "Admin Overview", to: "/admin/dashboard", icon: RxDashboard, group: "admin" },

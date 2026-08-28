@@ -57,6 +57,7 @@ app.use('/api', async (req, res, next) => {
 // ================= ROUTES =================
 app.use('/api/v2/user', require('./controller/user'));
 app.use('/api/v2/shop', require('./controller/shop'));
+app.use('/api/v2/category', require('./controller/category'));
 app.use('/api/v2/product', require('./controller/product'));
 app.use('/api/v2/event', require('./controller/event'));
 app.use('/api/v2/coupon', require('./controller/coupounCode'));
