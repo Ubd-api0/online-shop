@@ -3,7 +3,7 @@ import DashboardLayout from "../../components/Shop/Layout/DashboardLayout";
 import DashboardMessages from "../../components/Shop/DashboardMessages";
 
 const ShopInboxPage = () => (
-  <DashboardLayout active="inbox">
+  <DashboardLayout active="inbox" title="Messages">
     <DashboardMessages />
   </DashboardLayout>
 );

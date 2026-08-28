@@ -66,7 +66,6 @@ const CustomerList = () => {
 
   return (
     <div className="w-full">
-      <h1 className="text-xl font-semibold mb-4">Customers</h1>
       <div className="bg-surface border border-border rounded-md overflow-x-auto">
         <div className="min-w-[640px]">
           <DataGrid

@@ -3,7 +3,7 @@ import DashboardLayout from "../../components/Shop/Layout/DashboardLayout";
 import AllCoupons from "../../components/Shop/AllCoupons";
 
 const ShopAllCoupouns = () => (
-  <DashboardLayout active="coupons">
+  <DashboardLayout active="coupons" title="Discount Codes">
     <AllCoupons />
   </DashboardLayout>
 );
