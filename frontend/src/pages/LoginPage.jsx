@@ -5,14 +5,15 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const { isAuthenticated } = useSelector((state) => state.user);
-    // if user is login then redirect to home page
+    const { isAuthenticated, user } = useSelector((state) => state.user);
+
+    // Already signed in? Send owners to the dashboard, everyone else home.
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/");
+            navigate(user?.role === 'business_owner' ? '/dashboard' : '/');
         }
+    }, [isAuthenticated, user, navigate]);
 
-    })
     return (
         <div>
             <Login />

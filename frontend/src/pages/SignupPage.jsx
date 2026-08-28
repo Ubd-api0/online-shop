@@ -6,13 +6,12 @@ import { useSelector } from 'react-redux';
 const SignupPage = () => {
 
     const navigate = useNavigate();
-    const { isAuthenticated } = useSelector((state) => state.user);
-    // if user is login then redirect to home page
+    const { isAuthenticated, user } = useSelector((state) => state.user);
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/");
+            navigate(user?.role === 'business_owner' ? '/dashboard' : '/');
         }
-    })
+    }, [isAuthenticated, user, navigate])
 
     return (
         <div>

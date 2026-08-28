@@ -16,7 +16,6 @@ import {
   OrderSuccessPage,
   ProductDetailsPage,
   ProfilePage,
-  ShopCreatePage,
   OrderDetailsPage,
   TrackOrderPage,
   UserInbox,
@@ -49,7 +48,7 @@ import {
   AdminDashboardWithdraw,
 } from "./routes/AdminRoutes";
 
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { loadSeller, loadUser } from "./redux/actions/user";
@@ -177,7 +176,6 @@ const App = () => {
 
         <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
         {/* shop Routes */}
-        <Route path="/shop-create" element={<ShopCreatePage />} />
         <Route
           path="/shop/:id"
           element={
