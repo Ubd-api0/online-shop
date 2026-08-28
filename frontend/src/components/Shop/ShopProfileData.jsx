@@ -26,57 +26,42 @@ const ShopProfileData = ({ isOwner }) => {
 
   return (
     <div className='w-full'>
-      <div className='flex w-full items-center justify-between'>
-        <div className='w-full flex'>
-          <div
-            className='flex items-center'
+      <div className='flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+        <div className='flex w-full flex-wrap gap-x-5 gap-y-2'>
+          <h5
             onClick={() => setActive(1)}
+            className={`font-[600] text-[17px] sm:text-[20px] ${
+              active === 1 ? 'text-red-500' : 'text-content'
+            } cursor-pointer`}
           >
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 1 ? 'text-red-500' : 'text-[#333]'
-              } cursor-pointer pr-[20px]`}
-            >
-              Shop Products
-            </h5>
-          </div>
-          <div
-            className='flex items-center'
+            Shop Products
+          </h5>
+          <h5
             onClick={() => setActive(2)}
+            className={`font-[600] text-[17px] sm:text-[20px] ${
+              active === 2 ? 'text-red-500' : 'text-content'
+            } cursor-pointer`}
           >
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 2 ? 'text-red-500' : 'text-[#333]'
-              } cursor-pointer pr-[20px]`}
-            >
-              Running Events
-            </h5>
-          </div>
-
-          <div
-            className='flex items-center'
+            Running Events
+          </h5>
+          <h5
             onClick={() => setActive(3)}
+            className={`font-[600] text-[17px] sm:text-[20px] ${
+              active === 3 ? 'text-red-500' : 'text-content'
+            } cursor-pointer`}
           >
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 3 ? 'text-red-500' : 'text-[#333]'
-              } cursor-pointer pr-[20px]`}
+            Shop Reviews
+          </h5>
+        </div>
+        {isOwner && (
+          <Link to='/dashboard' className='shrink-0'>
+            <div
+              className={`${styles.button} !my-0 !w-full sm:!w-[150px] !h-[42px] !rounded-[4px]`}
             >
-              Shop Reviews
-            </h5>
-          </div>
-        </div>
-        <div>
-          {isOwner && (
-            <div>
-              <Link to='/dashboard'>
-                <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
-                  <span className='text-[#fff]'>Go Dashboard</span>
-                </div>
-              </Link>
+              <span className='text-[#fff]'>Go Dashboard</span>
             </div>
-          )}
-        </div>
+          </Link>
+        )}
       </div>
 
       <br />
@@ -128,12 +113,12 @@ const ShopProfileData = ({ isOwner }) => {
                 />
                 <div className='pl-2'>
                   <div className='flex w-full items-center'>
-                    <h1 className='font-[600] pr-2'>{item.user.name}</h1>
+                    <h1 className='font-[600] pr-2 text-content'>{item.user.name}</h1>
                     <Ratings rating={item.rating} />
                   </div>
-                  <p className='font-[400] text-[#000000a7]'>{item?.comment}</p>
+                  <p className='font-[400] text-muted'>{item?.comment}</p>
 
-                  <p className='text-[#000000a7] text-[14px]'>
+                  <p className='text-muted text-[14px]'>
                     {item.createdAt.substring(0, 10)}
                   </p>
                 </div>
