@@ -118,7 +118,7 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className='w-full max-w-2xl bg-surface border border-border rounded-md p-4 sm:p-6'>
+    <div className='w-full max-w-3xl bg-surface border border-border rounded-md p-4 sm:p-6'>
       {/* create event form */}
       <form onSubmit={handleSubmit}>
         <br />

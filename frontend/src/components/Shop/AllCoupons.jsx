@@ -122,7 +122,7 @@ const AllCoupons = () => {
             {isLoading ? (
                 <Loader />
             ) : (
-                <div className="w-full pt-1 mt-6 bg-surface border border-border rounded-md overflow-hidden">
+                <div className="w-full pt-1 mt-4 bg-surface border border-border rounded-md overflow-x-auto">
                     <div className="w-full flex justify-end">
                         <div
                             className={`${styles.button} !w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3`}

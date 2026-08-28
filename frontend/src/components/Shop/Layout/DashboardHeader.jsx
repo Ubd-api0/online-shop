@@ -3,20 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { FiMenu, FiLogOut, FiPackage, FiShoppingBag } from "react-icons/fi";
-import { AiOutlineGift } from "react-icons/ai";
-import { MdOutlineLocalOffer } from "react-icons/md";
-import { BiMessageSquareDetail } from "react-icons/bi";
+import { FiMenu, FiLogOut } from "react-icons/fi";
 import { backend_url, server } from "../../../server";
 import ThemeToggle from "../../Layout/ThemeToggle";
-
-const quick = [
-  { to: "/dashboard-coupouns", icon: AiOutlineGift },
-  { to: "/dashboard-events", icon: MdOutlineLocalOffer },
-  { to: "/dashboard-products", icon: FiShoppingBag },
-  { to: "/dashboard-orders", icon: FiPackage },
-  { to: "/dashboard-messages", icon: BiMessageSquareDetail },
-];
 
 const DashboardHeader = ({ onMenuClick }) => {
   const { seller } = useSelector((state) => state.seller);
@@ -52,13 +41,6 @@ const DashboardHeader = ({ onMenuClick }) => {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="hidden xl:flex items-center gap-4">
-          {quick.map(({ to, icon: Icon }) => (
-            <Link key={to} to={to} className="text-muted hover:text-brand">
-              <Icon size={24} />
-            </Link>
-          ))}
-        </div>
         <ThemeToggle size={20} />
         <Link to="/" className="hidden sm:block text-sm text-muted hover:text-brand">
           View store

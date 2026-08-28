@@ -240,12 +240,9 @@ const DashboardMessages = () => {
   }, [messages]);
 
   return (
-    <div className='w-[90%] bg-surface m-5 h-[85vh] overflow-y-scroll rounded'>
+    <div className='w-full bg-surface mt-4 h-[80vh] overflow-y-scroll rounded'>
       {!open && (
         <>
-          <h1 className='text-center text-[30px] py-3 font-Poppins'>
-            All Messages
-          </h1>
           {/* All messages list */}
           {conversations &&
             conversations.map((item, index) => (

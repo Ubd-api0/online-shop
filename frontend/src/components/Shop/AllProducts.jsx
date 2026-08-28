@@ -108,7 +108,7 @@ const AllProducts = () => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="w-full pt-1 mt-6 bg-surface border border-border rounded-md overflow-hidden">
+        <div className="w-full pt-1 mt-4 bg-surface border border-border rounded-md overflow-x-auto">
           <DataGrid
             rows={row}
             columns={columns}
