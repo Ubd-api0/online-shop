@@ -70,8 +70,6 @@ const StorefrontEditor = () => {
 
   return (
     <div className="max-w-3xl space-y-8">
-      <h1 className="text-xl font-semibold">Storefront</h1>
-
       {/* Hero */}
       <section className="bg-surface border border-border rounded-md p-4 space-y-3">
         <h3 className="font-medium">Hero banner</h3>

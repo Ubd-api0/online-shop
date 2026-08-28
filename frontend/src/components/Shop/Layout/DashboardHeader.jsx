@@ -37,7 +37,7 @@ const DashboardHeader = ({ onMenuClick }) => {
   const avatar = seller?.avatar || user?.avatar;
 
   return (
-    <header className="w-full h-[64px] bg-surface border-b border-border sticky top-0 left-0 z-[90] flex items-center justify-between px-3 sm:px-5">
+    <header className="fixed top-0 left-0 right-0 h-[64px] bg-surface border-b border-border z-[90] flex items-center justify-between px-3 sm:px-5">
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuClick}

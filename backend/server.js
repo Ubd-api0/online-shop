@@ -65,7 +65,6 @@ app.use('/api/v2/payment', require('./controller/payment'));
 app.use('/api/v2/order', require('./controller/order'));
 app.use('/api/v2/message', require('./controller/message'));
 app.use('/api/v2/conversation', require('./controller/conversation'));
-app.use('/api/v2/withdraw', require('./controller/withdraw'));
 
 // ================= ERROR HANDLER =================
 app.use(ErrorHandler);

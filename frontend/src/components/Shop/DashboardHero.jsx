@@ -21,7 +21,7 @@ const DashboardHero = () => {
     }, [dispatch]);
 
     /*  is calculating the available balance of the seller and rounding it to 2 decimal places. */
-    const availableBalance = seller?.availableBalance.toFixed(2);
+    const availableBalance = Number(seller?.availableBalance || 0).toFixed(2);
 
 
     const columns = [
@@ -99,14 +99,11 @@ const DashboardHero = () => {
                         <h3
                             className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-muted`}
                         >
-                            Account Balance{" "}
-                            <span className="text-[16px]">(with 10% service charge)</span>
+                            Total Revenue
                         </h3>
                     </div>
                     <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">${availableBalance}</h5>
-                    <Link to="/dashboard-withdraw-money">
-                        <h5 className="pt-4 pl-[2] text-[#077f9c]">Withdraw Money</h5>
-                    </Link>
+                    <p className="pt-4 pl-2 text-muted text-sm">from delivered orders</p>
                 </div>
 
                 <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-surface shadow rounded px-2 py-5">

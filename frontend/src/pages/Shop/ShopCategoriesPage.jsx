@@ -3,7 +3,7 @@ import DashboardLayout from "../../components/Shop/Layout/DashboardLayout";
 import CategoryManager from "../../components/Shop/CategoryManager";
 
 const ShopCategoriesPage = () => (
-  <DashboardLayout active="categories">
+  <DashboardLayout active="categories" title="Categories">
     <CategoryManager />
   </DashboardLayout>
 );

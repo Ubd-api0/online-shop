@@ -63,8 +63,6 @@ const CategoryManager = () => {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-xl font-semibold mb-4">Categories</h1>
-
       <form
         onSubmit={submit}
         className="bg-surface border border-border rounded-md p-4 mb-6 space-y-3"

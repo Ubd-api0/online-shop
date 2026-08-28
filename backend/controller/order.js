@@ -181,8 +181,8 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         order.paymentInfo.status = "Succeeded";
-        const serviceCharge = order.totalPrice * 0.1;
-        await updateSellerInfo(order.totalPrice - serviceCharge);
+        // Single-vendor: full order value is store revenue (no marketplace fee).
+        await addRevenue(order.totalPrice);
       }
 
       await order.save({ validateBeforeSave: false });
@@ -205,12 +205,10 @@ router.put(
         await product.save({ validateBeforeSave: false });
       }
 
-      async function updateSellerInfo(amount) {
-        const seller = await Shop.findById(req.seller.id);
-
-        seller.availableBalance = amount;
-
-        await seller.save();
+      async function addRevenue(amount) {
+        await Shop.findByIdAndUpdate(req.seller._id, {
+          $inc: { availableBalance: amount },
+        });
       }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -288,25 +286,5 @@ router.put(
   })
 );
 
-// all orders --- for admin
-router.get(
-  "/admin-all-orders",
-  isAuthenticated,
-  isAdmin("business_owner"),
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const orders = await Order.find().sort({
-        deliveredAt: -1,
-        createdAt: -1,
-      });
-      res.status(201).json({
-        success: true,
-        orders,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
 
 module.exports = router;

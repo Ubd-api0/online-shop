@@ -9,14 +9,15 @@ import ShopAllOrders from "../pages/Shop/ShopAllOrders";
 import ShopOrderDetails from "../pages/Shop/ShopOrderDetails";
 import ShopAllRefunds from "../pages/Shop/ShopAllRefunds";
 import ShopSettingsPage from "../pages/Shop/ShopSettingsPage";
-import ShopWithDrawMoneyPage from "../pages/Shop/ShopWithDrawMoneyPage";
 import ShopInboxPage from "../pages/Shop/ShopInboxPage";
 import ShopCategoriesPage from "../pages/Shop/ShopCategoriesPage";
 import ShopStorefrontPage from "../pages/Shop/ShopStorefrontPage";
+import ShopCustomersPage from "../pages/Shop/ShopCustomersPage";
 
 export {
   ShopCategoriesPage,
   ShopStorefrontPage,
+  ShopCustomersPage,
   ShopDashboardPage,
   ShopCreateProduct,
   ShopAllProducts,
@@ -28,6 +29,5 @@ export {
   ShopOrderDetails,
   ShopAllRefunds,
   ShopSettingsPage,
-  ShopWithDrawMoneyPage,
   ShopInboxPage,
 };

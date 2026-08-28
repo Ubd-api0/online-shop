@@ -113,8 +113,7 @@ const CreateProduct = () => {
   };
 
   return (
-    <div className='w-[90%] 800px:w-[50%] bg-surface  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll'>
-      <h5 className='text-[30px] font-Poppins text-center'>Create Product</h5>
+    <div className='w-full max-w-2xl bg-surface border border-border rounded-md p-4 sm:p-6'>
       {/* create product form */}
       <form onSubmit={handleSubmit}>
         <br />

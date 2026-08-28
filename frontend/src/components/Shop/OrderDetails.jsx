@@ -61,8 +61,8 @@ const OrderDetails = () => {
   };
 
   return (
-    <div className={`py-4 min-h-screen ${styles.section}`}>
-      <div className="w=full flex items-center justify-between">
+    <div className="w-full">
+      <div className="w-full flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center">
           <BsFillBagFill size={30} color="crimson" />
           <h1 className="pl-2 text-[25px]">Order Details</h1>
