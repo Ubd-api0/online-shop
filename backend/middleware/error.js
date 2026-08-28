@@ -4,6 +4,21 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.message = err.message || "Internal server Error";
 
+  // database unreachable — surface a clear, actionable message instead of a
+  // raw driver stack (querySrv ENOTFOUND, ECONNREFUSED, server selection, ...)
+  if (
+    err.name === "MongooseServerSelectionError" ||
+    err.name === "MongoNetworkError" ||
+    /querySrv|ENOTFOUND|ECONNREFUSED|server selection|failed to connect/i.test(
+      err.message
+    )
+  ) {
+    err = new ErrorHandler(
+      "Database is unavailable. Check DB_URL / Atlas cluster status / IP allow-list (run `npm run db:check`).",
+      503
+    );
+  }
+
   // wrong mongodb id error
   if (err.name === "CastError") {
     const message = `Resources not found with this id.. Invalid ${err.path}`;
