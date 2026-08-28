@@ -23,7 +23,7 @@ const SuggestedProduct = ({ data }) => {
     <div className={`${styles.section} mt-6 px-2 sm:px-0`}>
       {/* Header */}
       <div className='flex justify-between items-center border-b pb-2 mb-4'>
-        <h2 className='text-lg md:text-xl font-semibold text-gray-800'>
+        <h2 className='text-lg md:text-xl font-semibold text-content'>
           Related Products
         </h2>
 

@@ -87,7 +87,7 @@ const ProfileSidebar = ({ active, setActive }) => {
             active === 4 ? "text-[red]" : ""
           } 800px:block hidden`}
         >
-          inbox
+          Inbox
         </span>
       </div>
 
@@ -159,14 +159,8 @@ const ProfileSidebar = ({ active, setActive }) => {
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={logoutHandler}
       >
-        <AiOutlineLogin size={20} color={active === 8 ? "red" : ""} />
-        <span
-          className={`pl-3 ${
-            active === 8 ? "text-[red]" : ""
-          } 800px:block hidden`}
-        >
-          loguot
-        </span>
+        <AiOutlineLogin size={20} />
+        <span className="pl-3 800px:block hidden">Logout</span>
       </div>
     </div>
   );

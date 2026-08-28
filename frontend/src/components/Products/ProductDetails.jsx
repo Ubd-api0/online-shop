@@ -96,14 +96,14 @@ const ProductDetails = ({ data }) => {
   if (!data) return null;
 
   return (
-    <div className='bg-white pb-5'>
+    <div className='bg-surface text-content pb-[140px] lg:pb-5'>
       <div className='max-w-6xl mx-auto px-3 md:px-6 py-6'>
         {/* MAIN LAYOUT */}
         <div className='flex flex-col lg:flex-row gap-6'>
           {/* LEFT: IMAGES */}
           <div className='lg:w-[45%]'>
             {/* Main Image */}
-            <div className='border rounded-md p-2'>
+            <div className='border border-border rounded-md p-2'>
               <img
                 src={`${backend_url}${data.images?.[select]}`}
                 className='w-full h-[280px] sm:h-[400px] object-contain'
@@ -119,7 +119,7 @@ const ProductDetails = ({ data }) => {
                   src={`${backend_url}${img}`}
                   onClick={() => setSelect(i)}
                   className={`w-[70px] h-[70px] object-contain border cursor-pointer ${
-                    select === i ? 'border-red-500' : ''
+                    select === i ? 'border-red-500' : 'border-border'
                   }`}
                   alt=''
                 />
@@ -156,7 +156,7 @@ const ProductDetails = ({ data }) => {
             </div>
 
             {/* Price Box */}
-            <div className='mt-4 bg-gray-50 p-3 rounded-md'>
+            <div className='mt-4 bg-surface-alt p-3 rounded-md'>
               <div className='flex items-center gap-3'>
                 <span className='text-red-500 line-through'>
                   {data.originalPrice}$
@@ -165,7 +165,7 @@ const ProductDetails = ({ data }) => {
                   {data.discountPrice}$
                 </span>
               </div>
-              <p className='text-sm text-gray-500 mt-1'>{data.sold_out} sold</p>
+              <p className='text-sm text-muted mt-1'>{data.sold_out} sold</p>
               <p
                 className={`text-sm mt-1 font-medium ${
                   isMadeToOrder(data)
@@ -180,7 +180,7 @@ const ProductDetails = ({ data }) => {
             </div>
 
             {/* Description */}
-            <p className='mt-4 text-gray-600 text-sm md:text-base'>
+            <p className='mt-4 text-muted text-sm md:text-base'>
               {data.description}
             </p>
 
@@ -188,7 +188,7 @@ const ProductDetails = ({ data }) => {
             <div className='flex items-center gap-3 mt-5'>
               <button
                 onClick={() => setCount(Math.max(1, count - 1))}
-                className='px-3 py-1 bg-gray-200'
+                className='px-3 py-1 bg-surface-alt border border-border rounded'
               >
                 -
               </button>
@@ -197,7 +197,7 @@ const ProductDetails = ({ data }) => {
 
               <button
                 onClick={() => setCount(Math.min(maxQty(data), count + 1))}
-                className='px-3 py-1 bg-gray-200'
+                className='px-3 py-1 bg-surface-alt border border-border rounded'
               >
                 +
               </button>
@@ -231,8 +231,8 @@ const ProductDetails = ({ data }) => {
         averageRating={averageRating}
       />
 
-      {/* 🔥 MOBILE STICKY BAR (DARAZ STYLE) */}
-      <div className='fixed bottom-0 left-0 w-full bg-white shadow-lg flex lg:hidden'>
+      {/* 🔥 MOBILE STICKY BAR (DARAZ STYLE) — sits above the header's mobile bottom nav (<md) */}
+      <div className='fixed bottom-[56px] md:bottom-0 left-0 w-full bg-surface border-t border-border shadow-lg flex lg:hidden z-[100]'>
         <button
           onClick={toggleWishlist}
           className='w-1/5 py-3 flex justify-center'
@@ -277,9 +277,9 @@ const ProductDetailsInfo = ({
   if (!data) return null;
 
   return (
-    <div className='bg-white border rounded-md px-3 md:px-8 py-4'>
+    <div className='bg-surface text-content border border-border rounded-md px-3 md:px-8 py-4'>
       {/* 🔥 TABS (DARAZ STYLE) */}
-      <div className='flex gap-6 border-b overflow-x-auto whitespace-nowrap'>
+      <div className='flex gap-6 border-b border-border overflow-x-auto whitespace-nowrap'>
         <div
           className='relative pb-2 cursor-pointer'
           onClick={() => setActive(1)}
@@ -317,7 +317,7 @@ const ProductDetailsInfo = ({
 
       {/* 📦 PRODUCT DETAILS */}
       {active === 1 && (
-        <div className='py-4 text-gray-700 text-sm md:text-base leading-7 whitespace-pre-line'>
+        <div className='py-4 text-muted text-sm md:text-base leading-7 whitespace-pre-line'>
           {data.description}
         </div>
       )}
@@ -344,12 +344,12 @@ const ProductDetailsInfo = ({
                     <Ratings rating={item.rating} />
                   </div>
 
-                  <p className='text-sm text-gray-600'>{item.comment}</p>
+                  <p className='text-sm text-muted'>{item.comment}</p>
                 </div>
               </div>
             ))
           ) : (
-            <p className='text-gray-500 text-sm'>
+            <p className='text-muted text-sm'>
               No reviews yet for this product.
             </p>
           )}
@@ -372,14 +372,14 @@ const ProductDetailsInfo = ({
                 <div>
                   <h3 className='font-semibold'>{data.shop?.name}</h3>
 
-                  <p className='text-xs text-gray-500'>
+                  <p className='text-xs text-muted'>
                     ⭐ {averageRating}/5 Rating
                   </p>
                 </div>
               </div>
             </Link>
 
-            <p className='text-sm text-gray-600 mt-3'>
+            <p className='text-sm text-muted mt-3'>
               {data.shop?.description}
             </p>
           </div>

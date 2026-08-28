@@ -81,18 +81,18 @@ const UserOrderDetails = () => {
 
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>
-      <div className="w=full flex items-center justify-between">
+      <div className="w-full flex items-center justify-between">
         <div className="flex items-center">
           <BsFillBagFill size={30} color="crimson" />
           <h1 className="pl-2 text-[25px]">Order Details</h1>
         </div>
       </div>
 
-      <div className="w-full flex items-center justify-between pt-6">
-        <h5 className="text-[#00000084]">
-          order ID: <span>#{data?._id?.slice(0, 8)}</span>
+      <div className="w-full flex flex-wrap gap-2 items-center justify-between pt-6">
+        <h5 className="text-muted">
+          Order ID: <span>#{data?._id?.slice(0, 8)}</span>
         </h5>
-        <h5 className="text-[#000000084]">
+        <h5 className="text-muted">
           Placed On: <span>{data?.createdAt?.slice(0, 10)}</span>
         </h5>
       </div>
@@ -107,11 +107,11 @@ const UserOrderDetails = () => {
               <img
                 src={`${backend_url}/${item.images[0]}`}
                 alt="Product item order img"
-                className="w-[80x] h-[80px]"
+                className="w-[80px] h-[80px] object-cover rounded"
               />
               <div className="w-full">
                 <h5 className="pl-3 text-[20px]">{item.name}</h5>
-                <h5 className="pl-3 text-[20px] text-[#00000091]">
+                <h5 className="pl-3 text-[20px] text-muted">
                   US${item.discountPrice} x {item.qty}
                 </h5>
               </div>
@@ -129,8 +129,8 @@ const UserOrderDetails = () => {
 
       {/* Review Popup */}
       {open && (
-        <div className="w-full  top-0 left-0 h-screen bg-[#0005] z-50 flex items-center justify-center">
-          <div className="w-[50%] h-min bg-[#fff] shadow rounded-md p-3 ">
+        <div className="fixed inset-0 h-screen bg-[#0005] z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg h-min bg-surface text-content shadow rounded-md p-3 max-h-[90vh] overflow-y-auto">
             <div className="w-full flex justify-end p-3">
               <RxCross1
                 size={30}
@@ -189,7 +189,7 @@ const UserOrderDetails = () => {
             <div className="w-full ml-3">
               <label className="block text-[20px] font-[500]">
                 Write a Comment
-                <span className="ml-1 font-[400] text-[16px] text-[#00000052]">
+                <span className="ml-1 font-[400] text-[16px] text-muted">
                   (Optional)
                 </span>
               </label>
@@ -201,7 +201,7 @@ const UserOrderDetails = () => {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="How was your product? write your expresion about it!"
-                className="mt-2 w-[95%] border p-2 outline-none"
+                className="mt-2 w-[95%] border border-border bg-surface text-content rounded p-2 outline-none"
               ></textarea>
             </div>
             <div
@@ -214,7 +214,7 @@ const UserOrderDetails = () => {
         </div>
       )}
 
-      <div className="border-t w-full text-right">
+      <div className="border-t border-border w-full text-right pt-2">
         <h5>
           Total Price: <strong>US${data?.totalPrice}</strong>
         </h5>

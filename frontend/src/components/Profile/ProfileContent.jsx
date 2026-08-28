@@ -93,7 +93,7 @@ const ProfileContent = ({ active }) => {
 
               <label
                 htmlFor='avatar'
-                className='absolute bottom-1 right-1 w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer'
+                className='absolute bottom-1 right-1 w-9 h-9 rounded-full bg-surface-alt border border-border flex items-center justify-center cursor-pointer'
               >
                 <AiOutlineCamera size={20} />
               </label>
@@ -479,11 +479,11 @@ const Address = () => {
             <div>
               <h4 className='font-semibold'>{item.addressType}</h4>
 
-              <p className='text-sm text-gray-600'>
+              <p className='text-sm text-muted'>
                 {item.address1} {item.address2}
               </p>
 
-              <p className='text-sm text-gray-600'>{user?.phoneNumber}</p>
+              <p className='text-sm text-muted'>{user?.phoneNumber}</p>
             </div>
 
             <AiOutlineDelete
@@ -496,7 +496,7 @@ const Address = () => {
       </div>
 
       {user?.addresses?.length === 0 && (
-        <p className='text-center mt-10 text-gray-500'>No saved addresses</p>
+        <p className='text-center mt-10 text-muted'>No saved addresses</p>
       )}
 
       {/* DRAWER */}

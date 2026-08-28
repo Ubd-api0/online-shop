@@ -202,41 +202,41 @@ const ShippingInfo = ({
 }) => {
   return (
     <div className='bg-surface rounded-md shadow-sm p-5'>
-      <div className='flex items-center gap-2 border-b pb-4 mb-5'>
+      <div className='flex items-center gap-2 border-b border-border pb-4 mb-5'>
         <FiMapPin
           className='text-orange-500'
           size={22}
         />
-        <h2 className='text-[20px] font-semibold text-gray-800'>
+        <h2 className='text-[20px] font-semibold text-content'>
           Shipping Address
         </h2>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='text-sm font-medium text-gray-700'>Full Name</label>
+          <label className='text-sm font-medium text-muted'>Full Name</label>
 
           <input
             type='text'
             value={user?.name}
             disabled
-            className='mt-1 w-full border rounded-md h-[45px] px-3 bg-gray-50'
+            className='mt-1 w-full border border-border rounded-md h-[45px] px-3 bg-surface-alt text-muted'
           />
         </div>
 
         <div>
-          <label className='text-sm font-medium text-gray-700'>Email</label>
+          <label className='text-sm font-medium text-muted'>Email</label>
 
           <input
             type='email'
             value={user?.email}
             disabled
-            className='mt-1 w-full border rounded-md h-[45px] px-3 bg-gray-50'
+            className='mt-1 w-full border border-border rounded-md h-[45px] px-3 bg-surface-alt text-muted'
           />
         </div>
 
         <div>
-          <label className='text-sm font-medium text-gray-700'>
+          <label className='text-sm font-medium text-muted'>
             Phone Number
           </label>
 
@@ -244,28 +244,28 @@ const ShippingInfo = ({
             type='number'
             value={user?.phoneNumber}
             disabled
-            className='mt-1 w-full border rounded-md h-[45px] px-3 bg-gray-50'
+            className='mt-1 w-full border border-border rounded-md h-[45px] px-3 bg-surface-alt text-muted'
           />
         </div>
 
         <div>
-          <label className='text-sm font-medium text-gray-700'>Zip Code</label>
+          <label className='text-sm font-medium text-muted'>Zip Code</label>
 
           <input
             type='number'
             value={zipCode}
             onChange={(e) => setZipCode(e.target.value)}
-            className='mt-1 w-full border rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
+            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
           />
         </div>
 
         <div>
-          <label className='text-sm font-medium text-gray-700'>Country</label>
+          <label className='text-sm font-medium text-muted'>Country</label>
 
           <select
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className='mt-1 w-full border rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
+            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
           >
             <option value=''>Choose Country</option>
 
@@ -281,14 +281,14 @@ const ShippingInfo = ({
         </div>
 
         <div>
-          <label className='text-sm font-medium text-gray-700'>
+          <label className='text-sm font-medium text-muted'>
             State / City
           </label>
 
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className='mt-1 w-full border rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
+            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
           >
             <option value=''>Choose City</option>
 
@@ -304,7 +304,7 @@ const ShippingInfo = ({
         </div>
 
         <div>
-          <label className='text-sm font-medium text-gray-700'>
+          <label className='text-sm font-medium text-muted'>
             Address Line 1
           </label>
 
@@ -312,12 +312,12 @@ const ShippingInfo = ({
             type='text'
             value={address1}
             onChange={(e) => setAddress1(e.target.value)}
-            className='mt-1 w-full border rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
+            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
           />
         </div>
 
         <div>
-          <label className='text-sm font-medium text-gray-700'>
+          <label className='text-sm font-medium text-muted'>
             Address Line 2
           </label>
 
@@ -325,7 +325,7 @@ const ShippingInfo = ({
             type='text'
             value={address2}
             onChange={(e) => setAddress2(e.target.value)}
-            className='mt-1 w-full border rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
+            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
           />
         </div>
       </div>
@@ -345,7 +345,7 @@ const ShippingInfo = ({
               {user.addresses.map((item, index) => (
                 <div
                   key={index}
-                  className='border rounded-md p-3 flex items-start gap-3 hover:border-orange-500 cursor-pointer'
+                  className='border border-border rounded-md p-3 flex items-start gap-3 hover:border-orange-500 cursor-pointer'
                 >
                   <input
                     type='radio'
@@ -362,7 +362,7 @@ const ShippingInfo = ({
                   <div>
                     <h4 className='font-semibold'>{item.addressType}</h4>
 
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-muted'>
                       {item.address1}, {item.address2}
                     </p>
                   </div>
@@ -388,23 +388,23 @@ const CartData = ({
 }) => {
   return (
     <div className='bg-surface rounded-md shadow-sm p-5 sticky top-24'>
-      <h2 className='text-[20px] font-semibold border-b pb-4 mb-5'>
+      <h2 className='text-[20px] font-semibold border-b border-border pb-4 mb-5'>
         Order Summary
       </h2>
 
       <div className='space-y-4'>
         <div className='flex justify-between'>
-          <span className='text-gray-600'>Subtotal</span>
+          <span className='text-muted'>Subtotal</span>
           <span className='font-semibold'>${subTotalPrice.toFixed(2)}</span>
         </div>
 
         <div className='flex justify-between'>
-          <span className='text-gray-600'>Shipping Fee</span>
+          <span className='text-muted'>Shipping Fee</span>
           <span className='font-semibold'>${shipping.toFixed(2)}</span>
         </div>
 
-        <div className='flex justify-between border-b pb-4'>
-          <span className='text-gray-600'>Discount</span>
+        <div className='flex justify-between border-b border-border pb-4'>
+          <span className='text-muted'>Discount</span>
           <span className='font-semibold text-green-600'>
             -$
             {discountPercentage ? discountPercentage.toFixed(2) : '0.00'}
@@ -424,14 +424,14 @@ const CartData = ({
       >
         <div className='flex'>
           <div className='relative flex-1'>
-            <FiTag className='absolute left-3 top-3.5 text-gray-400' />
+            <FiTag className='absolute left-3 top-3.5 text-muted' />
 
             <input
               type='text'
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
               placeholder='Coupon code'
-              className='w-full border h-[45px] pl-10 pr-3 rounded-l-md outline-none focus:border-orange-500'
+              className='w-full border border-border bg-surface text-content h-[45px] pl-10 pr-3 rounded-l-md outline-none focus:border-orange-500'
             />
           </div>
 
@@ -474,13 +474,13 @@ const PaymentMethodPicker = ({
 
   return (
     <div className='bg-surface rounded-md shadow-sm p-5'>
-      <div className='flex items-center gap-2 border-b pb-4 mb-4'>
+      <div className='flex items-center gap-2 border-b border-border pb-4 mb-4'>
         <FiCreditCard className='text-orange-500' size={20} />
-        <h2 className='text-[20px] font-semibold text-gray-800'>Payment Method</h2>
+        <h2 className='text-[20px] font-semibold text-content'>Payment Method</h2>
       </div>
 
       {methods.length === 0 ? (
-        <p className='text-sm text-gray-500'>
+        <p className='text-sm text-muted'>
           No payment method is available for the items in your cart. Please
           contact the store.
         </p>
@@ -491,8 +491,8 @@ const PaymentMethodPicker = ({
               key={m.key}
               className={`flex items-start gap-3 border rounded-md p-3 cursor-pointer transition ${
                 paymentMethod === m.key
-                  ? 'border-orange-500 bg-orange-50'
-                  : 'hover:border-orange-300'
+                  ? 'border-orange-500 bg-orange-500/10'
+                  : 'border-border hover:border-orange-300'
               }`}
             >
               <input
@@ -503,8 +503,8 @@ const PaymentMethodPicker = ({
                 onChange={() => setPaymentMethod(m.key)}
               />
               <div>
-                <div className='font-medium text-gray-800'>{m.label}</div>
-                <div className='text-sm text-gray-500'>{describe(m.key)}</div>
+                <div className='font-medium text-content'>{m.label}</div>
+                <div className='text-sm text-muted'>{describe(m.key)}</div>
               </div>
             </label>
           ))}

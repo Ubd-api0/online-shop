@@ -50,8 +50,6 @@ const CreateProduct = () => {
     setImages((prevImages) => [...prevImages, ...files]);
   };
 
-  console.log(images);
-
   const _handleSubmit = (e) => {
     e.preventDefault();
 
@@ -125,7 +123,7 @@ const CreateProduct = () => {
             type='text'
             name='name'
             value={name}
-            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
             onChange={(e) => setName(e.target.value)}
             placeholder='Enter your product name...'
           />
@@ -142,7 +140,7 @@ const CreateProduct = () => {
             type='text'
             name='description'
             value={description}
-            className='mt-2 appearance-none block w-full pt-2 px-3 border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+            className='mt-2 appearance-none block w-full pt-2 px-3 border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
             onChange={(e) => setDescription(e.target.value)}
             placeholder='Enter your product description...'
           ></textarea>
@@ -153,7 +151,7 @@ const CreateProduct = () => {
             Category <span className='text-red-500'>*</span>
           </label>
           <select
-            className='w-full mt-2 border h-[35px] rounded-[5px]'
+            className='w-full mt-2 border border-border bg-surface text-content h-[35px] rounded-[5px]'
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
@@ -177,7 +175,7 @@ const CreateProduct = () => {
             type='text'
             name='tags'
             value={tags}
-            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
             onChange={(e) => setTags(e.target.value)}
             placeholder='Enter your product tags...'
           />
@@ -189,7 +187,7 @@ const CreateProduct = () => {
             type='number'
             name='price'
             value={originalPrice}
-            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
             onChange={(e) => setOriginalPrice(e.target.value)}
             placeholder='Enter your product price...'
           />
@@ -203,7 +201,7 @@ const CreateProduct = () => {
             type='number'
             name='price'
             value={discountPrice}
-            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+            className='mt-2 appearance-none block w-full px-3 h-[35px] border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
             onChange={(e) => setDiscountPrice(e.target.value)}
             placeholder='Enter your product price with discount...'
           />
@@ -214,7 +212,7 @@ const CreateProduct = () => {
             Fulfillment <span className='text-red-500'>*</span>
           </label>
           <select
-            className='w-full mt-2 border h-[35px] rounded-[5px]'
+            className='w-full mt-2 border border-border bg-surface text-content h-[35px] rounded-[5px]'
             value={fulfillment}
             onChange={(e) => setFulfillment(e.target.value)}
           >
@@ -223,7 +221,7 @@ const CreateProduct = () => {
               Made to order (manufacture after purchase)
             </option>
           </select>
-          <p className='text-xs text-gray-500 mt-1'>
+          <p className='text-xs text-muted mt-1'>
             {madeToOrder
               ? 'Customers can always order; the item is produced per order and stock is not tracked.'
               : 'Customers see "Currently unavailable" once stock reaches 0.'}
@@ -237,7 +235,7 @@ const CreateProduct = () => {
               type='number'
               min={0}
               value={leadTimeDays}
-              className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+              className='mt-2 appearance-none block w-full px-3 h-[35px] border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
               onChange={(e) => setLeadTimeDays(e.target.value)}
               placeholder='e.g. 7 — shown to customers as "ships in ~7 days"'
             />
@@ -251,14 +249,14 @@ const CreateProduct = () => {
               type='number'
               name='price'
               value={stock}
-              className='mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+              className='mt-2 appearance-none block w-full px-3 h-[35px] border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
               onChange={(e) => setStock(e.target.value)}
               placeholder='Enter your product stock...'
             />
           </div>
         )}
         <br />
-        <div className='border border-gray-200 rounded-[4px] p-3'>
+        <div className='border border-border rounded-[4px] p-3'>
           <label className='flex items-center gap-2 font-medium'>
             <input
               type='checkbox'
@@ -271,7 +269,7 @@ const CreateProduct = () => {
           </label>
           {override.enabled && (
             <div className='mt-3 pl-1 space-y-2 text-sm'>
-              <p className='text-gray-500'>
+              <p className='text-muted'>
                 Unchecked options are blocked for any cart containing this
                 product (intersected with the store settings).
               </p>
@@ -325,7 +323,7 @@ const CreateProduct = () => {
                       advancePercent: e.target.value,
                     }))
                   }
-                  className='w-[110px] border border-gray-300 rounded px-2 h-[30px]'
+                  className='w-[110px] border border-border bg-surface text-content rounded px-2 h-[30px]'
                 />
               </div>
             </div>
@@ -367,7 +365,7 @@ const CreateProduct = () => {
             <input
               type='submit'
               value='Create'
-              className='mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+              className='mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-border bg-surface text-content rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
             />
           </div>
         </div>

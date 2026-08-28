@@ -25,7 +25,7 @@ const EventCard = ({ data }) => {
   };
 
   return (
-    <div className='w-full bg-white rounded-md shadow-sm hover:shadow-md transition p-4 flex flex-col lg:flex-row gap-6'>
+    <div className='w-full bg-surface text-content border border-border rounded-md shadow-sm hover:shadow-md transition p-4 flex flex-col lg:flex-row gap-6'>
       {/* LEFT IMAGE */}
       <div className='relative lg:w-[45%] flex justify-center items-center'>
         {/* 🔥 Badge */}
@@ -44,12 +44,12 @@ const EventCard = ({ data }) => {
       <div className='lg:w-[55%] flex flex-col justify-between'>
         {/* TITLE */}
         <div>
-          <h2 className='text-lg sm:text-2xl font-semibold text-gray-800'>
+          <h2 className='text-lg sm:text-2xl font-semibold text-content'>
             {data.name}
           </h2>
 
           {/* DESCRIPTION */}
-          <p className='text-gray-500 mt-2 text-sm sm:text-base line-clamp-3'>
+          <p className='text-muted mt-2 text-sm sm:text-base line-clamp-3'>
             {data.description}
           </p>
         </div>
@@ -57,7 +57,7 @@ const EventCard = ({ data }) => {
         {/* PRICE SECTION */}
         <div className='mt-4'>
           <div className='flex items-center gap-3 flex-wrap'>
-            <span className='text-gray-400 line-through text-sm'>
+            <span className='text-muted line-through text-sm'>
               {data.originalPrice}$
             </span>
 
@@ -80,7 +80,7 @@ const EventCard = ({ data }) => {
         </div>
 
         {/* COUNTDOWN */}
-        <div className='mt-3 bg-gray-50 p-3 rounded'>
+        <div className='mt-3 bg-surface-alt p-3 rounded'>
           <CountDown data={data} />
         </div>
 

@@ -52,11 +52,11 @@ const ProductCard = ({ data }) => {
   const badge = availabilityBadge(data);
 
   return (
-    <div className='relative bg-white border rounded-md p-3 hover:shadow-md transition w-full'>
+    <div className='relative bg-surface text-content border border-border rounded-md p-3 hover:shadow-md transition w-full'>
       {/* ❤️ FAVORITE BUTTON (DARAZ STYLE) */}
       <div
         onClick={toggleWishlist}
-        className='absolute top-2 right-2 bg-white p-1 rounded-full shadow cursor-pointer z-10'
+        className='absolute top-2 right-2 bg-surface p-1 rounded-full shadow cursor-pointer z-10'
       >
         {click ? (
           <AiFillHeart
@@ -90,7 +90,7 @@ const ProductCard = ({ data }) => {
       </Link>
 
       {/* SHOP NAME */}
-      <h5 className='text-xs text-gray-500 mt-1'>{data.shop.name}</h5>
+      <h5 className='text-xs text-muted mt-1'>{data.shop.name}</h5>
 
       {/* TITLE */}
       <h4 className='text-sm font-medium line-clamp-2'>{data.name}</h4>
@@ -98,7 +98,7 @@ const ProductCard = ({ data }) => {
       {/* PRICE */}
       <div className='flex items-center gap-2 mt-1'>
         <span className='text-green-600 font-bold'>${data.discountPrice}</span>
-        <span className='text-gray-400 line-through text-xs'>
+        <span className='text-muted line-through text-xs'>
           ${data.originalPrice}
         </span>
       </div>

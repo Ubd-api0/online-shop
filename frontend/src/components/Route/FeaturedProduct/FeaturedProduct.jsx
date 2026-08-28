@@ -25,7 +25,7 @@ const FeaturedProduct = () => {
               />
             ))
           ) : (
-            <p className='col-span-full text-center text-gray-500 py-10'>
+            <p className='col-span-full text-center text-muted py-10'>
               No products available
             </p>
           )}

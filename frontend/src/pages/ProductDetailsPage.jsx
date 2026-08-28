@@ -40,7 +40,7 @@ const ProductDetailsPage = () => {
       {data ? (
         <ProductDetails data={data} />
       ) : (
-        <div className='text-center py-20 text-gray-500'>
+        <div className='text-center py-20 text-muted'>
           Loading product...
         </div>
       )}

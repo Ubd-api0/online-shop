@@ -375,7 +375,7 @@ const PaymentInfo = ({
               </button>
               {open && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[99999] p-4">
-                  <div className="w-full max-w-md max-h-[80vh] bg-white rounded-md p-8 relative overflow-y-auto">
+                  <div className="w-full max-w-md max-h-[80vh] bg-surface text-content rounded-md p-8 relative overflow-y-auto">
                     <RxCross1
                       size={26}
                       className="cursor-pointer absolute top-4 right-4"

@@ -24,13 +24,11 @@ const Success = () => {
         },
     };
     return (
-        <div>
+        <div className="py-10">
             <Lottie options={defaultOptions} width={300} height={300} />
-            <h5 className="text-center mb-14 text-[25px] text-[#000000a1]">
+            <h5 className="text-center mb-14 text-[25px] text-content">
                 Your order is successful 😍
             </h5>
-            <br />
-            <br />
         </div>
     );
 };

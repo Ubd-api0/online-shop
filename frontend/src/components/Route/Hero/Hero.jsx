@@ -21,9 +21,9 @@ const Hero = () => {
       className='w-full min-h-[60vh] sm:min-h-[70vh] flex items-center bg-cover bg-center px-4'
       style={{ backgroundImage: `url(${image})` }}
     >
-      <div className='max-w-xl bg-black/10 backdrop-blur-[1px] rounded-lg p-4'>
-        <h1 className='text-2xl sm:text-4xl font-bold text-gray-900'>{title}</h1>
-        <p className='text-sm sm:text-base text-gray-700 mt-3'>{subtitle}</p>
+      <div className='max-w-xl bg-black/45 backdrop-blur-[2px] rounded-lg p-5 sm:p-6'>
+        <h1 className='text-2xl sm:text-4xl font-bold text-white'>{title}</h1>
+        <p className='text-sm sm:text-base text-gray-100 mt-3'>{subtitle}</p>
         <Link to={ctaLink}>
           <button className='mt-5 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-md'>
             {ctaText}

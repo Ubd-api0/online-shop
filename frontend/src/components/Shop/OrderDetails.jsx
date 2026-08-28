@@ -76,11 +76,11 @@ const OrderDetails = () => {
         </Link>
       </div>
 
-      <div className="w-full flex items-center justify-between pt-6">
-        <h5 className="text-[#00000084]">
-          order ID: <span>#{data?._id?.slice(0, 8)}</span>
+      <div className="w-full flex flex-wrap gap-2 items-center justify-between pt-6">
+        <h5 className="text-muted">
+          Order ID: <span>#{data?._id?.slice(0, 8)}</span>
         </h5>
-        <h5 className="text-[#000000084]">
+        <h5 className="text-muted">
           Placed On: <span>{data?.createdAt?.slice(0, 10)}</span>
         </h5>
       </div>
@@ -94,17 +94,17 @@ const OrderDetails = () => {
             <img
               src={`${backend_url}/${item.images[0]}`}
               alt="Product item order img"
-              className="w-[80x] h-[80px]"
+              className="w-[80px] h-[80px] object-cover rounded"
             />
             <div className="w-full">
               <h5 className="pl-3 text-[20px]">{item.name}</h5>
-              <h5 className="pl-3 text-[20px] text-[#00000091]">
+              <h5 className="pl-3 text-[20px] text-muted">
                 US${item.discountPrice} x {item.qty}
               </h5>
             </div>
           </div>
         ))}
-      <div className="border-t w-full text-right">
+      <div className="border-t border-border w-full text-right pt-2">
         <h5>
           Total Price: <strong>US${data?.totalPrice}</strong>
         </h5>
@@ -175,7 +175,7 @@ const OrderDetails = () => {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-[220px] mt-2 border h-[35px] rounded-[5px]"
+              className="w-[220px] mt-2 border border-border bg-surface text-content h-[35px] rounded-[5px]"
             >
               {stages.slice(from).map((option, index) => (
                 <option value={option} key={index}>
@@ -191,7 +191,7 @@ const OrderDetails = () => {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
+          className="w-[200px] mt-2 border border-border bg-surface text-content h-[35px] rounded-[5px]"
         >
           {["Processing refund", "Refund Success"]
             .slice(
