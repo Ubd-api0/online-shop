@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import Store from "./redux/store";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import {
   LoginPage,
   SignupPage,
@@ -32,28 +32,17 @@ import {
   ShopOrderDetails,
   ShopAllRefunds,
   ShopSettingsPage,
-  ShopWithDrawMoneyPage,
   ShopInboxPage,
   ShopCategoriesPage,
   ShopStorefrontPage,
+  ShopCustomersPage,
 } from "./routes/ShopRoutes";
-
-import {
-  AdminDashboardPage,
-  AdminDashboardUsers,
-  AdminDashboardSellers,
-  AdminDashboardOrders,
-  AdminDashboardProducts,
-  AdminDashboardEvents,
-  AdminDashboardWithdraw,
-} from "./routes/AdminRoutes";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { loadSeller, loadUser } from "./redux/actions/user";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute";
 import { ShopHomePage } from "./ShopRoutes";
 import { getAllProducts } from "./redux/actions/product";
@@ -113,9 +102,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-      </Routes>
-
-      <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sign-up" element={<SignupPage />} />
@@ -248,10 +234,10 @@ const App = () => {
         />
 
         <Route
-          path="/dashboard-withdraw-money"
+          path="/dashboard-customers"
           element={
             <SellerProtectedRoute>
-              <ShopWithDrawMoneyPage />
+              <ShopCustomersPage />
             </SellerProtectedRoute>
           }
         />
@@ -306,63 +292,7 @@ const App = () => {
           }
         />
 
-        {/* Admin Routes */}
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardPage />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin-users"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardUsers />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin-sellers"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardSellers />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin-orders"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardOrders />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin-products"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardProducts />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin-events"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardEvents />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route
-          path="/admin-withdraw-request"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardWithdraw />
-            </ProtectedAdminRoute>
-          }
-        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ToastContainer
         position="bottom-center"

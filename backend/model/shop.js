@@ -1,25 +1,15 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-// config
-dotenv.config();
 
-// Single-vendor: this document is the ONE store's configuration.
-// It is NOT an authentication identity — all login/auth is on the User model
-// (a User with role 'business_owner' whose `shop` points here). The legacy
-// email/password fields are kept only so old data doesn't break.
+// Single-vendor: the ONE store's configuration. Not an authentication
+// identity — all login/auth is on the User model (a User with role
+// 'business_owner' whose `shop` points here). Provisioned via `npm run seed:store`.
 const shopSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please enter your shop name!'],
+    required: [true, 'Please enter your store name!'],
   },
   email: {
     type: String,
-  },
-  password: {
-    type: String,
-    select: false,
   },
   description: {
     type: String,
@@ -30,18 +20,11 @@ const shopSchema = new mongoose.Schema({
   phoneNumber: {
     type: Number,
   },
-  role: {
-    type: String,
-    default: 'Seller',
-  },
   avatar: {
     type: String,
   },
   zipCode: {
     type: Number,
-  },
-  withdrawMethod: {
-    type: Object,
   },
   // Store-wide payment criteria shown to customers at checkout.
   paymentSettings: {
@@ -80,41 +63,15 @@ const shopSchema = new mongoose.Schema({
       default: undefined,
     },
   },
+  // Cumulative revenue from delivered orders.
   availableBalance: {
     type: Number,
     default: 0,
   },
-  transections: [
-    {
-      amount: { type: Number, required: true },
-      status: { type: String, default: 'Processing' },
-      createdAt: { type: Date, default: Date.now() },
-      updatedAt: { type: Date },
-    },
-  ],
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
-  resetPasswordToken: String,
-  resetPasswordTime: Date,
 });
-
-// Hash password only if one is actually set/changed (legacy support).
-shopSchema.pre('save', async function (next) {
-  if (!this.isModified('password') || !this.password) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-shopSchema.methods.getJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRES,
-  });
-};
-
-shopSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
 
 module.exports = mongoose.model('Shop', shopSchema);

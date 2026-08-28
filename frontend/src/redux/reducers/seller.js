@@ -1,5 +1,6 @@
 import { createReducer } from "@reduxjs/toolkit";
 
+// Holds the single store's config document (loaded for the business owner).
 const initialState = {
   isLoading: true,
 };
@@ -18,22 +19,7 @@ export const sellerReducer = createReducer(initialState, {
     state.error = action.payload;
     state.isSeller = false;
   },
-  // get all sellers ---admin
-  getAllSellersRequest: (state) => {
-    state.isLoading = true;
-  },
-  getAllSellersSuccess: (state, action) => {
-    state.isLoading = false;
-    state.sellers = action.payload;
-  },
-  getAllSellerFailed: (state, action) => {
-    state.isLoading = false;
-    state.error = action.payload;
-  },
-
   clearErrors: (state) => {
     state.error = null;
   },
 });
-
-// reducer -> logic (state change)
