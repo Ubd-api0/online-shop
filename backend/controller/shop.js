@@ -64,12 +64,13 @@ router.put(
   '/update-seller-info',
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
-    const { name, description, address, phoneNumber, zipCode } = req.body;
+    const { name, description, email, address, phoneNumber, zipCode } = req.body;
     const shop = await Shop.findById(req.seller._id);
     if (!shop) return next(new ErrorHandler('Store not found', 404));
 
     if (name !== undefined) shop.name = name;
     if (description !== undefined) shop.description = description;
+    if (email !== undefined) shop.email = email;
     if (address !== undefined) shop.address = address;
     if (phoneNumber !== undefined) shop.phoneNumber = phoneNumber;
     if (zipCode !== undefined) shop.zipCode = zipCode;
@@ -84,13 +85,14 @@ router.get(
   '/storefront',
   catchAsyncErrors(async (req, res) => {
     const shop = await Shop.findOne().select(
-      'name description phoneNumber address storefront'
+      'name description email phoneNumber address storefront'
     );
     const categories = await Category.find().sort({ order: 1, createdAt: 1 });
     res.status(200).json({
       success: true,
       name: shop?.name || 'Shop',
       description: shop?.description || '',
+      email: shop?.email || '',
       phoneNumber: shop?.phoneNumber,
       address: shop?.address,
       hero: shop?.storefront?.hero || {},

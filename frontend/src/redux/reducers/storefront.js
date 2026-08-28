@@ -7,6 +7,9 @@ const initialState = {
   hero: {},
   storeName: "",
   storeDescription: "",
+  storePhone: "",
+  storeAddress: "",
+  storeEmail: "",
 };
 
 export const storefrontReducer = createReducer(initialState, {
@@ -20,6 +23,9 @@ export const storefrontReducer = createReducer(initialState, {
     state.hero = action.payload.hero || {};
     state.storeName = action.payload.name || "";
     state.storeDescription = action.payload.description || "";
+    state.storePhone = action.payload.phoneNumber || "";
+    state.storeAddress = action.payload.address || "";
+    state.storeEmail = action.payload.email || "";
   },
   storefrontFail: (state, action) => {
     state.loading = false;

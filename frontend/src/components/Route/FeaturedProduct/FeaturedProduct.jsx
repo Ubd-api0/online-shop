@@ -7,7 +7,7 @@ const FeaturedProduct = () => {
   const { allProducts } = useSelector((state) => state.products);
 
   return (
-    <div className='mt-6 md:mt-10'>
+    <div className='py-6 md:py-8'>
       <div className={styles.section}>
         {/* Heading */}
         <div className={`${styles.heading} mb-4`}>
@@ -15,7 +15,7 @@ const FeaturedProduct = () => {
         </div>
 
         {/* Grid */}
-        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-12'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3'>
           {/* Data */}
           {allProducts?.length > 0 ? (
             allProducts.map((item) => (

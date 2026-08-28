@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   AiOutlineHeart,
@@ -10,6 +10,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { useSelector } from 'react-redux';
 import { backend_url } from '../../server';
 import { navItems } from '../../static/data';
+import appConfig from '../../config/appConfig';
 import Cart from '../cart/Cart';
 import Wishlist from '../Wishlist/Wishlist';
 import ThemeToggle from './ThemeToggle';
@@ -27,6 +28,20 @@ const useDebounce = (value, delay = 400) => {
   return debounced;
 };
 
+const Brand = () => (
+  <Link to='/' className='flex items-center shrink-0'>
+    {appConfig.logoUrl ? (
+      <img
+        src={appConfig.logoUrl}
+        alt={appConfig.name}
+        className='h-8 w-auto object-contain'
+      />
+    ) : (
+      <span className='text-xl font-bold text-orange-500'>{appConfig.name}</span>
+    )}
+  </Link>
+);
+
 const Header = () => {
   const navigate = useNavigate();
   const { cart } = useSelector((state) => state.cart);
@@ -43,17 +58,9 @@ const Header = () => {
 
   const [results, setResults] = useState([]);
   const [selectedCat, setSelectedCat] = useState('All');
-  const [mobileCatOpen, setMobileCatOpen] = useState(false);
-  const [sticky, setSticky] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
 
-  /* ---------------- Sticky Header ---------------- */
-  useEffect(() => {
-    const onScroll = () => setSticky(window.scrollY > 80);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  /* ---------------- Smart Filtering (Daraz style) ---------------- */
+  /* ---------------- Smart Filtering ---------------- */
   const filteredProducts = useMemo(() => {
     let filtered = allProducts || [];
 
@@ -76,107 +83,151 @@ const Header = () => {
     setResults(filteredProducts);
   }, [filteredProducts]);
 
+  const pickCategory = (name) => {
+    setSelectedCat(name);
+    setCatOpen(false);
+    navigate(
+      name === 'All'
+        ? '/products'
+        : `/products?category=${encodeURIComponent(name)}`
+    );
+  };
+
+  const catList = ['All', ...(categories || []).map((c) => c.name)];
+
   return (
     <>
       {/* HEADER */}
-      <header
-        className={`relative w-full bg-surface text-content z-[999] ${
-          sticky ? 'fixed top-0 shadow-md' : ''
-        }`}
-      >
+      <header className='sticky top-0 left-0 z-[999] w-full bg-surface text-content border-b border-border shadow-sm'>
         {/* TOP BAR */}
-        <div className='border-b border-border'>
-          <div className='max-w-7xl mx-auto px-3 py-3 flex items-center justify-between gap-4'>
-            {/* LOGO */}
-            <Link
-              to='/'
-              className='text-xl font-bold text-orange-500 md:block hidden'
+        <div className='max-w-7xl mx-auto px-3 py-3 flex items-center justify-between gap-4'>
+          {/* LOGO (hidden on the smallest screens to give search room) */}
+          <div className='hidden sm:flex'>
+            <Brand />
+          </div>
+
+          {/* SEARCH */}
+          <div className='flex-1 relative flex items-stretch h-[42px] border border-border rounded-md overflow-visible'>
+            {/* CATEGORY */}
+            <button
+              type='button'
+              onClick={() => setCatOpen((v) => !v)}
+              className='shrink-0 min-w-[104px] max-w-[150px] px-3 bg-surface-alt border-r border-border flex items-center justify-between gap-1 rounded-l-md'
             >
-              SHOP
-            </Link>
+              <span className='text-sm truncate'>{selectedCat}</span>
+              <IoIosArrowDown size={14} className='shrink-0' />
+            </button>
 
-            {/* SEARCH */}
-            <div className='flex-1 relative flex items-center border rounded-md overflow-hidden'>
-              {/* CATEGORY */}
-              <div
-                onClick={() => setMobileCatOpen(!mobileCatOpen)}
-                className='px-3 py-2 bg-surface-alt flex items-center gap-1 cursor-pointer'
-              >
-                <span className='text-sm'>{selectedCat}</span>
-                <IoIosArrowDown size={14} />
-              </div>
+            {/* INPUT */}
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder='Search products...'
+              className='flex-1 min-w-0 px-3 bg-surface text-content outline-none text-sm'
+            />
 
-              {/* INPUT */}
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder='Search products...'
-                className='w-full px-3 py-2 outline-none text-sm'
-              />
+            {/* BUTTON */}
+            <button
+              type='button'
+              className='shrink-0 bg-orange-500 hover:bg-orange-600 px-4 text-white flex items-center justify-center rounded-r-md'
+              aria-label='Search'
+            >
+              <AiOutlineSearch size={18} />
+            </button>
 
-              {/* BUTTON */}
-              <button className='bg-orange-500 px-4 text-white'>
-                <AiOutlineSearch />
-              </button>
-            </div>
-
-            {/* ICONS */}
-            <div className='md:block hidden'>
-              <div className='flex items-center gap-4'>
-                <ThemeToggle size={20} />
-                {/* Wishlist */}
-                <div
-                  onClick={() => setOpenWishlist(true)}
-                  className='relative cursor-pointer'
-                >
-                  <AiOutlineHeart size={22} />
-                  <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full'>
-                    {wishlist?.length}
-                  </span>
-                </div>
-
-                {/* Cart */}
-                <div
-                  onClick={() => setOpenCart(true)}
-                  className='relative cursor-pointer'
-                >
-                  <AiOutlineShoppingCart size={22} />
-                  <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full'>
-                    {cart?.length}
-                  </span>
-                </div>
-
-                {/* Owner dashboard shortcut */}
-                {isAuthenticated && user?.role === 'business_owner' && (
-                  <Link
-                    to='/dashboard'
-                    className='text-sm font-semibold text-orange-500 hover:text-orange-600'
+            {/* DESKTOP CATEGORY DROPDOWN */}
+            {catOpen && (
+              <div className='hidden md:block absolute left-0 top-[calc(100%+4px)] w-[240px] max-h-[320px] overflow-y-auto bg-surface text-content border border-border rounded-md shadow-lg z-[100]'>
+                {catList.map((name) => (
+                  <button
+                    key={name}
+                    onClick={() => pickCategory(name)}
+                    className={`block w-full text-left px-3 py-2 text-sm hover:bg-surface-alt ${
+                      selectedCat === name ? 'text-orange-500 font-medium' : ''
+                    }`}
                   >
-                    Dashboard
-                  </Link>
-                )}
+                    {name}
+                  </button>
+                ))}
+              </div>
+            )}
 
-                {/* Profile */}
-                {isAuthenticated ? (
-                  <Link to='/profile'>
+            {/* SEARCH RESULTS */}
+            {search.length > 2 && results.length > 0 && (
+              <div className='absolute left-0 top-[calc(100%+4px)] w-full bg-surface text-content shadow-lg max-h-[300px] overflow-y-auto z-[90] border border-border rounded-md'>
+                {results.map((p) => (
+                  <Link
+                    key={p._id}
+                    to={`/product/${p._id}`}
+                    onClick={() => setSearch('')}
+                    className='flex items-center gap-2 p-2 hover:bg-surface-alt'
+                  >
                     <img
-                      src={`${backend_url}${user.avatar}`}
-                      className='w-8 h-8 rounded-full object-cover'
+                      src={`${backend_url}${p.images?.[0]}`}
+                      className='w-10 h-10 object-contain'
                       alt=''
                     />
+                    <span className='text-sm'>{p.name}</span>
                   </Link>
-                ) : (
-                  <Link to='/login'>
-                    <CgProfile size={22} />
-                  </Link>
-                )}
+                ))}
               </div>
+            )}
+          </div>
+
+          {/* ICONS */}
+          <div className='hidden md:flex items-center gap-4'>
+            <ThemeToggle size={20} />
+            {/* Wishlist */}
+            <div
+              onClick={() => setOpenWishlist(true)}
+              className='relative cursor-pointer'
+            >
+              <AiOutlineHeart size={22} />
+              <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full'>
+                {wishlist?.length || 0}
+              </span>
             </div>
+
+            {/* Cart */}
+            <div
+              onClick={() => setOpenCart(true)}
+              className='relative cursor-pointer'
+            >
+              <AiOutlineShoppingCart size={22} />
+              <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full'>
+                {cart?.length || 0}
+              </span>
+            </div>
+
+            {/* Owner dashboard shortcut */}
+            {isAuthenticated && user?.role === 'business_owner' && (
+              <Link
+                to='/dashboard'
+                className='text-sm font-semibold text-orange-500 hover:text-orange-600'
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {/* Profile */}
+            {isAuthenticated ? (
+              <Link to='/profile'>
+                <img
+                  src={`${backend_url}${user.avatar}`}
+                  className='w-8 h-8 rounded-full object-cover'
+                  alt=''
+                />
+              </Link>
+            ) : (
+              <Link to='/login'>
+                <CgProfile size={22} />
+              </Link>
+            )}
           </div>
         </div>
 
         {/* NAV STRIP */}
-        <div className='hidden md:block border-b border-border bg-surface'>
+        <div className='hidden md:block border-t border-border bg-surface'>
           <div className='max-w-7xl mx-auto px-3'>
             <nav className='flex items-center gap-6 h-11'>
               {navItems.map((i) => (
@@ -194,35 +245,25 @@ const Header = () => {
       </header>
 
       {/* ---------------- MOBILE CATEGORY DRAWER ---------------- */}
-      {mobileCatOpen && (
+      {catOpen && (
         <div
-          className='fixed inset-0 bg-black/40 z-[9999]'
-          onClick={() => setMobileCatOpen(!mobileCatOpen)}
+          className='md:hidden fixed inset-0 bg-black/40 z-[9999]'
+          onClick={() => setCatOpen(false)}
         >
-          <div className='w-[75%] max-w-[300px] bg-surface text-content h-full p-4 overflow-y-auto'>
+          <div
+            className='w-[75%] max-w-[300px] bg-surface text-content h-full p-4 overflow-y-auto'
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className='font-semibold mb-3'>Categories</h3>
-
-            <div
-              onClick={() => {
-                setSelectedCat('All');
-                navigate('/products');
-                setMobileCatOpen(false);
-              }}
-              className='p-2 border-b border-border cursor-pointer'
-            >
-              All
-            </div>
-            {(categories || []).map((c) => (
+            {catList.map((name) => (
               <div
-                key={c._id}
-                onClick={() => {
-                  setSelectedCat(c.name);
-                  navigate(`/products?category=${encodeURIComponent(c.name)}`);
-                  setMobileCatOpen(false);
-                }}
-                className='p-2 border-b border-border cursor-pointer'
+                key={name}
+                onClick={() => pickCategory(name)}
+                className={`p-2 border-b border-border cursor-pointer ${
+                  selectedCat === name ? 'text-orange-500 font-medium' : ''
+                }`}
               >
-                {c.name}
+                {name}
               </div>
             ))}
           </div>
@@ -230,19 +271,13 @@ const Header = () => {
       )}
 
       {/* ---------------- MOBILE BOTTOM NAV ---------------- */}
-      <div className='fixed bottom-0 left-0 w-full bg-surface border-t flex justify-around py-2 md:hidden z-[999]'>
-        <Link
-          to='/'
-          className='text-xs text-center'
-        >
+      <div className='fixed bottom-0 left-0 w-full bg-surface border-t border-border flex justify-around py-2 md:hidden z-[999]'>
+        <Link to='/' className='text-xs text-center'>
           🏠
           <div>Home</div>
         </Link>
 
-        <button
-          onClick={() => setMobileCatOpen(true)}
-          className='text-xs'
-        >
+        <button onClick={() => setCatOpen(true)} className='text-xs'>
           📂
           <div>Category</div>
         </button>
@@ -252,10 +287,7 @@ const Header = () => {
           <div>Theme</div>
         </div>
 
-        <button
-          onClick={() => setOpenCart(true)}
-          className='relative text-xs'
-        >
+        <button onClick={() => setOpenCart(true)} className='relative text-xs'>
           🛒
           <div>Cart</div>
           {cart?.length > 0 && (
@@ -279,10 +311,7 @@ const Header = () => {
         </button>
 
         {isAuthenticated ? (
-          <Link
-            to='/profile'
-            className='text-xs'
-          >
+          <Link to='/profile' className='text-xs'>
             <Avatar
               src={`${backend_url}${user.avatar}`}
               style={{ height: '26px', width: '26px' }}
@@ -298,37 +327,13 @@ const Header = () => {
       </div>
 
       {/* POPUPS */}
-      {openCart && (
-        <Cart
-          openCart={openCart}
-          setOpenCart={setOpenCart}
-        />
-      )}
+      {openCart && <Cart openCart={openCart} setOpenCart={setOpenCart} />}
 
       {openWishlist && (
         <Wishlist
           openWishlist={openWishlist}
           setOpenWishlist={setOpenWishlist}
         />
-      )}
-      {/* SEARCH RESULTS */}
-      {search.length > 2 && results.length > 0 && (
-        <div className='absolute left-0 w-full bg-surface shadow-lg max-h-[300px] overflow-y-auto z-[9999] border mt-1 rounded-md'>
-          {results.map((p) => (
-            <Link
-              key={p._id}
-              to={`/product/${p._id}`}
-              className='flex items-center gap-2 p-2 hover:bg-surface-alt'
-            >
-              <img
-                src={`${backend_url}${p.images?.[0]}`}
-                className='w-10 h-10 object-contain'
-                alt=''
-              />
-              <span className='text-sm'>{p.name}</span>
-            </Link>
-          ))}
-        </div>
       )}
     </>
   );

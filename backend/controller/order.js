@@ -8,6 +8,47 @@ const Shop = require("../model/shop");
 const Product = require("../model/product");
 const { effectivePolicy, isMethodAllowed } = require("../utils/paymentPolicy");
 
+// Shared stock / availability check for a cart.
+// Returns { ok, hasMadeToOrder, issues: [{ name }] }.
+async function checkCartAvailability(cart) {
+  const issues = [];
+  let hasMadeToOrder = false;
+
+  if (!Array.isArray(cart) || cart.length === 0) {
+    return { ok: false, hasMadeToOrder, issues: [{ name: "Your cart is empty" }] };
+  }
+
+  const productIds = [...new Set(cart.map((i) => i._id))];
+  const products = await Product.find({ _id: { $in: productIds } });
+  const productById = new Map(products.map((p) => [String(p._id), p]));
+
+  for (const item of cart) {
+    const product = productById.get(String(item._id));
+    if (!product) {
+      issues.push({ name: item.name || "A product in your cart" });
+      continue;
+    }
+    if (product.fulfillment === "made_to_order") {
+      hasMadeToOrder = true;
+      continue; // always orderable
+    }
+    if ((product.stock || 0) < item.qty) {
+      issues.push({ name: product.name });
+    }
+  }
+
+  return { ok: issues.length === 0, hasMadeToOrder, issues };
+}
+
+// re-check cart availability (called by the client right before checkout)
+router.post(
+  "/check-availability",
+  catchAsyncErrors(async (req, res, next) => {
+    const { ok, issues } = await checkCartAvailability(req.body.cart);
+    res.status(200).json({ success: true, ok, issues });
+  })
+);
+
 // create new order
 router.post(
   "/create-order",
@@ -26,30 +67,25 @@ router.post(
         return next(new ErrorHandler("Cart is empty", 400));
       }
 
+      // ---- stock / availability check ----
+      const availability = await checkCartAvailability(cart);
+      if (!availability.ok) {
+        return next(
+          new ErrorHandler(
+            `Currently unavailable: ${availability.issues
+              .map((i) => i.name)
+              .join(", ")}`,
+            400
+          )
+        );
+      }
+      const hasMadeToOrder = availability.hasMadeToOrder;
+
       // ---- validate the chosen payment method against store/product criteria ----
       const shop = await Shop.findOne();
       const productIds = [...new Set(cart.map((i) => i._id))];
       const products = await Product.find({ _id: { $in: productIds } });
-      const productById = new Map(products.map((p) => [String(p._id), p]));
       const policy = effectivePolicy(shop, products);
-
-      // ---- stock / availability check ----
-      let hasMadeToOrder = false;
-      for (const item of cart) {
-        const product = productById.get(String(item._id));
-        if (!product) {
-          return next(new ErrorHandler("A product in your cart no longer exists", 400));
-        }
-        if (product.fulfillment === "made_to_order") {
-          hasMadeToOrder = true;
-          continue; // always orderable
-        }
-        if ((product.stock || 0) < item.qty) {
-          return next(
-            new ErrorHandler(`"${product.name}" is currently unavailable`, 400)
-          );
-        }
-      }
 
       if (!isMethodAllowed(policy, paymentMethod)) {
         return next(

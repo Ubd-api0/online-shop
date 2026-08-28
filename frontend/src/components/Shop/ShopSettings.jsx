@@ -12,6 +12,7 @@ const ShopSettings = () => {
   const { seller } = useSelector((state) => state.seller);
   const [avatar, setAvatar] = useState();
   const [name, setName] = useState(seller && seller.name);
+  const [email, setEmail] = useState((seller && seller.email) || '');
   const [description, setDescription] = useState(
     seller && seller.description ? seller.description : ''
   );
@@ -81,6 +82,7 @@ const ShopSettings = () => {
         `${server}/shop/update-seller-info`,
         {
           name,
+          email,
           address,
           zipCode,
           phoneNumber,
@@ -97,28 +99,28 @@ const ShopSettings = () => {
       });
   };
 
+  const avatarSrc = avatar
+    ? URL.createObjectURL(avatar)
+    : `${backend_url}${seller.avatar || ''}`;
+
   return (
     <div className='w-full flex flex-col items-center'>
-      <div className='flex w-full max-w-4xl flex-col justify-center my-5'>
+      <div className='flex w-full max-w-xl flex-col my-5'>
         <div className='w-full flex items-center justify-center'>
           <div className='relative'>
             <img
-              src={
-                avatar
-                  ? URL.createObjectURL(avatar)
-                  : `${backend_url}/${seller.avatar}`
-              }
+              src={avatarSrc}
               alt=''
-              className='w-[200px] h-[200px] rounded-full cursor-pointer'
+              className='w-[160px] h-[160px] rounded-full object-cover border border-border'
             />
-            <div className='w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[10px] right-[15px]'>
+            <div className='w-[32px] h-[32px] bg-surface border border-border rounded-full flex items-center justify-center cursor-pointer absolute bottom-[6px] right-[10px]'>
               <input
                 type='file'
                 id='image'
                 className='hidden'
                 onChange={handleImage}
               />
-              <label htmlFor='image'>
+              <label htmlFor='image' className='cursor-pointer'>
                 <AiOutlineCamera />
               </label>
             </div>
@@ -126,93 +128,90 @@ const ShopSettings = () => {
         </div>
 
         {/* shop info */}
-        <form
-          className='flex flex-col items-center'
-          onSubmit={updateHandler}
-        >
-          <div className='w-[100%] flex items-center flex-col 800px:w-[50%] mt-5'>
-            <div className='w-full pl-[3%]'>
-              <label className='block pb-2'>Shop Name</label>
-            </div>
+        <form className='flex flex-col gap-4 mt-6' onSubmit={updateHandler}>
+          <div>
+            <label className='block pb-2 text-sm text-muted'>Shop Name</label>
             <input
-              type='name'
-              placeholder={`${seller.name}`}
-              value={name}
+              type='text'
+              value={name || ''}
               onChange={(e) => setName(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={styles.input}
               required
             />
           </div>
-          <div className='w-[100%] flex items-center flex-col 800px:w-[50%] mt-5'>
-            <div className='w-full pl-[3%]'>
-              <label className='block pb-2'>Shop description</label>
-            </div>
+
+          <div>
+            <label className='block pb-2 text-sm text-muted'>Shop Email</label>
             <input
-              type='name'
-              placeholder={`${
-                seller?.description
-                  ? seller.description
-                  : 'Enter your shop description'
-              }`}
+              type='email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder='store@example.com'
+              className={styles.input}
+            />
+          </div>
+
+          <div>
+            <label className='block pb-2 text-sm text-muted'>
+              Shop Description
+            </label>
+            <input
+              type='text'
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={styles.input}
             />
           </div>
-          <div className='w-[100%] flex items-center flex-col 800px:w-[50%] mt-5'>
-            <div className='w-full pl-[3%]'>
-              <label className='block pb-2'>Shop Address</label>
-            </div>
+
+          <div>
+            <label className='block pb-2 text-sm text-muted'>Shop Address</label>
             <input
-              type='name'
-              placeholder={seller?.address}
-              value={address}
+              type='text'
+              value={address || ''}
               onChange={(e) => setAddress(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={styles.input}
               required
             />
           </div>
 
-          <div className='w-[100%] flex items-center flex-col 800px:w-[50%] mt-5'>
-            <div className='w-full pl-[3%]'>
-              <label className='block pb-2'>Shop Phone Number</label>
-            </div>
+          <div>
+            <label className='block pb-2 text-sm text-muted'>
+              Shop Phone Number
+            </label>
             <input
               type='number'
-              placeholder={seller?.phoneNumber}
-              value={phoneNumber}
+              value={phoneNumber || ''}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={styles.input}
               required
             />
           </div>
 
-          <div className='w-[100%] flex items-center flex-col 800px:w-[50%] mt-5'>
-            <div className='w-full pl-[3%]'>
-              <label className='block pb-2'>Shop Zip Code</label>
-            </div>
+          <div>
+            <label className='block pb-2 text-sm text-muted'>Shop Zip Code</label>
             <input
               type='number'
-              placeholder={seller?.zipCode}
-              value={zipCode}
+              value={zipCode || ''}
               onChange={(e) => setZipcode(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={styles.input}
               required
             />
           </div>
 
-          <div className='w-[100%] flex items-center flex-col 800px:w-[50%] mt-5'>
-            <input
-              type='submit'
-              value='Update Shop'
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
-              required
-              readOnly
-            />
-          </div>
+          <button
+            type='submit'
+            className='h-[42px] px-6 rounded-md bg-brand text-white font-semibold self-start'
+          >
+            Update Shop
+          </button>
         </form>
 
-        <PaymentSettingsPanel seller={seller} onSaved={() => dispatch(loadSeller())} />
+        <div className='mt-8'>
+          <PaymentSettingsPanel
+            seller={seller}
+            onSaved={() => dispatch(loadSeller())}
+          />
+        </div>
       </div>
     </div>
   );

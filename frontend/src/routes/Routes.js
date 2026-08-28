@@ -14,6 +14,11 @@ import ProfilePage from "../pages/ProfilePage";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
 import TrackOrderPage from "../pages/TrackOrderPage";
 import UserInbox from "../pages/UserInbox";
+import AboutPage from "../pages/AboutPage";
+import ContactPage from "../pages/ContactPage";
+import ShippingReturnsPage from "../pages/ShippingReturnsPage";
+import PrivacyPage from "../pages/PrivacyPage";
+import TermsPage from "../pages/TermsPage";
 
 export {
   LoginPage,
@@ -32,4 +37,9 @@ export {
   OrderDetailsPage,
   TrackOrderPage,
   UserInbox,
+  AboutPage,
+  ContactPage,
+  ShippingReturnsPage,
+  PrivacyPage,
+  TermsPage,
 };

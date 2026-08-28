@@ -750,58 +750,21 @@ export const productData = [
   },
 ];
 
-export const footerProductLinks = [
-  {
-    name: 'About us',
-    link: '/about',
-  },
-  {
-    name: 'Careers',
-    link: '/carrers',
-  },
-  {
-    name: 'Store Locations',
-  },
-  {
-    name: 'Our Blog',
-  },
-  {
-    name: 'Reviews',
-  },
+export const footerShopLinks = [
+  { name: 'Home', link: '/' },
+  { name: 'Products', link: '/products' },
+  { name: 'Best Selling', link: '/best-selling' },
+  { name: 'Events', link: '/events' },
 ];
 
-export const footercompanyLinks = [
-  {
-    name: 'Game & Video',
-  },
-  {
-    name: 'Phone &Tablets',
-  },
-  {
-    name: 'Computers & Laptop',
-  },
-  {
-    name: 'Sport Watches',
-  },
-  {
-    name: 'Events',
-  },
+export const footerCompanyLinks = [
+  { name: 'About Us', link: '/about' },
+  { name: 'Contact Us', link: '/contact' },
+  { name: 'FAQ', link: '/faq' },
 ];
 
-export const footerSupportLinks = [
-  {
-    name: 'FAQ',
-  },
-  {
-    name: 'Reviews',
-  },
-  {
-    name: 'Contact Us',
-  },
-  {
-    name: 'Shipping',
-  },
-  {
-    name: 'Live chat',
-  },
+export const footerLegalLinks = [
+  { name: 'Shipping & Returns', link: '/shipping-returns' },
+  { name: 'Privacy Policy', link: '/privacy' },
+  { name: 'Terms of Service', link: '/terms' },
 ];

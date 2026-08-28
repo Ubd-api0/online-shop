@@ -86,11 +86,10 @@ const OrderDetails = () => {
       </div>
 
       {/* Order Items */}
-      <br />
-      <br />
+      <div className="mt-8 space-y-5">
       {data &&
         data?.cart.map((item, index) => (
-          <div className="w-full flex items-start mb-5">
+          <div key={index} className="w-full flex items-start gap-3">
             <img
               src={`${backend_url}/${item.images[0]}`}
               alt="Product item order img"
@@ -104,17 +103,16 @@ const OrderDetails = () => {
             </div>
           </div>
         ))}
-      <div className="border-t border-border w-full text-right pt-2">
+      </div>
+      <div className="border-t border-border w-full text-right pt-2 mt-4">
         <h5>
           Total Price: <strong>US${data?.totalPrice}</strong>
         </h5>
       </div>
-      <br />
-      <br />
 
       {/* Shipping Address */}
 
-      <div className="w-full 800px:flex items-center">
+      <div className="w-full 800px:flex items-start gap-6 mt-8">
         <div className="w-full 800px:w-[60%]">
           <h4 className="pt-3 text-[20px] font-[600]">Shipping Address:</h4>
 
@@ -140,10 +138,8 @@ const OrderDetails = () => {
           </h4>
         </div>
       </div>
-      <br />
-      <br />
 
-      <h4 className="pt-3 text-[20px] font-[600]">Order status:</h4>
+      <h4 className="pt-3 text-[20px] font-[600] mt-8">Order status:</h4>
       {data?.hasMadeToOrder && (
         <p className="text-sm text-blue-600 pt-1">
           This order contains made-to-order items.

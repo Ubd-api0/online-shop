@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import styles from '../../styles/styles';
 import { Country, State } from 'country-state-city';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { server } from '../../server';
 import { toast } from 'react-toastify';
 import { FiMapPin, FiTag, FiCreditCard } from 'react-icons/fi';
 import { effectivePolicy, availableMethods } from '../../utils/paymentPolicy';
+import { updatUserAddress } from '../../redux/actions/user';
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
   const { cart } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
-  const [userInfo, setUserInfo] = useState(false);
+  const [addressType, setAddressType] = useState('Home');
+  // true once the shipping fields were filled from a saved address (so we
+  // don't re-save an unchanged address on checkout).
+  const [usingSaved, setUsingSaved] = useState(false);
+  // show the "new address" form (auto-open when there are no saved addresses)
+  const [showNewAddress, setShowNewAddress] = useState(
+    !(user?.addresses?.length > 0)
+  );
 
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
@@ -60,14 +68,33 @@ const Checkout = () => {
 
   const totalPrice = (subTotalPrice + shipping - discountPercentage).toFixed(2);
 
-  const paymentSubmit = () => {
-    if (!address1 || !address2 || !zipCode || !country || !city) {
+  const paymentSubmit = async () => {
+    if (!address1 || !zipCode || !country || !city) {
       toast.error('Please fill shipping address!');
       return;
     }
     if (!paymentMethod) {
       toast.error('Please choose a payment method!');
       return;
+    }
+
+    // re-check stock right before checkout — the cart can go stale.
+    // If the pre-check itself fails (network / old backend), fall through:
+    // /order/create-order does the authoritative check and will reject.
+    try {
+      const { data } = await axios.post(`${server}/order/check-availability`, {
+        cart,
+      });
+      if (data && data.ok === false) {
+        toast.error(
+          `Currently unavailable: ${data.issues
+            .map((i) => i.name)
+            .join(', ')}`
+        );
+        return;
+      }
+    } catch (e) {
+      // ignore — authoritative check happens at order creation
     }
 
     const shippingAddress = {
@@ -77,6 +104,19 @@ const Checkout = () => {
       country,
       city,
     };
+
+    // save a freshly-typed address to the profile for next time
+    const alreadySaved = (user?.addresses || []).some(
+      (a) =>
+        a.address1 === address1 &&
+        String(a.zipCode) === String(zipCode) &&
+        a.city === city
+    );
+    if (!usingSaved && !alreadySaved) {
+      dispatch(
+        updatUserAddress(country, city, address1, address2, zipCode, addressType)
+      );
+    }
 
     const orderData = {
       cart,
@@ -136,8 +176,29 @@ const Checkout = () => {
     }
   };
 
+  const applySavedAddress = (item) => {
+    setAddress1(item.address1 || '');
+    setAddress2(item.address2 || '');
+    setZipCode(item.zipCode || '');
+    setCountry(item.country || '');
+    setCity(item.city || '');
+    setAddressType(item.addressType || 'Home');
+    setUsingSaved(true);
+    setShowNewAddress(false);
+  };
+
+  const startNewAddress = () => {
+    setAddress1('');
+    setAddress2('');
+    setZipCode('');
+    setCountry('');
+    setCity('');
+    setUsingSaved(false);
+    setShowNewAddress(true);
+  };
+
   return (
-    <div className='bg-surface-alt min-h-screen py-6'>
+    <div className='bg-surface-alt py-6'>
       <div className='max-w-7xl mx-auto px-3 lg:px-5'>
         <div className='flex flex-col lg:flex-row gap-5'>
           {/* LEFT */}
@@ -148,8 +209,11 @@ const Checkout = () => {
               setCountry={setCountry}
               city={city}
               setCity={setCity}
-              userInfo={userInfo}
-              setUserInfo={setUserInfo}
+              addressType={addressType}
+              setAddressType={setAddressType}
+              showNewAddress={showNewAddress}
+              startNewAddress={startNewAddress}
+              applySavedAddress={applySavedAddress}
               address1={address1}
               setAddress1={setAddress1}
               address2={address2}
@@ -185,14 +249,22 @@ const Checkout = () => {
   );
 };
 
+const fieldCls =
+  'mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500';
+const disabledCls =
+  'mt-1 w-full border border-border rounded-md h-[45px] px-3 bg-surface-alt text-muted';
+
 const ShippingInfo = ({
   user,
   country,
   setCountry,
   city,
   setCity,
-  userInfo,
-  setUserInfo,
+  addressType,
+  setAddressType,
+  showNewAddress,
+  startNewAddress,
+  applySavedAddress,
   address1,
   setAddress1,
   address2,
@@ -200,176 +272,168 @@ const ShippingInfo = ({
   zipCode,
   setZipCode,
 }) => {
+  const saved = user?.addresses || [];
+
   return (
     <div className='bg-surface rounded-md shadow-sm p-5'>
       <div className='flex items-center gap-2 border-b border-border pb-4 mb-5'>
-        <FiMapPin
-          className='text-orange-500'
-          size={22}
-        />
+        <FiMapPin className='text-orange-500' size={22} />
         <h2 className='text-[20px] font-semibold text-content'>
           Shipping Address
         </h2>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        <div>
-          <label className='text-sm font-medium text-muted'>Full Name</label>
-
-          <input
-            type='text'
-            value={user?.name}
-            disabled
-            className='mt-1 w-full border border-border rounded-md h-[45px] px-3 bg-surface-alt text-muted'
-          />
-        </div>
-
-        <div>
-          <label className='text-sm font-medium text-muted'>Email</label>
-
-          <input
-            type='email'
-            value={user?.email}
-            disabled
-            className='mt-1 w-full border border-border rounded-md h-[45px] px-3 bg-surface-alt text-muted'
-          />
-        </div>
-
-        <div>
-          <label className='text-sm font-medium text-muted'>
-            Phone Number
-          </label>
-
-          <input
-            type='number'
-            value={user?.phoneNumber}
-            disabled
-            className='mt-1 w-full border border-border rounded-md h-[45px] px-3 bg-surface-alt text-muted'
-          />
-        </div>
-
-        <div>
-          <label className='text-sm font-medium text-muted'>Zip Code</label>
-
-          <input
-            type='number'
-            value={zipCode}
-            onChange={(e) => setZipCode(e.target.value)}
-            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
-          />
-        </div>
-
-        <div>
-          <label className='text-sm font-medium text-muted'>Country</label>
-
-          <select
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
-          >
-            <option value=''>Choose Country</option>
-
-            {Country.getAllCountries().map((item) => (
-              <option
-                key={item.isoCode}
-                value={item.isoCode}
+      {/* SAVED ADDRESSES — primary picker */}
+      {saved.length > 0 && (
+        <div className='space-y-3 mb-5'>
+          {saved.map((item, index) => {
+            const selected =
+              !showNewAddress &&
+              item.address1 === address1 &&
+              String(item.zipCode) === String(zipCode);
+            return (
+              <label
+                key={index}
+                className={`flex items-start gap-3 border rounded-md p-3 cursor-pointer transition ${
+                  selected
+                    ? 'border-orange-500 bg-orange-500/10'
+                    : 'border-border hover:border-orange-300'
+                }`}
               >
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className='text-sm font-medium text-muted'>
-            State / City
-          </label>
-
-          <select
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
-          >
-            <option value=''>Choose City</option>
-
-            {State.getStatesOfCountry(country).map((item) => (
-              <option
-                key={item.isoCode}
-                value={item.isoCode}
-              >
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className='text-sm font-medium text-muted'>
-            Address Line 1
-          </label>
-
-          <input
-            type='text'
-            value={address1}
-            onChange={(e) => setAddress1(e.target.value)}
-            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
-          />
-        </div>
-
-        <div>
-          <label className='text-sm font-medium text-muted'>
-            Address Line 2
-          </label>
-
-          <input
-            type='text'
-            value={address2}
-            onChange={(e) => setAddress2(e.target.value)}
-            className='mt-1 w-full border border-border bg-surface text-content rounded-md h-[45px] px-3 outline-none focus:border-orange-500'
-          />
-        </div>
-      </div>
-
-      {/* SAVED ADDRESS */}
-      {user?.addresses?.length > 0 && (
-        <div className='mt-6'>
-          <button
-            onClick={() => setUserInfo(!userInfo)}
-            className='text-orange-500 font-semibold'
-          >
-            {userInfo ? 'Hide Saved Addresses' : 'Choose Saved Address'}
-          </button>
-
-          {userInfo && (
-            <div className='mt-4 space-y-3'>
-              {user.addresses.map((item, index) => (
-                <div
-                  key={index}
-                  className='border border-border rounded-md p-3 flex items-start gap-3 hover:border-orange-500 cursor-pointer'
-                >
-                  <input
-                    type='radio'
-                    name='address'
-                    onClick={() => {
-                      setAddress1(item.address1);
-                      setAddress2(item.address2);
-                      setZipCode(item.zipCode);
-                      setCountry(item.country);
-                      setCity(item.city);
-                    }}
-                  />
-
-                  <div>
-                    <h4 className='font-semibold'>{item.addressType}</h4>
-
-                    <p className='text-sm text-muted'>
-                      {item.address1}, {item.address2}
-                    </p>
-                  </div>
+                <input
+                  type='radio'
+                  name='address'
+                  className='mt-1'
+                  checked={selected}
+                  onChange={() => applySavedAddress(item)}
+                />
+                <div>
+                  <h4 className='font-semibold text-content'>
+                    {item.addressType}
+                  </h4>
+                  <p className='text-sm text-muted'>
+                    {[item.address1, item.address2, item.city, item.country]
+                      .filter(Boolean)
+                      .join(', ')}
+                  </p>
                 </div>
+              </label>
+            );
+          })}
+
+          <button
+            type='button'
+            onClick={startNewAddress}
+            className='text-orange-500 font-semibold text-sm'
+          >
+            {showNewAddress ? '— Using a new address —' : '+ Use a new address'}
+          </button>
+        </div>
+      )}
+
+      {/* NEW ADDRESS FORM */}
+      {showNewAddress && (
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div>
+            <label className='text-sm font-medium text-muted'>Full Name</label>
+            <input
+              type='text'
+              value={user?.name || ''}
+              disabled
+              className={disabledCls}
+            />
+          </div>
+
+          <div>
+            <label className='text-sm font-medium text-muted'>Email</label>
+            <input
+              type='email'
+              value={user?.email || ''}
+              disabled
+              className={disabledCls}
+            />
+          </div>
+
+          <div>
+            <label className='text-sm font-medium text-muted'>Country</label>
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className={fieldCls}
+            >
+              <option value=''>Choose Country</option>
+              {Country.getAllCountries().map((item) => (
+                <option key={item.isoCode} value={item.isoCode}>
+                  {item.name}
+                </option>
               ))}
-            </div>
-          )}
+            </select>
+          </div>
+
+          <div>
+            <label className='text-sm font-medium text-muted'>State / City</label>
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className={fieldCls}
+            >
+              <option value=''>Choose City</option>
+              {State.getStatesOfCountry(country).map((item) => (
+                <option key={item.isoCode} value={item.isoCode}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className='text-sm font-medium text-muted'>Zip Code</label>
+            <input
+              type='number'
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+              className={fieldCls}
+            />
+          </div>
+
+          <div>
+            <label className='text-sm font-medium text-muted'>
+              Address Type
+            </label>
+            <select
+              value={addressType}
+              onChange={(e) => setAddressType(e.target.value)}
+              className={fieldCls}
+            >
+              <option value='Home'>Home</option>
+              <option value='Office'>Office</option>
+              <option value='Other'>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label className='text-sm font-medium text-muted'>
+              Address Line 1
+            </label>
+            <input
+              type='text'
+              value={address1}
+              onChange={(e) => setAddress1(e.target.value)}
+              className={fieldCls}
+            />
+          </div>
+
+          <div>
+            <label className='text-sm font-medium text-muted'>
+              Address Line 2
+            </label>
+            <input
+              type='text'
+              value={address2}
+              onChange={(e) => setAddress2(e.target.value)}
+              className={fieldCls}
+            />
+          </div>
         </div>
       )}
     </div>

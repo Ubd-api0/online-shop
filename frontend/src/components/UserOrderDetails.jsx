@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../styles/styles";
 import { BsFillBagFill } from "react-icons/bs";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { backend_url, server } from "../server";
@@ -80,7 +80,7 @@ const UserOrderDetails = () => {
   };
 
   return (
-    <div className={`py-4 min-h-screen ${styles.section}`}>
+    <div className={`py-8 ${styles.section}`}>
       <div className="w-full flex items-center justify-between">
         <div className="flex items-center">
           <BsFillBagFill size={30} color="crimson" />
@@ -98,12 +98,11 @@ const UserOrderDetails = () => {
       </div>
 
       {/* Order Items */}
-      <br />
-      <br />
+      <div className="mt-8 space-y-5">
       {data &&
         data?.cart.map((item, index) => {
           return (
-            <div className="w-full flex items-start mb-5">
+            <div key={index} className="w-full flex items-start gap-3">
               <img
                 src={`${backend_url}/${item.images[0]}`}
                 alt="Product item order img"
@@ -126,6 +125,7 @@ const UserOrderDetails = () => {
             </div>
           );
         })}
+      </div>
 
       {/* Review Popup */}
       {open && (
@@ -219,12 +219,10 @@ const UserOrderDetails = () => {
           Total Price: <strong>US${data?.totalPrice}</strong>
         </h5>
       </div>
-      <br />
-      <br />
 
       {/* Shipping Address */}
 
-      <div className="w-full 800px:flex items-center">
+      <div className="w-full 800px:flex items-start gap-6 mt-8">
         <div className="w-full 800px:w-[60%]">
           <h4 className="pt-3 text-[20px] font-[600]">Shipping Address:</h4>
 
@@ -258,13 +256,10 @@ const UserOrderDetails = () => {
           )}
         </div>
       </div>
-      <br />
 
-      <Link to="/">
+      <Link to="/" className="inline-block mt-6">
         <div className={`${styles.button} text-white`}>Send Message</div>
       </Link>
-      <br />
-      <br />
     </div>
   );
 };

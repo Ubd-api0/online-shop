@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import Footer from "../components/Layout/Footer";
-import Header from "../components/Layout/Header";
+import Layout from "../components/Layout/Layout";
 import styles from "../styles/styles";
 
 const FAQPage = () => {
     return (
-        <div>
-            <Header activeHeading={5} />
+        <Layout>
             <Faq />
-            <Footer />
-        </div>
+        </Layout>
     );
 };
 
@@ -25,9 +22,9 @@ const Faq = () => {
     };
 
     return (
-        <div className={`${styles.section} my-8`}>
-            <h2 className="text-3xl font-bold text-content mb-8">FAQ</h2>
-            <div className="mx-auto space-y-4">
+        <div className={`${styles.section} py-10`}>
+            <h1 className="text-3xl font-bold text-content mb-8">FAQ</h1>
+            <div className="max-w-3xl space-y-4">
                 {/* single Faq */}
 
                 <div className="border-b border-border pb-4">

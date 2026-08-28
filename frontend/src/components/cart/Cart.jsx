@@ -79,7 +79,7 @@ const Cart = ({ openCart, setOpenCart }) => {
           </Box>
 
           {/* FOOTER */}
-          <Box className='p-4 border-t'>
+          <Box className='p-4 border-t border-border'>
             <Link to='/checkout'>
               <Button
                 fullWidth
@@ -124,7 +124,7 @@ const CartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const totalPrice = data.discountPrice * value;
 
   return (
-    <Box className='flex gap-3 p-4 border-b items-center'>
+    <Box className='flex gap-3 p-4 border-b border-border items-center'>
       {/* Quantity */}
       <Box className='flex flex-col items-center gap-1'>
         <button
@@ -154,11 +154,15 @@ const CartItem = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
       {/* Info */}
       <Box className='flex-1'>
         <Typography variant='body2'>{data.name}</Typography>
-        {madeToOrder && (
+        {madeToOrder ? (
           <Typography variant='caption' sx={{ color: '#2563eb', display: 'block' }}>
             Made to order{data.leadTimeDays ? ` · ~${data.leadTimeDays}d` : ''}
           </Typography>
-        )}
+        ) : (data.stock || 0) < value ? (
+          <Typography variant='caption' sx={{ color: '#dc2626', display: 'block' }}>
+            Not enough stock
+          </Typography>
+        ) : null}
         <Typography variant='caption'>
           ${data.discountPrice} × {value}
         </Typography>

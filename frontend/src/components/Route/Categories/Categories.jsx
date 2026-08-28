@@ -16,8 +16,8 @@ const Categories = () => {
     <>
       {/* Feature tiles */}
       {featureTiles?.length > 0 && (
-        <div className={`${styles.section} mt-2`}>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-2'>
+        <div className={`${styles.section} py-6 md:py-8`}>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
             {featureTiles.map((t, index) => (
               <div
                 key={index}
@@ -36,7 +36,7 @@ const Categories = () => {
 
       {/* Categories showcase */}
       {categories?.length > 0 && (
-        <div className='block p-1 md:p-4'>
+        <div className='block pb-6 md:pb-8'>
           <div className={`${styles.section} w-full`}>
             <div
               onClick={() => setDropDown(!dropDown)}

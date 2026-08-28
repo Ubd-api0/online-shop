@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Layout/Header";
 import { useSelector } from "react-redux";
+import Layout from "../components/Layout/Layout";
 import Loader from "../components/Layout/Loader";
 import styles from "../styles/styles";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
@@ -20,23 +20,26 @@ const BestSellingPage = () => {
   }, [allProducts]);
 
   return (
-    <>
+    <Layout>
       {isLoading ? (
         <Loader />
       ) : (
-        <div>
-          <Header activeHeading={2} />
-          <br />
-          <br />
-          <div className={`${styles.section}`}>
-            <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12">
-              {data &&
-                data.map((i, index) => <ProductCard data={i} key={index} />)}
-            </div>
+        <div className={`${styles.section} py-8`}>
+          <h1 className="text-2xl font-semibold text-content mb-6">
+            Best Selling
+          </h1>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {data &&
+              data.map((i, index) => <ProductCard data={i} key={index} />)}
           </div>
+          {data && data.length === 0 && (
+            <p className="text-center w-full py-24 text-lg text-muted">
+              No products yet.
+            </p>
+          )}
         </div>
       )}
-    </>
+    </Layout>
   );
 };
 

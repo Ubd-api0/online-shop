@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
+import Layout from '../components/Layout/Layout';
 import ProductDetails from '../components/Products/ProductDetails';
 import { useParams, useSearchParams } from 'react-router-dom';
 import SuggestedProduct from '../components/Products/SuggestedProduct';
@@ -33,23 +32,15 @@ const ProductDetailsPage = () => {
   }, [id, eventData, allProducts, allEvents]);
 
   return (
-    <div>
-      <Header />
-
-      {/* Product Details */}
+    <Layout>
       {data ? (
         <ProductDetails data={data} />
       ) : (
-        <div className='text-center py-20 text-muted'>
-          Loading product...
-        </div>
+        <div className='text-center py-20 text-muted'>Loading product...</div>
       )}
 
-      {/* Suggested Products */}
       {!eventData && data && <SuggestedProduct data={data} />}
-
-      <Footer />
-    </div>
+    </Layout>
   );
 };
 
