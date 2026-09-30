@@ -3,11 +3,12 @@ import { CheckoutForm } from "@/components/checkout/checkout-form";
 
 export const metadata = { title: "Checkout" };
 
-export default function CheckoutPage() {
+export default async function CheckoutPage({ searchParams }) {
+  const { mode } = await searchParams;
   return (
     <>
       <CheckoutSteps active={1} />
-      <CheckoutForm />
+      <CheckoutForm mode={mode} />
     </>
   );
 }

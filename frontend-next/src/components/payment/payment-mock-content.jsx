@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { completeCheckout } from "@/redux/slices/cart";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,7 @@ const GATEWAY_LABEL = { easypaisa: "EasyPaisa", jazzcash: "JazzCash" };
 export function PaymentMockContent() {
   const params = useSearchParams();
   const router = useRouter();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
 
@@ -49,8 +51,7 @@ export function PaymentMockContent() {
           status: method === "partial_advance" ? "advance_paid" : "succeeded",
         },
       });
-      localStorage.setItem("cartItems", JSON.stringify([]));
-      localStorage.setItem("latestOrder", JSON.stringify([]));
+      dispatch(completeCheckout(orderData));
       toast.success("Payment successful!");
       window.location.assign("/order/success");
     } catch (err) {

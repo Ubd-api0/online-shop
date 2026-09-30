@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { hydrate as hydrateCart } from "./slices/cart";
+import { hydrate as hydrateCart, hydrateBuyNow, markHydrated } from "./slices/cart";
 import { hydrate as hydrateWishlist } from "./slices/wishlist";
 
 // Reads localStorage after mount (safe — never runs during SSR) and
@@ -17,6 +17,7 @@ import { hydrate as hydrateWishlist } from "./slices/wishlist";
 export function CartHydrator() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart);
+  const buyNow = useSelector((state) => state.cart.buyNow);
   const wishlist = useSelector((state) => state.wishlist.wishlist);
   const [hydrated, setHydrated] = useState(false);
 
@@ -25,10 +26,17 @@ export function CartHydrator() {
       const cartItems = localStorage.getItem("cartItems");
       if (cartItems) dispatch(hydrateCart(JSON.parse(cartItems)));
     } catch {}
+    // Buy Now lives in sessionStorage: it should survive a refresh of the
+    // checkout/payment page, but not linger in the tab after it's closed.
+    try {
+      const buyNowItem = sessionStorage.getItem("buyNowItem");
+      if (buyNowItem) dispatch(hydrateBuyNow(JSON.parse(buyNowItem)));
+    } catch {}
     try {
       const wishlistItems = localStorage.getItem("wishlistItems");
       if (wishlistItems) dispatch(hydrateWishlist(JSON.parse(wishlistItems)));
     } catch {}
+    dispatch(markHydrated());
     setHydrated(true);
   }, [dispatch]);
 
@@ -38,6 +46,14 @@ export function CartHydrator() {
       localStorage.setItem("cartItems", JSON.stringify(cart));
     } catch {}
   }, [cart, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      if (buyNow) sessionStorage.setItem("buyNowItem", JSON.stringify(buyNow));
+      else sessionStorage.removeItem("buyNowItem");
+    } catch {}
+  }, [buyNow, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;

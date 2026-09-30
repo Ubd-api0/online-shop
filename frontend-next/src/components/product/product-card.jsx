@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { addToWishlist, removeFromWishlist } from "@/redux/slices/wishlist";
 import { addToCart } from "@/redux/slices/cart";
+import { useBuyNow } from "@/redux/use-buy-now";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ export function ProductCard({ data }) {
   const cart = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
   const [click, setClick] = useState(false);
+  const buyNow = useBuyNow();
 
   useEffect(() => {
     setClick(wishlist?.some((i) => i._id === data._id));
@@ -82,14 +84,20 @@ export function ProductCard({ data }) {
         ) : null}
       </div>
 
-      <Button
-        onClick={addToCartHandler}
-        disabled={!isAvailable(data)}
-        size="sm"
-        className="mt-2 w-full"
-      >
-        {isAvailable(data) ? "Add to Cart" : "Unavailable"}
-      </Button>
+      {isAvailable(data) ? (
+        <div className="mt-2 flex gap-2">
+          <Button onClick={addToCartHandler} size="sm" variant="outline" className="flex-1 px-2">
+            Add to Cart
+          </Button>
+          <Button onClick={() => buyNow(data)} size="sm" className="flex-1 px-2">
+            Buy Now
+          </Button>
+        </div>
+      ) : (
+        <Button disabled size="sm" className="mt-2 w-full">
+          Unavailable
+        </Button>
+      )}
     </Card>
   );
 }

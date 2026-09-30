@@ -10,7 +10,8 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { completeCheckout } from "@/redux/slices/cart";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import api from "@/lib/axios";
@@ -36,6 +37,7 @@ export function PaymentForm({ initialConfig }) {
 
   const { user } = useSelector((state) => state.user);
   const router = useRouter();
+  const dispatch = useDispatch();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -77,8 +79,7 @@ export function PaymentForm({ initialConfig }) {
       paymentMethod: method,
       paymentInfo,
     });
-    localStorage.setItem("cartItems", JSON.stringify([]));
-    localStorage.setItem("latestOrder", JSON.stringify([]));
+    dispatch(completeCheckout(orderData));
     toast.success("Order placed successfully!");
     window.location.assign("/order/success");
   };

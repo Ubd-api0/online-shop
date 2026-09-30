@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { addToWishlist, removeFromWishlist } from "@/redux/slices/wishlist";
 import { addToCart } from "@/redux/slices/cart";
+import { useBuyNow } from "@/redux/use-buy-now";
 import api from "@/lib/axios";
 import { Ratings } from "@/components/product/ratings";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ export function ProductDetails({ data, allProducts = [] }) {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const router = useRouter();
+  const buyNow = useBuyNow();
 
   const totalReviewsLength = allProducts.reduce((acc, p) => acc + (p.reviews?.length || 0), 0);
   const totalRatings = allProducts.reduce(
@@ -152,8 +154,16 @@ export function ProductDetails({ data, allProducts = [] }) {
             </div>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button onClick={addToCartHandler} disabled={!isAvailable(data)} className="flex-1">
-                {isAvailable(data) ? "Add to Cart" : "Unavailable"}
+              <Button onClick={() => buyNow(data, count)} disabled={!isAvailable(data)} className="flex-1">
+                {isAvailable(data) ? "Buy Now" : "Unavailable"}
+              </Button>
+              <Button
+                onClick={addToCartHandler}
+                disabled={!isAvailable(data)}
+                variant="outline"
+                className="flex-1"
+              >
+                Add to Cart
               </Button>
               <Button onClick={handleMessageSubmit} variant="outline" className="flex-1">
                 Chat <MessageCircle className="ml-2 size-4" />
@@ -254,15 +264,22 @@ export function ProductDetails({ data, allProducts = [] }) {
         <button onClick={toggleWishlist} className="flex w-1/5 justify-center py-3">
           <Heart className={click ? "size-6 fill-red-500 text-red-500" : "size-6 text-content"} />
         </button>
+        <button onClick={handleMessageSubmit} className="w-1/5 py-3 text-sm font-semibold text-content">
+          Chat
+        </button>
         <button
           onClick={addToCartHandler}
           disabled={!isAvailable(data)}
-          className="w-2/5 bg-brand font-semibold text-white disabled:opacity-50"
+          className="w-[30%] bg-blue-600 text-sm font-semibold text-white disabled:opacity-50"
         >
-          {isAvailable(data) ? "Add to Cart" : "Unavailable"}
+          Add to Cart
         </button>
-        <button onClick={handleMessageSubmit} className="w-2/5 bg-blue-600 font-semibold text-white">
-          Chat
+        <button
+          onClick={() => buyNow(data, count)}
+          disabled={!isAvailable(data)}
+          className="w-[30%] bg-brand text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {isAvailable(data) ? "Buy Now" : "Unavailable"}
         </button>
       </div>
     </div>

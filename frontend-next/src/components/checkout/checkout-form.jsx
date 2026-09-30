@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Country, State } from "country-state-city";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,9 +16,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export function CheckoutForm() {
+export function CheckoutForm({ mode }) {
   const { user } = useSelector((state) => state.user);
-  const cart = useSelector((state) => state.cart.cart);
+  const cartItems = useSelector((state) => state.cart.cart);
+  const buyNow = useSelector((state) => state.cart.buyNow);
+  const cartHydrated = useSelector((state) => state.cart.hydrated);
+  const isBuyNow = mode === "buy-now" && !!buyNow;
+  // What's being bought: the single Buy Now product, or only the cart items
+  // the customer ticked. Unticked cart items are left untouched.
+  const cart = useMemo(
+    () => (isBuyNow ? [buyNow] : cartItems.filter((i) => i.selected)),
+    [isBuyNow, buyNow, cartItems]
+  );
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -90,6 +101,7 @@ export function CheckoutForm() {
 
     const orderData = {
       cart,
+      source: isBuyNow ? "buy-now" : "cart",
       totalPrice,
       subTotalPrice,
       shipping,
@@ -157,6 +169,19 @@ export function CheckoutForm() {
     setShowNewAddress(true);
   };
 
+  if (!cartHydrated) return <div className="min-h-[50vh] bg-surface-alt" />;
+
+  if (cart.length === 0) {
+    return (
+      <div className="bg-surface-alt px-4 py-16 text-center text-content">
+        <p className="mb-3">Nothing to checkout — select some items in your cart first.</p>
+        <Link href="/products" className="text-brand underline">
+          Continue shopping
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-surface-alt py-6">
       <div className="mx-auto max-w-7xl px-3 lg:px-5">
@@ -191,6 +216,8 @@ export function CheckoutForm() {
 
           <div className="w-full lg:w-[32%]">
             <CartSummary
+              items={cart}
+              isBuyNow={isBuyNow}
               applyCoupon={applyCoupon}
               totalPrice={totalPrice}
               shipping={shipping}
@@ -334,6 +361,8 @@ function Field({ label, children }) {
 }
 
 function CartSummary({
+  items,
+  isBuyNow,
   applyCoupon,
   totalPrice,
   shipping,
@@ -345,7 +374,27 @@ function CartSummary({
 }) {
   return (
     <Card variant="solid" className="sticky top-24 p-5">
-      <h2 className="mb-5 border-b border-border pb-4 text-[20px] font-semibold text-content">Order Summary</h2>
+      <h2 className="mb-4 border-b border-border pb-4 text-[20px] font-semibold text-content">Order Summary</h2>
+
+      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
+        {isBuyNow ? "Buy now" : `${items.length} ${items.length === 1 ? "item" : "items"} from cart`}
+      </p>
+      <ul className="mb-5 max-h-60 space-y-3 overflow-y-auto border-b border-border pb-4">
+        {items.map((item) => (
+          <li key={item._id} className="flex items-center gap-3">
+            <div className="relative size-12 shrink-0 overflow-hidden rounded-DEFAULT bg-surface-alt">
+              {item.images?.[0] && <Image src={item.images[0]} alt={item.name} fill className="object-contain" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-1 text-sm text-content">{item.name}</p>
+              <p className="text-xs text-muted">
+                ${item.discountPrice} × {item.qty}
+              </p>
+            </div>
+            <span className="text-sm font-semibold text-content">${(item.discountPrice * item.qty).toFixed(2)}</span>
+          </li>
+        ))}
+      </ul>
 
       <div className="space-y-4">
         <div className="flex justify-between">

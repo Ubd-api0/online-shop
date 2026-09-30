@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { addToCart } from "@/redux/slices/cart";
+import { useBuyNow } from "@/redux/use-buy-now";
 import { CountDown } from "@/components/events/count-down";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 export function EventCard({ data }) {
   const cart = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
+  const buyNow = useBuyNow();
 
   const addToCartHandler = () => {
     const exists = cart?.some((i) => i._id === data._id);
@@ -70,8 +72,11 @@ export function EventCard({ data }) {
               See Details
             </Button>
           </Link>
-          <Button onClick={addToCartHandler} className="w-full sm:w-auto">
+          <Button onClick={addToCartHandler} variant="outline" className="w-full sm:w-auto">
             Add to Cart
+          </Button>
+          <Button onClick={() => buyNow(data)} className="w-full sm:w-auto">
+            Buy Now
           </Button>
         </div>
       </div>

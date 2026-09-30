@@ -1,20 +1,42 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ShoppingBag, Plus, Minus, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { addToCart, removeFromCart } from "@/redux/slices/cart";
+import {
+  addToCart,
+  removeFromCart,
+  removeManyFromCart,
+  toggleCartItem,
+  setAllCartSelected,
+  clearBuyNow,
+} from "@/redux/slices/cart";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+
+const checkboxClass = "size-4 shrink-0 cursor-pointer accent-brand";
 
 export function CartDrawer({ open, onOpenChange }) {
   const cart = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
+  const selected = cart.filter((i) => i.selected);
+  const allSelected = cart.length > 0 && selected.length === cart.length;
+  const selectedTotal = selected.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
+
+  const checkout = () => {
+    if (selected.length === 0) {
+      toast.error("Select at least one item to checkout");
+      return;
+    }
+    // Checkout from the cart always wins over a stale Buy Now left in the session.
+    dispatch(clearBuyNow());
+    onOpenChange(false);
+    router.push("/checkout");
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -22,7 +44,9 @@ export function CartDrawer({ open, onOpenChange }) {
         <SheetHeader>
           <div className="flex items-center gap-2">
             <ShoppingBag className="size-5" />
-            <SheetTitle>{cart.length} Items</SheetTitle>
+            <SheetTitle>
+              {cart.length} {cart.length === 1 ? "Item" : "Items"}
+            </SheetTitle>
           </div>
         </SheetHeader>
 
@@ -30,15 +54,46 @@ export function CartDrawer({ open, onOpenChange }) {
           <div className="flex flex-1 items-center justify-center text-muted">Cart is empty</div>
         ) : (
           <>
+            <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-content">
+                <input
+                  type="checkbox"
+                  className={checkboxClass}
+                  checked={allSelected}
+                  onChange={() => dispatch(setAllCartSelected(!allSelected))}
+                />
+                Select all
+              </label>
+              {selected.length > 0 && (
+                <button
+                  onClick={() => dispatch(removeManyFromCart(selected.map((i) => i._id)))}
+                  className="text-xs text-red-500 hover:underline"
+                >
+                  Remove selected ({selected.length})
+                </button>
+              )}
+            </div>
+
             <div className="flex-1 overflow-y-auto">
               {cart.map((item) => (
                 <CartItem key={item._id} data={item} dispatch={dispatch} />
               ))}
             </div>
-            <div className="border-t border-border p-4">
-              <Link href="/checkout" onClick={() => onOpenChange(false)}>
-                <Button className="w-full">Checkout (${totalPrice})</Button>
-              </Link>
+
+            <div className="space-y-3 border-t border-border p-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted">
+                  Selected: {selected.length} of {cart.length}
+                </span>
+                <span className="text-base font-bold text-content">${selectedTotal.toFixed(2)}</span>
+              </div>
+              <Button className="w-full" onClick={checkout} disabled={selected.length === 0}>
+                {selected.length === 0
+                  ? "Select items to checkout"
+                  : allSelected
+                    ? "Checkout all items"
+                    : `Checkout ${selected.length} ${selected.length === 1 ? "item" : "items"}`}
+              </Button>
             </div>
           </>
         )}
@@ -48,7 +103,7 @@ export function CartDrawer({ open, onOpenChange }) {
 }
 
 function CartItem({ data, dispatch }) {
-  const [value, setValue] = useState(data.qty);
+  const value = data.qty;
   const madeToOrder = data.fulfillment === "made_to_order";
 
   const increment = () => {
@@ -56,20 +111,26 @@ function CartItem({ data, dispatch }) {
       toast.error("Stock limited");
       return;
     }
-    setValue(value + 1);
     dispatch(addToCart({ ...data, qty: value + 1 }));
   };
 
   const decrement = () => {
     if (value === 1) return;
-    setValue(value - 1);
     dispatch(addToCart({ ...data, qty: value - 1 }));
   };
 
   const totalPrice = data.discountPrice * value;
 
   return (
-    <div className="flex items-center gap-3 border-b border-border p-4">
+    <div className={`flex items-center gap-3 border-b border-border p-4 ${data.selected ? "" : "opacity-60"}`}>
+      <input
+        type="checkbox"
+        className={checkboxClass}
+        checked={!!data.selected}
+        onChange={() => dispatch(toggleCartItem(data._id))}
+        aria-label={`Select ${data.name}`}
+      />
+
       <div className="flex flex-col items-center gap-1">
         <button
           onClick={increment}
@@ -92,7 +153,7 @@ function CartItem({ data, dispatch }) {
         )}
       </div>
 
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <p className="line-clamp-1 text-sm text-content">{data.name}</p>
         {madeToOrder ? (
           <p className="text-xs text-blue-500">
