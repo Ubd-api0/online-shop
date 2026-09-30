@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ProductCard } from "@/components/product/product-card";
 import { Ratings } from "@/components/product/ratings";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export function ShopProfileData({ products = [], events = [] }) {
+export function ShopProfileData({ products = [], events = [], isOwner = false }) {
   const [active, setActive] = useState(1);
   const allReviews = products.map((product) => product.reviews || []).flat();
 
@@ -18,16 +20,23 @@ export function ShopProfileData({ products = [], events = [] }) {
 
   return (
     <div className="w-full">
-      <div className="flex w-full flex-wrap gap-x-5 gap-y-2">
-        <h5 onClick={() => setActive(1)} className={tabClass(1)}>
-          Shop Products
-        </h5>
-        <h5 onClick={() => setActive(2)} className={tabClass(2)}>
-          Running Events
-        </h5>
-        <h5 onClick={() => setActive(3)} className={tabClass(3)}>
-          Shop Reviews
-        </h5>
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex w-full flex-wrap gap-x-5 gap-y-2">
+          <h5 onClick={() => setActive(1)} className={tabClass(1)}>
+            Shop Products
+          </h5>
+          <h5 onClick={() => setActive(2)} className={tabClass(2)}>
+            Running Events
+          </h5>
+          <h5 onClick={() => setActive(3)} className={tabClass(3)}>
+            Shop Reviews
+          </h5>
+        </div>
+        {isOwner && (
+          <Link href="/dashboard" className="shrink-0">
+            <Button size="sm">Go Dashboard</Button>
+          </Link>
+        )}
       </div>
 
       <br />

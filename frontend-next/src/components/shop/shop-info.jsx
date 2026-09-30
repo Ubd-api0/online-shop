@@ -1,6 +1,21 @@
-import Image from "next/image";
+"use client";
 
-export function ShopInfo({ shop, productsCount, averageRating }) {
+import Image from "next/image";
+import Link from "next/link";
+import { toast } from "sonner";
+import api from "@/lib/axios";
+import { Button } from "@/components/ui/button";
+
+export function ShopInfo({ shop, productsCount, averageRating, isOwner = false }) {
+  const logoutHandler = async () => {
+    try {
+      await api.get("/shop/logout");
+      window.location.assign("/login");
+    } catch {
+      toast.error("Could not log out");
+    }
+  };
+
   return (
     <div>
       <div className="w-full py-5">
@@ -32,6 +47,16 @@ export function ShopInfo({ shop, productsCount, averageRating }) {
         <h5 className="font-semibold text-content">Joined On</h5>
         <h4 className="text-muted">{shop?.createdAt?.slice(0, 10)}</h4>
       </div>
+      {isOwner && (
+        <div className="space-y-2 px-4 py-3">
+          <Link href="/settings">
+            <Button className="w-full">Edit Shop</Button>
+          </Link>
+          <Button variant="outline" className="w-full" onClick={logoutHandler}>
+            Log Out
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,31 @@
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Package,
+  FolderPlus,
+  Tag,
+  FilePlus,
+  MessageSquare,
+  Gift,
+  RotateCcw,
+  Users,
+  LayoutGrid,
+  Store,
+  Settings,
+} from "lucide-react";
+
+export const NAV = [
+  { key: "dashboard", label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { key: "orders", label: "All Orders", to: "/dashboard-orders", icon: ShoppingBag },
+  { key: "products", label: "All Products", to: "/dashboard-products", icon: Package },
+  { key: "create-product", label: "Create Product", to: "/dashboard-create-product", icon: FolderPlus },
+  { key: "events", label: "All Events", to: "/dashboard-events", icon: Tag },
+  { key: "create-event", label: "Create Event", to: "/dashboard-create-event", icon: FilePlus },
+  { key: "inbox", label: "Shop Inbox", to: "/dashboard-messages", icon: MessageSquare },
+  { key: "coupons", label: "Discount Codes", to: "/dashboard-coupouns", icon: Gift },
+  { key: "refunds", label: "Refunds", to: "/dashboard-refunds", icon: RotateCcw },
+  { key: "customers", label: "Customers", to: "/dashboard-customers", icon: Users },
+  { key: "categories", label: "Categories", to: "/dashboard-categories", icon: LayoutGrid },
+  { key: "storefront", label: "Storefront", to: "/dashboard-storefront", icon: Store },
+  { key: "settings", label: "Settings", to: "/settings", icon: Settings },
+];
