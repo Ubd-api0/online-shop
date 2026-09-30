@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===================== THEME TOKENS =====================
+   Single source of truth for color + shape + glass styling.
+   Change a value here and every component using it updates. */
+:root {
+  --surface: #ffffff;
+  --surface-alt: #f6f6f5;
+  --content: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --brand: #f63b60;
+  --brand-hover: #e02a4f;
+
+  --radius: 1rem;
+  --radius-sm: calc(var(--radius) - 0.5rem);
+  --radius-lg: calc(var(--radius) + 0.5rem);
+
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-hover: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.12);
+  --glass-blur: 16px;
+}
+
+.dark {
+  --surface: #1e2029;
+  --surface-alt: #15161d;
+  --content: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #343746;
+  --brand: #f63b60;
+  --brand-hover: #ff5c7c;
+
+  --glass-bg: rgba(30, 32, 41, 0.55);
+  --glass-bg-hover: rgba(30, 32, 41, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-content: var(--content);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+
+  --radius-DEFAULT: var(--radius);
+  --radius-sm: var(--radius-sm);
+  --radius-lg: var(--radius-lg);
+
+  --font-sans: var(--font-roboto);
+  --font-display: var(--font-poppins);
+
+  --breakpoint-400px: 400px;
+  --breakpoint-800px: 800px;
+  --breakpoint-1000px: 1050px;
+  --breakpoint-1100px: 1110px;
+  --breakpoint-1300px: 1300px;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--surface-alt);
+  color: var(--content);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* Reusable glass-surface utility for anything that isn't a `ui/` primitive
+   (page backgrounds, decorative panels) — primitives define their own via cva. */
+.glass-surface {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes zoom-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+@keyframes slide-in-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
