@@ -1,0 +1,11 @@
+import { NextResponse } from "next/server";
+import { withErrorHandling } from "@/lib/api/errors";
+import { requireSeller } from "@/lib/auth/session";
+import { createCategory } from "@/lib/data/categories";
+
+export const POST = withErrorHandling(async (request) => {
+  await requireSeller();
+  const body = await request.json();
+  const category = await createCategory(body);
+  return NextResponse.json({ success: true, category }, { status: 201 });
+});
