@@ -1,0 +1,11 @@
+import { NextResponse } from "next/server";
+import { withErrorHandling } from "@/lib/api/errors";
+import { requireAuth } from "@/lib/auth/session";
+import { updateUserPassword } from "@/lib/data/users";
+
+export const PUT = withErrorHandling(async (request) => {
+  const authUser = await requireAuth();
+  const body = await request.json();
+  await updateUserPassword(authUser._id, body);
+  return NextResponse.json({ success: true, message: "Password updated successfully!" });
+});
