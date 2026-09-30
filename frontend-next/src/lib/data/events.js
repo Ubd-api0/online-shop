@@ -22,6 +22,11 @@ export async function listAllEventsSorted() {
   return Event.find().sort({ createdAt: -1 });
 }
 
+export async function findEventById(id) {
+  await connectDB();
+  return Event.findById(id);
+}
+
 export async function listEventsByShop(shopId) {
   await connectDB();
   return Event.find({ shopId });

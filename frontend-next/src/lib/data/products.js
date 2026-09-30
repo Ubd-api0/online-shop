@@ -22,6 +22,11 @@ export async function listAllProducts() {
   return Product.find().sort({ createdAt: -1 });
 }
 
+export async function findProductById(id) {
+  await connectDB();
+  return Product.findById(id);
+}
+
 export async function deleteShopProduct(id) {
   await connectDB();
   const product = await Product.findByIdAndDelete(id);
