@@ -24,6 +24,9 @@ export function InfiniteProductGrid({ initial, query = {}, pageSize = 20, emptyT
   const [failed, setFailed] = useState(false);
   const sentinel = useRef(null);
   const busy = useRef(false);
+  // Latest query in a ref: the grid is remounted (key) when it changes, so it
+  // never needs to re-create loadMore for it.
+  const queryRef = useRef(query);
 
   const loadMore = useCallback(async () => {
     if (busy.current || !hasMore) return;
@@ -32,7 +35,7 @@ export function InfiniteProductGrid({ initial, query = {}, pageSize = 20, emptyT
     setFailed(false);
     try {
       const { data } = await api.get("/product/list", {
-        params: { ...query, page: page + 1, limit: pageSize },
+        params: { ...queryRef.current, page: page + 1, limit: pageSize },
       });
       setItems((prev) => {
         const seen = new Set(prev.map((p) => p._id));
@@ -46,8 +49,7 @@ export function InfiniteProductGrid({ initial, query = {}, pageSize = 20, emptyT
       busy.current = false;
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasMore, page, pageSize, JSON.stringify(query)]);
+  }, [hasMore, page, pageSize]);
 
   // Start fetching well before the user actually hits the bottom.
   useEffect(() => {
