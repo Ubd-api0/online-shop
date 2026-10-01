@@ -6,12 +6,31 @@ import { State, City } from "country-state-city";
 // Shared by the checkout UI and the server-side rate engine so both resolve
 // the same zone for the same address.
 
-const strip = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+const strip = (s) => s.normalize("NFD").replace(/\p{Mn}/gu, "").trim();
 const ADMIN_UNIT = /\b(District|Agency|Division|Tehsil)\b/i;
 
 export const PROVINCES = State.getStatesOfCountry("PK")
   .map((s) => ({ code: s.isoCode, name: strip(s.name) }))
   .sort((a, b) => a.name.localeCompare(b.name));
+
+// Well-known places missing from the country-state-city dataset.
+const EXTRA_CITIES = {
+  PB: ["Attock"],
+  KP: ["Swat"],
+  GB: ["Hunza"],
+  JK: ["Mirpur", "Bagh", "Rawalakot"],
+};
+
+// Shown first (in this order) before the user types anything.
+export const POPULAR_CITIES = {
+  PB: ["Lahore", "Faisalabad", "Rawalpindi", "Multan", "Gujranwala", "Sialkot", "Bahawalpur", "Sargodha"],
+  SD: ["Karachi", "Hyderabad", "Sukkur", "Larkana", "Nawabshah", "Mirpur Khas"],
+  KP: ["Peshawar", "Mardan", "Abbottabad", "Swat", "Kohat", "Dera Ismail Khan"],
+  BA: ["Quetta", "Gwadar", "Turbat", "Khuzdar"],
+  IS: ["Islamabad"],
+  GB: ["Gilgit", "Skardu", "Hunza"],
+  JK: ["Muzaffarabad", "Mirpur", "Kotli", "Rawalakot"],
+};
 
 const cityCache = new Map();
 
@@ -20,6 +39,7 @@ export function citiesOf(provinceCode) {
   if (!cityCache.has(provinceCode)) {
     const names = City.getCitiesOfState("PK", provinceCode)
       .map((c) => strip(c.name))
+      .concat(EXTRA_CITIES[provinceCode] || [])
       .filter((n) => n && !ADMIN_UNIT.test(n));
     cityCache.set(provinceCode, [...new Set(names)].sort((a, b) => a.localeCompare(b)));
   }

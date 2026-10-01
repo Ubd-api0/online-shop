@@ -42,12 +42,12 @@ const DEFAULT_TILES = [
 
 const DEFAULT_CATEGORIES = [
   { name: 'Sofas', subTitle: 'Comfortable Seating', image: 'https://images.pexels.com/photos/1866149/pexels-photo-1866149.jpeg?auto=compress&cs=tinysrgb&w=500' },
-  { name: 'Coffee Tables', subTitle: 'Center Pieces', image: 'https://images.pexels.com/photos/894612/pexels-photo-894612.jpeg?auto=compress&cs=tinysrgb&w=500' },
-  { name: 'TV Units', subTitle: 'Entertainment Units', image: 'https://images.pexels.com/photos/6969824/pexels-photo-6969824.jpeg?auto=compress&cs=tinysrgb&w=500' },
+  { name: 'Coffee Tables', subTitle: 'Center Pieces', image: 'https://images.pexels.com/photos/2995012/pexels-photo-2995012.jpeg?auto=compress&cs=tinysrgb&w=500' },
+  { name: 'TV Units', subTitle: 'Entertainment Units', image: 'https://images.pexels.com/photos/6316065/pexels-photo-6316065.jpeg?auto=compress&cs=tinysrgb&w=500' },
   { name: 'Recliners', subTitle: 'Relaxation Chairs', image: 'https://images.pexels.com/photos/3757055/pexels-photo-3757055.jpeg?auto=compress&cs=tinysrgb&w=500' },
-  { name: 'Bookshelves', subTitle: 'Library Storage', image: 'https://images.pexels.com/photos/2047397/pexels-photo-2047397.jpeg?auto=compress&cs=tinysrgb&w=500' },
+  { name: 'Bookshelves', subTitle: 'Library Storage', image: 'https://images.pexels.com/photos/1125130/pexels-photo-1125130.jpeg?auto=compress&cs=tinysrgb&w=500' },
   { name: 'Beds', subTitle: 'Sleeping Comfort', image: 'https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=500' },
-  { name: 'Wardrobes', subTitle: 'Closet Storage', image: 'https://images.pexels.com/photos/3935333/pexels-photo-3935333.jpeg?auto=compress&cs=tinysrgb&w=500' },
+  { name: 'Wardrobes', subTitle: 'Closet Storage', image: 'https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?auto=compress&cs=tinysrgb&w=500' },
 ];
 
 async function run() {

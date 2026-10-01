@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Truck, Zap, Calculator, MapPin } from "lucide-react";
 import api from "@/lib/axios";
-import { PROVINCES, citiesOf, provinceName } from "@/lib/shipping/pakistan";
+import { PROVINCES, provinceName } from "@/lib/shipping/pakistan";
+import { CityCombobox } from "@/components/address/city-combobox";
 import { ZONES, resolveShippingSettings, deliveryOptions } from "@/lib/shipping/rates";
 import { formatPrice } from "@/lib/format";
 import { Card } from "@/components/ui/card";
@@ -84,12 +85,12 @@ export function ShippingSettings() {
           </div>
           <div className="space-y-2">
             <Label>City</Label>
-            <Input list="origin-cities" value={s.originCity} onChange={(e) => set({ originCity: e.target.value })} />
-            <datalist id="origin-cities">
-              {citiesOf(s.originProvince).map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
+            <CityCombobox
+              province={s.originProvince}
+              value={s.originCity}
+              onChange={(originCity) => set({ originCity })}
+              placeholder="Choose the city you ship from"
+            />
           </div>
           <div className="space-y-2">
             <Label>Default parcel weight (kg)</Label>
@@ -248,12 +249,7 @@ function RatePreview({ settings }) {
             </option>
           ))}
         </select>
-        <Input list="preview-cities" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
-        <datalist id="preview-cities">
-          {citiesOf(province).map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
+        <CityCombobox province={province} value={city} onChange={setCity} placeholder="City" />
         <Input type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} aria-label="Weight kg" />
         <Input type="number" value={subtotal} onChange={(e) => setSubtotal(e.target.value)} aria-label="Order value" />
       </div>

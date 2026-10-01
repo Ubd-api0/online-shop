@@ -1,8 +1,9 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useId } from "react";
 import { Home, Briefcase, MapPin } from "lucide-react";
-import { PROVINCES, citiesOf, provinceName, normalizeAddress } from "@/lib/shipping/pakistan";
+import { PROVINCES, provinceName, normalizeAddress } from "@/lib/shipping/pakistan";
+import { CityCombobox } from "@/components/address/city-combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -53,7 +54,6 @@ const selectClass =
 export function AddressFields({ value, onChange, compact = false }) {
   const id = useId();
   const set = (k) => (e) => onChange({ ...value, [k]: e.target.value });
-  const cities = useMemo(() => citiesOf(value.province), [value.province]);
 
   return (
     <div className={cn("grid gap-4", !compact && "sm:grid-cols-2")}>
@@ -87,20 +87,14 @@ export function AddressFields({ value, onChange, compact = false }) {
         </select>
       </Field>
       <Field label="City" htmlFor={`${id}-city`}>
-        <Input
+        <CityCombobox
           id={`${id}-city`}
-          list={`${id}-cities`}
+          province={value.province}
           value={value.city}
-          onChange={set("city")}
+          onChange={(city) => onChange({ ...value, city })}
           disabled={!value.province}
-          placeholder={value.province ? "Type or choose your city" : "Choose a province first"}
-          autoComplete="off"
+          placeholder={value.province ? "Search or choose your city" : "Choose a province first"}
         />
-        <datalist id={`${id}-cities`}>
-          {cities.map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
       </Field>
       <Field label="House / Street address" htmlFor={`${id}-a1`} className={compact ? undefined : "sm:col-span-2"}>
         <Input
