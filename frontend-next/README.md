@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Shop
 
-## Getting Started
+A single-vendor e-commerce store for Pakistan, built with **Next.js 16** (App Router, React 19), **Tailwind CSS v4**, **Redux Toolkit** and **MongoDB** (Mongoose). The storefront, customer account, checkout and store-owner dashboard are one app; the API lives in Next.js Route Handlers under `src/app/api/v2`.
 
-First, run the development server:
+## Features
+
+- **Storefront** — infinite-scroll product feeds, categories, search & sort, events with countdowns, wishlist
+- **Cart & checkout** — select items to buy, Buy Now, saved addresses with Province → City pickers, server-side price quotes, vouchers
+- **Delivery** — courier-style rates (weight × zone), express option, free-delivery threshold, COD fee — configured in the dashboard
+- **Payments** — Cash on Delivery, full online, partial advance; Stripe, PayPal, EasyPaisa, JazzCash
+- **Orders** — status timeline, courier + tracking number, customer cancel & refunds, branded email notifications
+- **Accounts** — email sign-up with verification, Google sign-in, profile, address book, messages
+- **Dashboard** — orders, products, events, coupons, customers, categories, storefront, shipping and payment settings
+- Light & dark themes, mobile-first layouts
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # then fill in the values
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No MongoDB handy? `npm run db:local` starts a local database (keep it running) — point `DB_URL` at `mongodb://127.0.0.1:27017/shop_db`.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### First-time setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The store record, the owner login and default categories are created by the store seed script (from the original backend), and demo data can be added with:
 
-## Learn More
+```bash
+npm run seed:demo            # 56 products + 22 events (tagged demo-seed)
+npm run seed:demo -- --clean # remove them again
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Configuration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Branding & policies** — `src/config/appConfig.js` (store name, logo, currency, return window, support hours)
+- **Environment** — see `.env.example`
+- **Google sign-in** — add `<your-site>/auth/callback` as an Authorized redirect URI on your Google OAuth client
+- **Real-time chat** — requires the separate socket server (`NEXT_PUBLIC_SOCKET_URL`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` / `npm start` | Production build / server |
+| `npm run lint` | ESLint |
+| `npm run db:local` | Local MongoDB for development |
+| `npm run seed:demo` | Demo products & events |
