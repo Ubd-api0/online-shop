@@ -1,24 +1,17 @@
-import { listAllProducts } from "@/lib/data/products";
+import { queryProducts } from "@/lib/data/products";
 import { serialize } from "@/lib/serialize";
-import { ProductCard } from "@/components/product/product-card";
+import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 
 export const metadata = { title: "Best Selling" };
 
 export default async function BestSellingPage() {
-  const products = serialize(await listAllProducts());
-  const data = [...products].sort((a, b) => b.sold_out - a.sold_out);
+  const query = { sort: "best_selling" };
+  const first = serialize(await queryProducts({ ...query, page: 1 }));
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 800px:px-6">
-      <h1 className="mb-6 font-display text-2xl font-semibold text-content">Best Selling</h1>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {data.map((p) => (
-          <ProductCard data={p} key={p._id} />
-        ))}
-      </div>
-      {data.length === 0 && (
-        <p className="w-full py-24 text-center text-lg text-muted">No products yet.</p>
-      )}
+    <div className="mx-auto max-w-7xl px-4 py-6 800px:px-6 800px:py-8">
+      <h1 className="mb-5 font-display text-xl font-semibold text-content sm:text-2xl">Best Selling</h1>
+      <InfiniteProductGrid initial={first} query={query} emptyText="No products yet." />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/product/product-card";
+import { GRID_CLASS } from "@/components/product/grid-class";
 
 export function ProductGrid({ title, products = [] }) {
   return (
@@ -6,7 +7,7 @@ export function ProductGrid({ title, products = [] }) {
       <div className="mx-auto max-w-7xl px-4 800px:px-6">
         {title && <h2 className="mb-4 font-display text-xl font-semibold text-content">{title}</h2>}
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className={GRID_CLASS}>
           {products.length > 0 ? (
             products.map((item) => <ProductCard key={item._id} data={item} />)
           ) : (

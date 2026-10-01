@@ -65,3 +65,48 @@ export async function reviewProduct({ user, rating, comment, productId, orderId 
     { arrayFilters: [{ "elem._id": productId }], new: true }
   );
 }
+
+// ---- Paginated listing (infinite scroll) ----------------------------------
+
+export const PRODUCT_SORTS = {
+  newest: { createdAt: -1, _id: -1 },
+  best_selling: { sold_out: -1, _id: -1 },
+  price_asc: { discountPrice: 1, _id: 1 },
+  price_desc: { discountPrice: -1, _id: -1 },
+};
+
+// Only what a product card / cart / wishlist needs — keeps each page small
+// (no reviews, no description, no full embedded shop document).
+const CARD_FIELDS =
+  "name category tags originalPrice discountPrice stock fulfillment leadTimeDays images ratings shopId shop.name sold_out paymentOverride weightKg createdAt";
+
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * One page of products for the storefront grids.
+ * Sorted with an _id tiebreak so pages never overlap or skip items.
+ */
+export async function queryProducts({ category, q, sort = "newest", page = 1, limit = 20 } = {}) {
+  await connectDB();
+  const filter = {};
+  if (category) filter.category = new RegExp(`^${escapeRegex(String(category))}$`, "i");
+  if (q && String(q).trim()) {
+    const rx = new RegExp(escapeRegex(String(q).trim()), "i");
+    filter.$or = [{ name: rx }, { tags: rx }, { category: rx }];
+  }
+
+  const size = Math.min(48, Math.max(1, Number(limit) || 20));
+  const pageNo = Math.max(1, Number(page) || 1);
+
+  const [products, total] = await Promise.all([
+    Product.find(filter)
+      .select(CARD_FIELDS)
+      .sort(PRODUCT_SORTS[sort] || PRODUCT_SORTS.newest)
+      .skip((pageNo - 1) * size)
+      .limit(size)
+      .lean(),
+    Product.countDocuments(filter),
+  ]);
+
+  return { products, total, page: pageNo, hasMore: pageNo * size < total };
+}

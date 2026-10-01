@@ -90,6 +90,16 @@ export function Header({ categories = [] }) {
 
   const catList = ["All", ...categories.map((c) => c.name)];
 
+  // Full results page (infinite scroll), keeping the chosen category.
+  const submitSearch = () => {
+    const q = search.trim();
+    if (!q) return;
+    const sp = new URLSearchParams({ q });
+    if (selectedCat !== "All") sp.set("category", selectedCat);
+    setSearch("");
+    router.push(`/products?${sp}`);
+  };
+
   const pickCategory = (name) => {
     setSelectedCat(name);
     setCatOpen(false);
@@ -118,6 +128,8 @@ export function Header({ categories = [] }) {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submitSearch()}
+              enterKeyHint="search"
               placeholder="Search products..."
               className="min-w-0 flex-1 bg-surface px-3 text-sm text-content outline-none"
             />
@@ -125,6 +137,7 @@ export function Header({ categories = [] }) {
             <button
               type="button"
               aria-label="Search"
+              onClick={submitSearch}
               className="flex shrink-0 items-center justify-center rounded-r-DEFAULT bg-brand px-4 text-white hover:bg-brand-hover"
             >
               <Search className="size-[18px]" />

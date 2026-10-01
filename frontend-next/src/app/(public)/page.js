@@ -1,10 +1,12 @@
 import { getStorefront } from "@/lib/data/shops";
-import { listAllProducts } from "@/lib/data/products";
+import { queryProducts } from "@/lib/data/products";
+import { serialize } from "@/lib/serialize";
 import { listAllEvents } from "@/lib/data/events";
 import { Hero } from "@/components/home/hero";
 import { CategoriesSection } from "@/components/home/categories-section";
 import { EventsWidget } from "@/components/home/events-widget";
 import { ProductGrid } from "@/components/product/product-grid";
+import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import appConfig from "@/config/appConfig";
 
 export async function generateMetadata() {
@@ -16,17 +18,17 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const [storefront, products, events] = await Promise.all([
+  const [storefront, bestDeals, feed, events] = await Promise.all([
     getStorefront(),
-    listAllProducts(),
+    queryProducts({ sort: "best_selling", limit: 10 }),
+    queryProducts({ sort: "newest", page: 1 }),
     listAllEvents(),
   ]);
 
-  const bestDeals = [...products].sort((a, b) => b.sold_out - a.sold_out).slice(0, 10);
-  const plainStorefront = JSON.parse(JSON.stringify(storefront));
-  const plainProducts = JSON.parse(JSON.stringify(products));
-  const plainBestDeals = JSON.parse(JSON.stringify(bestDeals));
-  const plainEvents = JSON.parse(JSON.stringify(events));
+  const plainStorefront = serialize(storefront);
+  const plainBestDeals = serialize(bestDeals.products);
+  const plainFeed = serialize(feed);
+  const plainEvents = serialize(events);
 
   return (
     <>
@@ -37,7 +39,11 @@ export default async function HomePage() {
       />
       <ProductGrid title="Best Deals" products={plainBestDeals} />
       <EventsWidget allEvents={plainEvents} />
-      <ProductGrid title="Featured Products" products={plainProducts} />
+      {/* Endless "Just for you" feed, like Daraz's home page */}
+      <section className="mx-auto max-w-7xl px-4 py-6 800px:px-6 800px:py-8">
+        <h2 className="mb-4 font-display text-xl font-semibold text-content">Just For You</h2>
+        <InfiniteProductGrid initial={plainFeed} query={{ sort: "newest" }} />
+      </section>
     </>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { ShoppingBag, Plus, Minus, X } from "lucide-react";
+import { ShoppingBag, Heart, Trash2, Truck } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
@@ -13,87 +13,112 @@ import {
   setAllCartSelected,
   clearBuyNow,
 } from "@/redux/slices/cart";
+import { addToWishlist } from "@/redux/slices/wishlist";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
+import { maxQty } from "@/lib/productAvailability";
+import {
+  DRAWER_CLASS,
+  DrawerTitle,
+  DrawerEmpty,
+  ItemThumb,
+  PriceLine,
+  QtyStepper,
+} from "@/components/cart/drawer-parts";
+import { cn } from "@/lib/utils";
 
-const checkboxClass = "size-4 shrink-0 cursor-pointer accent-brand";
+const checkboxClass = "size-[18px] shrink-0 cursor-pointer accent-brand";
 
 export function CartDrawer({ open, onOpenChange }) {
   const cart = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
   const router = useRouter();
+  const close = () => onOpenChange(false);
 
   const selected = cart.filter((i) => i.selected);
   const allSelected = cart.length > 0 && selected.length === cart.length;
-  const selectedTotal = selected.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
+  const selectedQty = selected.reduce((s, i) => s + i.qty, 0);
+  const subtotal = selected.reduce((acc, i) => acc + i.qty * i.discountPrice, 0);
+  const savings = selected.reduce(
+    (acc, i) => acc + (i.originalPrice > i.discountPrice ? (i.originalPrice - i.discountPrice) * i.qty : 0),
+    0
+  );
 
   const checkout = () => {
-    if (selected.length === 0) {
-      toast.error("Select at least one item to checkout");
-      return;
-    }
+    if (selected.length === 0) return toast.error("Select at least one item to checkout");
     // Checkout from the cart always wins over a stale Buy Now left in the session.
     dispatch(clearBuyNow());
-    onOpenChange(false);
+    close();
     router.push("/checkout");
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right">
+      <SheetContent side="right" className={DRAWER_CLASS}>
         <SheetHeader>
-          <div className="flex items-center gap-2">
-            <ShoppingBag className="size-5" />
-            <SheetTitle>
-              {cart.length} {cart.length === 1 ? "Item" : "Items"}
-            </SheetTitle>
-          </div>
+          <SheetTitle asChild>
+            <div>
+              <DrawerTitle icon={ShoppingBag} title="My Cart" count={cart.length} />
+            </div>
+          </SheetTitle>
         </SheetHeader>
 
         {cart.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center text-muted">Cart is empty</div>
+          <DrawerEmpty
+            icon={ShoppingBag}
+            title="Your cart is empty"
+            text="Looks like you haven't added anything yet. Explore our products and find something you love."
+            onAction={close}
+          />
         ) : (
           <>
-            <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-content">
+            <div className="flex items-center justify-between border-b border-border bg-surface-alt/60 px-4 py-2.5">
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-content">
                 <input
                   type="checkbox"
                   className={checkboxClass}
                   checked={allSelected}
                   onChange={() => dispatch(setAllCartSelected(!allSelected))}
                 />
-                Select all
+                Select all ({cart.length})
               </label>
               {selected.length > 0 && (
                 <button
                   onClick={() => dispatch(removeManyFromCart(selected.map((i) => i._id)))}
-                  className="text-xs text-red-500 hover:underline"
+                  className="flex items-center gap-1 text-xs font-medium text-red-500 hover:underline"
                 >
-                  Remove selected ({selected.length})
+                  <Trash2 className="size-3.5" /> Delete ({selected.length})
                 </button>
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <ul className="flex-1 divide-y divide-border overflow-y-auto">
               {cart.map((item) => (
-                <CartItem key={item._id} data={item} dispatch={dispatch} />
+                <CartItem key={item._id} item={item} dispatch={dispatch} onNavigate={close} />
               ))}
-            </div>
+            </ul>
 
-            <div className="space-y-3 border-t border-border p-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted">
-                  Selected: {selected.length} of {cart.length}
-                </span>
-                <span className="text-base font-bold text-content">{formatPrice(selectedTotal)}</span>
+            <div className="space-y-3 border-t border-border bg-surface p-4 shadow-[0_-8px_24px_rgba(0,0,0,0.08)]">
+              <div className="space-y-1 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted">
+                    Subtotal ({selectedQty} item{selectedQty === 1 ? "" : "s"})
+                  </span>
+                  <span className="text-lg font-bold text-content">{formatPrice(subtotal)}</span>
+                </div>
+                {savings > 0 && (
+                  <div className="flex justify-between text-emerald-600">
+                    <span>You save</span>
+                    <span className="font-medium">{formatPrice(savings)}</span>
+                  </div>
+                )}
+                <p className="flex items-center gap-1.5 text-xs text-muted">
+                  <Truck className="size-3.5" /> Delivery fee calculated at checkout
+                </p>
               </div>
-              <Button className="w-full" onClick={checkout} disabled={selected.length === 0}>
-                {selected.length === 0
-                  ? "Select items to checkout"
-                  : allSelected
-                    ? "Checkout all items"
-                    : `Checkout ${selected.length} ${selected.length === 1 ? "item" : "items"}`}
+              <Button className="h-12 w-full text-base" onClick={checkout} disabled={selected.length === 0}>
+                {selected.length === 0 ? "Select items to checkout" : `Checkout (${selected.length})`}
               </Button>
             </div>
           </>
@@ -103,79 +128,78 @@ export function CartDrawer({ open, onOpenChange }) {
   );
 }
 
-function CartItem({ data, dispatch }) {
-  const value = data.qty;
-  const madeToOrder = data.fulfillment === "made_to_order";
+function CartItem({ item, dispatch, onNavigate }) {
+  const madeToOrder = item.fulfillment === "made_to_order";
+  const limit = madeToOrder ? undefined : maxQty(item);
+  const short = !madeToOrder && (item.stock || 0) < item.qty;
+  const lowStock = !madeToOrder && !short && item.stock > 0 && item.stock <= 5;
 
-  const increment = () => {
-    if (!madeToOrder && data.stock <= value) {
-      toast.error("Stock limited");
-      return;
-    }
-    dispatch(addToCart({ ...data, qty: value + 1 }));
+  const setQty = (qty) => {
+    if (limit != null && qty > limit) return toast.error(`Only ${item.stock} in stock`);
+    dispatch(addToCart({ ...item, qty }));
   };
 
-  const decrement = () => {
-    if (value === 1) return;
-    dispatch(addToCart({ ...data, qty: value - 1 }));
+  const moveToWishlist = () => {
+    dispatch(addToWishlist(item));
+    dispatch(removeFromCart(item._id));
+    toast.success("Moved to wishlist");
   };
-
-  const totalPrice = data.discountPrice * value;
 
   return (
-    <div className={`flex items-center gap-3 border-b border-border p-4 ${data.selected ? "" : "opacity-60"}`}>
+    <li className={cn("flex gap-3 px-4 py-4 transition-opacity", !item.selected && "opacity-60")}>
       <input
         type="checkbox"
-        className={checkboxClass}
-        checked={!!data.selected}
-        onChange={() => dispatch(toggleCartItem(data._id))}
-        aria-label={`Select ${data.name}`}
+        className={cn(checkboxClass, "mt-8")}
+        checked={!!item.selected}
+        onChange={() => dispatch(toggleCartItem(item._id))}
+        aria-label={`Select ${item.name}`}
       />
+      <ItemThumb item={item} onNavigate={onNavigate} />
 
-      <div className="flex flex-col items-center gap-1">
-        <button
-          onClick={increment}
-          className="flex size-6 items-center justify-center rounded bg-brand text-white"
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Link
+          href={`/product/${item._id}`}
+          onClick={onNavigate}
+          className="line-clamp-2 text-sm leading-5 text-content hover:text-brand"
         >
-          <Plus className="size-3.5" />
-        </button>
-        <span className="text-sm">{value}</span>
-        <button
-          onClick={decrement}
-          className="flex size-6 items-center justify-center rounded bg-surface-alt text-content"
-        >
-          <Minus className="size-3.5" />
-        </button>
-      </div>
-
-      <div className="relative size-[70px] shrink-0 overflow-hidden rounded-DEFAULT bg-surface-alt">
-        {data.images?.[0] && (
-          <Image src={data.images[0]} alt={data.name} fill className="object-contain" />
-        )}
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="line-clamp-1 text-sm text-content">{data.name}</p>
+          {item.name}
+        </Link>
         {madeToOrder ? (
-          <p className="text-xs text-blue-500">
-            Made to order{data.leadTimeDays ? ` · ~${data.leadTimeDays}d` : ""}
-          </p>
-        ) : (data.stock || 0) < value ? (
-          <p className="text-xs text-red-500">Not enough stock</p>
+          <span className="mt-0.5 text-xs text-sky-600 dark:text-sky-400">
+            Made to order{item.leadTimeDays ? ` · ships in ~${item.leadTimeDays} days` : ""}
+          </span>
+        ) : short ? (
+          <span className="mt-0.5 text-xs font-medium text-red-500">Only {item.stock || 0} left — reduce quantity</span>
+        ) : lowStock ? (
+          <span className="mt-0.5 text-xs text-amber-600">Only {item.stock} left</span>
         ) : null}
-        <p className="text-xs text-muted">
-          {formatPrice(data.discountPrice)} × {value}
-        </p>
-        <p className="font-bold text-brand">{formatPrice(totalPrice)}</p>
-      </div>
 
-      <button
-        onClick={() => dispatch(removeFromCart(data._id))}
-        className="text-muted hover:text-content"
-        aria-label="Remove"
-      >
-        <X className="size-4" />
-      </button>
-    </div>
+        <div className="mt-1">
+          <PriceLine item={item} qty={item.qty} />
+        </div>
+
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <QtyStepper value={item.qty} max={limit} onDec={() => setQty(item.qty - 1)} onInc={() => setQty(item.qty + 1)} />
+          <div className="flex items-center gap-1">
+            <button
+              onClick={moveToWishlist}
+              className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-red-500"
+              aria-label="Move to wishlist"
+              title="Move to wishlist"
+            >
+              <Heart className="size-4" />
+            </button>
+            <button
+              onClick={() => dispatch(removeFromCart(item._id))}
+              className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-red-500"
+              aria-label="Remove from cart"
+              title="Remove"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </li>
   );
 }
