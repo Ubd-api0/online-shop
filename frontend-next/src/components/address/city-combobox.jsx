@@ -46,7 +46,6 @@ export function CityCombobox({ province, value, onChange, disabled, placeholder,
     const onDown = (e) => !boxRef.current?.contains(e.target) && close();
     document.addEventListener("pointerdown", onDown);
     return () => document.removeEventListener("pointerdown", onDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   // Keep the highlighted option in view.
