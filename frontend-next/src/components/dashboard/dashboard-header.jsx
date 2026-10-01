@@ -25,7 +25,7 @@ export function DashboardHeader({ onMenuClick }) {
   const avatar = seller?.avatar || user?.avatar;
 
   return (
-    <header className="glass-surface fixed left-0 right-0 top-0 z-[90] flex h-[64px] items-center justify-between border-x-0 border-t-0 px-3 sm:px-5">
+    <header className="glass-surface fixed left-0 right-0 top-0 z-header flex h-[64px] items-center justify-between border-x-0 border-t-0 px-3 sm:px-5">
       <div className="flex items-center gap-3">
         <button onClick={onMenuClick} className="text-content lg:hidden" aria-label="Open menu">
           <Menu className="size-6" />

@@ -32,7 +32,7 @@ export function SelectContent({ className, children, ...props }) {
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          "glass-surface z-50 max-h-72 min-w-[8rem] overflow-hidden rounded-DEFAULT p-1",
+          "bg-surface border border-border shadow-2xl z-popover max-h-72 min-w-[8rem] overflow-hidden rounded-DEFAULT p-1",
           "data-[state=open]:animate-[zoom-in_120ms_ease-out]",
           className
         )}

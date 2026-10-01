@@ -239,7 +239,7 @@ export function UserOrderDetails({ orderId }) {
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-overlay flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <Card
         variant="solid"
         className="max-h-[90vh] w-full max-w-md overflow-y-auto p-5"

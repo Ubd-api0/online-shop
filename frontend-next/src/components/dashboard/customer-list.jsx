@@ -75,8 +75,8 @@ export function CustomerList() {
       </Table>
 
       {open && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 p-4">
-          <Card variant="glass" className="w-full max-w-md p-6 text-center">
+        <div className="fixed inset-0 z-overlay flex items-center justify-center bg-black/50 p-4">
+          <Card variant="solid" className="w-full max-w-md p-6 text-center">
             <h3 className="py-4 text-lg text-content">Delete this customer?</h3>
             <div className="flex items-center justify-center gap-4">
               <Button variant="outline" onClick={() => setOpen(false)}>

@@ -12,7 +12,7 @@ export const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
 const menuSurface =
-  "glass-surface z-50 min-w-[10rem] overflow-hidden rounded-DEFAULT p-1 " +
+  "bg-surface border border-border shadow-2xl z-popover min-w-[10rem] overflow-hidden rounded-DEFAULT p-1 " +
   "data-[state=open]:animate-[zoom-in_120ms_ease-out] data-[state=closed]:animate-[fade-out_100ms_ease-in]";
 
 const menuItem =

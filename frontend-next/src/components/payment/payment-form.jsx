@@ -328,8 +328,8 @@ function PaymentGateways({ user, open, setOpen, gateways, paypalClientId, amount
                 {amountLabel}
               </Button>
               {open && (
-                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 p-4">
-                  <Card variant="glass" className="relative max-h-[80vh] w-full max-w-md overflow-y-auto p-8">
+                <div className="fixed inset-0 z-overlay flex items-center justify-center bg-black/50 p-4">
+                  <Card variant="solid" className="relative max-h-[80vh] w-full max-w-md overflow-y-auto p-8">
                     <button onClick={() => setOpen(false)} className="absolute right-4 top-4">
                       <X className="size-[26px] text-content" />
                     </button>

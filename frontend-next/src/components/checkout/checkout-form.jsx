@@ -501,7 +501,7 @@ export function CheckoutForm({ mode }) {
       </div>
 
       {/* Mobile sticky action bar (sits above the header's mobile bottom nav) */}
-      <div className="fixed inset-x-0 bottom-[56px] z-[90] flex items-center justify-between gap-3 border-t border-border bg-surface px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)] lg:hidden 800px:bottom-0">
+      <div className="fixed inset-x-0 bottom-[56px] z-sticky flex items-center justify-between gap-3 border-t border-border bg-surface px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)] lg:hidden 800px:bottom-0">
         <div>
           <p className="text-xs text-muted">Total</p>
           <p className="text-lg font-bold text-brand">{quote ? formatPrice(quote.totalPrice) : "…"}</p>

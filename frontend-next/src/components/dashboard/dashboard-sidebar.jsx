@@ -38,15 +38,15 @@ function NavList({ active, onClose }) {
 export function DashboardSideBar({ active, open, onClose }) {
   return (
     <>
-      <aside className="glass-surface fixed bottom-0 left-0 top-[64px] z-[80] hidden w-[260px] overflow-y-auto border-y-0 border-l-0 lg:block">
+      <aside className="glass-surface fixed bottom-0 left-0 top-[64px] z-sticky hidden w-[260px] overflow-y-auto border-y-0 border-l-0 lg:block">
         <NavList active={active} onClose={() => {}} />
       </aside>
 
       {open && (
-        <div className="fixed inset-0 z-[100] lg:hidden" onClick={onClose} role="presentation">
-          <div className="absolute inset-0 bg-black/40" />
+        <div className="fixed inset-0 z-overlay lg:hidden" onClick={onClose} role="presentation">
+          <div className="absolute inset-0 bg-black/50" />
           <div
-            className="glass-surface absolute left-0 top-0 h-full w-[78%] max-w-[300px] overflow-y-auto border-y-0 border-l-0"
+            className="bg-surface shadow-2xl border-r border-border absolute left-0 top-0 h-full w-[78%] max-w-[300px] overflow-y-auto border-y-0 border-l-0"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">

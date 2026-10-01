@@ -65,6 +65,33 @@
   --breakpoint-1300px: 1300px;
 }
 
+/* ---------------------------------------------------------------------------
+   Stacking scale — the ONLY z-index values used for layout layers. Anything
+   that floats above page content uses one of these (never a raw z-[999]):
+     z-sticky   in-page sticky bars (checkout / product action bars, sidebars)
+     z-header   site header + mobile bottom nav, dashboard header
+     z-dropdown popovers anchored inside the header (search, categories)
+     z-overlay  drawers (Sheet), dialogs and full-screen modals
+     z-popover  Radix select / dropdown menus — above overlays, because they
+                can be opened from inside a drawer or dialog
+   Toasts (sonner) sit above all of these by default.
+   ------------------------------------------------------------------------- */
+@utility z-sticky {
+  z-index: 30;
+}
+@utility z-header {
+  z-index: 40;
+}
+@utility z-dropdown {
+  z-index: 50;
+}
+@utility z-overlay {
+  z-index: 60;
+}
+@utility z-popover {
+  z-index: 70;
+}
+
 * {
   scroll-behavior: smooth;
 }

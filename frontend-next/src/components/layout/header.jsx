@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -49,6 +49,22 @@ export function Header({ categories = [] }) {
   const [results, setResults] = useState([]);
   const [selectedCat, setSelectedCat] = useState("All");
   const [catOpen, setCatOpen] = useState(false);
+  const searchBoxRef = useRef(null);
+
+  // Close the category popover on a tap/click outside the search box or Escape.
+  useEffect(() => {
+    if (!catOpen) return;
+    const onDown = (e) => {
+      if (!searchBoxRef.current?.contains(e.target)) setCatOpen(false);
+    };
+    const onKey = (e) => e.key === "Escape" && setCatOpen(false);
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [catOpen]);
   const [mobileCatOpen, setMobileCatOpen] = useState(false);
 
   // Lazily fetch the catalog once, only when the visitor starts searching —
@@ -83,13 +99,13 @@ export function Header({ categories = [] }) {
 
   return (
     <>
-      <header className="sticky top-0 z-[999] w-full glass-surface border-x-0 border-t-0">
+      <header className="sticky top-0 z-header w-full glass-surface border-x-0 border-t-0">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-3 py-3 800px:px-6">
           <div className="hidden sm:flex">
             <Brand />
           </div>
 
-          <div className="relative flex h-[42px] flex-1 items-stretch overflow-visible rounded-DEFAULT border border-border">
+          <div ref={searchBoxRef} className="relative flex h-[42px] flex-1 items-stretch overflow-visible rounded-DEFAULT border border-border">
             <button
               type="button"
               onClick={() => setCatOpen((v) => !v)}
@@ -115,7 +131,7 @@ export function Header({ categories = [] }) {
             </button>
 
             {catOpen && (
-              <div className="glass-surface absolute left-0 top-[calc(100%+4px)] z-[100] hidden max-h-[320px] w-[240px] overflow-y-auto rounded-DEFAULT 800px:block">
+              <div className="bg-surface border border-border shadow-2xl absolute left-0 top-[calc(100%+4px)] z-dropdown max-h-[60vh] w-[240px] max-w-[calc(100vw-1.5rem)] overflow-y-auto rounded-DEFAULT py-1">
                 {catList.map((name) => (
                   <button
                     key={name}
@@ -131,7 +147,7 @@ export function Header({ categories = [] }) {
             )}
 
             {search.length > 1 && results.length > 0 && (
-              <div className="glass-surface absolute left-0 top-[calc(100%+4px)] z-[90] max-h-[300px] w-full overflow-y-auto rounded-DEFAULT">
+              <div className="bg-surface border border-border shadow-2xl absolute left-0 top-[calc(100%+4px)] z-dropdown max-h-[300px] w-full overflow-y-auto rounded-DEFAULT">
                 {results.slice(0, 10).map((p) => (
                   <Link
                     key={p._id}
@@ -207,9 +223,9 @@ export function Header({ categories = [] }) {
 
       {/* mobile category drawer */}
       {mobileCatOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/40 800px:hidden" onClick={() => setMobileCatOpen(false)}>
+        <div className="fixed inset-0 z-overlay bg-black/50 backdrop-blur-sm 800px:hidden" onClick={() => setMobileCatOpen(false)}>
           <div
-            className="glass-surface h-full w-[75%] max-w-[300px] overflow-y-auto p-4"
+            className="h-full w-[75%] max-w-[300px] overflow-y-auto border-r border-border bg-surface p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="mb-3 font-semibold text-content">Categories</h3>
@@ -229,7 +245,7 @@ export function Header({ categories = [] }) {
       )}
 
       {/* mobile bottom nav */}
-      <div className="glass-surface fixed bottom-0 left-0 z-[999] flex w-full justify-around border-x-0 border-b-0 py-2 800px:hidden">
+      <div className="glass-surface fixed bottom-0 left-0 z-header flex w-full justify-around border-x-0 border-b-0 py-2 800px:hidden">
         <Link href="/" className="flex flex-col items-center text-xs text-content">
           <Home className="size-5" />
           Home

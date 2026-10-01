@@ -261,7 +261,7 @@ export function ProductDetails({ data, allProducts = [] }) {
       </div>
 
       {/* mobile sticky bar — sits above the header's mobile bottom nav */}
-      <div className="glass-surface fixed bottom-[56px] left-0 z-[100] flex w-full border-x-0 border-b-0 lg:hidden 800px:bottom-0">
+      <div className="fixed bottom-[56px] left-0 z-sticky flex w-full border-t border-border bg-surface lg:hidden 800px:bottom-0">
         <button onClick={toggleWishlist} className="flex w-1/5 justify-center py-3">
           <Heart className={click ? "size-6 fill-red-500 text-red-500" : "size-6 text-content"} />
         </button>

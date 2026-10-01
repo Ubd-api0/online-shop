@@ -13,14 +13,14 @@ export function DialogContent({ className, children, ...props }) {
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
         className={cn(
-          "fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm",
+          "fixed inset-0 z-overlay bg-black/50 backdrop-blur-sm",
           "data-[state=open]:animate-[fade-in_150ms_ease-out]",
           "data-[state=closed]:animate-[fade-out_150ms_ease-in]"
         )}
       />
       <DialogPrimitive.Content
         className={cn(
-          "fixed left-1/2 top-1/2 z-[1000] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2",
+          "fixed left-1/2 top-1/2 z-overlay w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2",
           "glass-surface rounded-lg p-6",
           "data-[state=open]:animate-[zoom-in_180ms_ease-out]",
           "data-[state=closed]:animate-[zoom-out_150ms_ease-in]",

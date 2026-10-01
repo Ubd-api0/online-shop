@@ -105,8 +105,8 @@ export function AllCoupons() {
       </Table>
 
       {open && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4">
-          <Card variant="glass" className="w-full max-w-md p-6">
+        <div className="fixed inset-0 z-overlay flex items-center justify-center bg-black/50 p-4">
+          <Card variant="solid" className="w-full max-w-md p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="font-display text-xl text-content">Create Coupon Code</h3>
               <button onClick={() => setOpen(false)}>

@@ -24,14 +24,14 @@ export function SheetContent({ className, side = "right", children, ...props }) 
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
         className={cn(
-          "fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm",
+          "fixed inset-0 z-overlay bg-black/50 backdrop-blur-sm",
           "data-[state=open]:animate-[fade-in_150ms_ease-out]",
           "data-[state=closed]:animate-[fade-out_150ms_ease-in]"
         )}
       />
       <DialogPrimitive.Content
         className={cn(
-          "fixed z-[1000] flex flex-col glass-surface border-border",
+          "fixed z-overlay flex flex-col bg-surface border-border shadow-2xl",
           sideClasses[side],
           className
         )}
