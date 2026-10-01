@@ -7,6 +7,10 @@ import { Card } from "@/components/ui/card";
 import appConfig from "@/config/appConfig";
 import { formatPhone, normalizePhone } from "@/lib/phone";
 
+// Rendered from the database; refreshed every 60s and on demand after
+// dashboard edits (lib/revalidate.js) — never frozen at build time.
+export const revalidate = 60;
+
 export const metadata = {
   title: "Contact us",
   description: `Get in touch with ${appConfig.name} about orders, delivery, returns or products.`,

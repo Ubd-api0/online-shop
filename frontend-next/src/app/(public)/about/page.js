@@ -6,6 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import appConfig from "@/config/appConfig";
 
+// Rendered from the database; refreshed every 60s and on demand after
+// dashboard edits (lib/revalidate.js) — never frozen at build time.
+export const revalidate = 60;
+
 export const metadata = {
   title: "About us",
   description: `Learn about ${appConfig.name} — what we sell, how we work and what we promise our customers.`,

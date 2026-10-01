@@ -39,6 +39,17 @@ npm run seed:demo -- --clean # remove them again
 - **Google sign-in** — add `<your-site>/auth/callback` as an Authorized redirect URI on your Google OAuth client
 - **Real-time chat** — requires the separate socket server (`NEXT_PUBLIC_SOCKET_URL`)
 
+## Deploying to Vercel
+
+1. **Import** the repo in Vercel — framework *Next.js* is detected automatically; no build settings to change.
+2. **Environment variables** — add everything from `.env.example` (Project → Settings → Environment Variables). Set `FRONTEND_URL` to your Vercel URL, e.g. `https://your-shop.vercel.app` (used in email links).
+3. **MongoDB Atlas → Network Access** — allow `0.0.0.0/0`. Vercel functions don't have fixed IPs, so an IP allow-list blocks them.
+4. **Google sign-in** — add `https://your-domain/auth/callback` to the OAuth client's *Authorized redirect URIs* (keep the localhost one for development).
+5. **Chat** — the socket server can't run on Vercel; host it elsewhere (Render, Railway, a VPS) and set `NEXT_PUBLIC_SOCKET_URL`. Everything else works without it.
+6. **Payments** — update the EasyPaisa / JazzCash callback URLs to your domain.
+
+Public pages (home, about, best selling, events, contact) are pre-rendered and refreshed every 60 s, and immediately after you change products, events, categories or store info in the dashboard.
+
 ## Scripts
 
 | Command | What it does |

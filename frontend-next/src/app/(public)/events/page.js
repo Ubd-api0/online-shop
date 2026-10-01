@@ -2,6 +2,10 @@ import { listAllEvents } from "@/lib/data/events";
 import { serialize } from "@/lib/serialize";
 import { EventCard } from "@/components/events/event-card";
 
+// Rendered from the database; refreshed every 60s and on demand after
+// dashboard edits (lib/revalidate.js) — never frozen at build time.
+export const revalidate = 60;
+
 export const metadata = { title: "Events" };
 
 export default async function EventsPage() {

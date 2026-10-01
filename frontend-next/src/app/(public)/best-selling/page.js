@@ -2,6 +2,10 @@ import { queryProducts } from "@/lib/data/products";
 import { serialize } from "@/lib/serialize";
 import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 
+// Rendered from the database; refreshed every 60s and on demand after
+// dashboard edits (lib/revalidate.js) — never frozen at build time.
+export const revalidate = 60;
+
 export const metadata = { title: "Best Selling" };
 
 export default async function BestSellingPage() {

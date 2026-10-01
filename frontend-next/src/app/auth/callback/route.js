@@ -27,7 +27,7 @@ export async function GET(request) {
   try {
     const profile = await exchangeCodeForProfile({ code, redirectUri: googleRedirectUri(request) });
     const { user, created } = await findOrCreateGoogleUser(profile);
-    if (created) sendWelcomeEmail(user, url.origin).catch(() => {});
+    if (created) sendWelcomeEmail(user, url.origin);
 
     const dest = safeNext(saved.next) || (user.role === "business_owner" ? "/dashboard" : "/");
     const res = NextResponse.redirect(new URL(dest, request.url));

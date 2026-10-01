@@ -37,6 +37,16 @@ export async function requireSeller() {
   return { user, shop };
 }
 
+// Chat/member ids the signed-in user may act as: themselves, and — for the
+// business owner — the store (sellers chat as the shop id).
+export function actorIds(user) {
+  return [String(user._id), user.role === "business_owner" && user.shop ? String(user.shop) : null].filter(Boolean);
+}
+
+export function assertActor(user, id) {
+  if (!actorIds(user).includes(String(id))) throw new ApiError("Not allowed", 403);
+}
+
 export function requireRole(user, ...roles) {
   if (!roles.includes(user.role)) {
     throw new ApiError(`${user.role} can not access this resource`, 403);

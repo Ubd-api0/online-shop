@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { withErrorHandling } from "@/lib/api/errors";
-import { updateLastMessage } from "@/lib/data/conversations";
+import { requireAuth, assertActor } from "@/lib/auth/session";
+import { updateLastMessage, assertConversationMember } from "@/lib/data/conversations";
 
 export const PUT = withErrorHandling(async (request, { params }) => {
+  const user = await requireAuth();
   const { id } = await params;
-  const body = await request.json();
-  const conversation = await updateLastMessage(id, body);
+  const { lastMessage, lastMessageId } = await request.json();
+  assertActor(user, lastMessageId);
+  await assertConversationMember(id, lastMessageId);
+  const conversation = await updateLastMessage(id, { lastMessage, lastMessageId });
   return NextResponse.json({ success: true, conversation }, { status: 201 });
 });

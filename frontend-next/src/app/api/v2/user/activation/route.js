@@ -22,6 +22,6 @@ export const POST = withErrorHandling(async (request) => {
   if (!payload?.id) throw new ApiError("This activation link is invalid or outdated — please sign up again", 400);
 
   const user = await verifyUserAccount(payload.id);
-  if (user.justVerified) sendWelcomeEmail(user, request.headers.get("origin")).catch(() => {});
+  if (user.justVerified) sendWelcomeEmail(user, request.headers.get("origin"));
   return issueAuthResponse(user, 200);
 });
