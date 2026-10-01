@@ -22,8 +22,10 @@ const userSchema = new mongoose.Schema({
     minLength: [6, "Password must be at least 6 characters"],
     select: false,
   },
+  // "03001234567" (see lib/phone.js). Older accounts stored a Number; Mongoose
+  // casts those to a string on read.
   phoneNumber: {
-    type: Number,
+    type: String,
   },
   addresses: [
     {
@@ -48,9 +50,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Shop",
   },
+  // Optional — the UI shows the user's initial when there's no photo.
   avatar: {
     type: String,
-    required: true,
+    default: "",
   },
   createdAt: {
     type: Date,

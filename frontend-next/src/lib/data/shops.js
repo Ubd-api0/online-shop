@@ -1,5 +1,6 @@
 import { resolveShippingSettings, DEFAULT_SHIPPING, ZONES } from "@/lib/shipping/rates";
 import { PROVINCES } from "@/lib/shipping/pakistan";
+import { normalizePhone, isValidPhone } from "@/lib/phone";
 import connectDB from "@/lib/db/connect";
 import Shop from "@/lib/db/models/Shop";
 import Category from "@/lib/db/models/Category";
@@ -24,8 +25,11 @@ export async function updateShopInfo(shopId, { name, description, email, address
   if (description !== undefined) shop.description = description;
   if (email !== undefined) shop.email = email;
   if (address !== undefined) shop.address = address;
-  if (phoneNumber !== undefined) shop.phoneNumber = phoneNumber;
-  if (zipCode !== undefined) shop.zipCode = zipCode;
+  if (phoneNumber !== undefined && phoneNumber !== "") {
+    if (!isValidPhone(phoneNumber)) throw new ApiError("Please enter a valid phone number, e.g. 0300-1234567", 400);
+    shop.phoneNumber = normalizePhone(phoneNumber);
+  }
+  if (zipCode !== undefined) shop.zipCode = String(zipCode).replace(/\D/g, "").slice(0, 5);
   await shop.save();
   return shop;
 }

@@ -4,6 +4,7 @@ import { useId } from "react";
 import { Home, Briefcase, MapPin } from "lucide-react";
 import { PROVINCES, provinceName, normalizeAddress } from "@/lib/shipping/pakistan";
 import { CityCombobox } from "@/components/address/city-combobox";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -61,15 +62,7 @@ export function AddressFields({ value, onChange, compact = false }) {
         <Input id={`${id}-name`} value={value.fullName} onChange={set("fullName")} placeholder="Recipient's name" autoComplete="name" />
       </Field>
       <Field label="Mobile number" htmlFor={`${id}-phone`}>
-        <Input
-          id={`${id}-phone`}
-          type="tel"
-          inputMode="tel"
-          value={value.phone}
-          onChange={set("phone")}
-          placeholder="03XX-XXXXXXX"
-          autoComplete="tel"
-        />
+        <PhoneInput id={`${id}-phone`} value={value.phone} onChange={(phone) => onChange({ ...value, phone })} />
       </Field>
       <Field label="Province / Region" htmlFor={`${id}-prov`}>
         <select

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
+import { formatPhone } from "@/lib/phone";
 
 export function ShopInfo({ shop, productsCount, averageRating, isOwner = false }) {
   const logoutHandler = async () => {
@@ -33,7 +34,7 @@ export function ShopInfo({ shop, productsCount, averageRating, isOwner = false }
       </div>
       <div className="p-3">
         <h5 className="font-semibold text-content">Phone Number</h5>
-        <h4 className="text-muted">{shop?.phoneNumber}</h4>
+        <h4 className="text-muted">{shop?.phoneNumber ? formatPhone(shop.phoneNumber) : "-"}</h4>
       </div>
       <div className="p-3">
         <h5 className="font-semibold text-content">Total Products</h5>

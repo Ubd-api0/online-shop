@@ -27,6 +27,7 @@ export function SignupForm() {
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
     setAvatar(file || null);
+    e.target.value = ""; // allow re-picking the same file after Remove
   };
 
   const handleSubmit = async (e) => {
@@ -66,12 +67,19 @@ export function SignupForm() {
       <div className="flex min-h-screen items-center justify-center px-4">
         <Card variant="solid" className="w-full max-w-md p-8 text-center">
           <MailCheck className="mx-auto size-16 text-brand" strokeWidth={1.5} />
-          <h1 className="mt-4 text-xl font-semibold text-content">Check your inbox</h1>
+          <h1 className="mt-4 text-xl font-semibold text-content">
+            Check your inbox
+          </h1>
           <p className="mt-2 text-sm text-muted">
-            We sent an activation link to <span className="font-medium text-content">{sentTo}</span>. Open it to verify
-            your email — you&apos;ll be signed in automatically. The link is valid for 24 hours.
+            We sent an activation link to{" "}
+            <span className="font-medium text-content">{sentTo}</span>. Open it
+            to verify your email — you&apos;ll be signed in automatically. The
+            link is valid for 24 hours.
           </p>
-          <p className="mt-4 text-xs text-muted">Didn&apos;t get it? Check spam, or simply log in — we&apos;ll send a fresh link.</p>
+          <p className="mt-4 text-xs text-muted">
+            Didn&apos;t get it? Check spam, or simply log in — we&apos;ll send a
+            fresh link.
+          </p>
           <div className="mt-6 flex justify-center gap-3">
             <Button onClick={() => router.push("/login")}>Go to login</Button>
             <Button variant="outline" onClick={() => setSentTo(null)}>
@@ -137,33 +145,63 @@ export function SignupForm() {
                   onClick={() => setVisible((v) => !v)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted"
                 >
-                  {visible ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
+                  {visible ? (
+                    <Eye className="size-5" />
+                  ) : (
+                    <EyeOff className="size-5" />
+                  )}
                 </button>
               </div>
-              <p className={tooShort ? "text-xs text-danger" : "text-xs text-muted"}>At least 6 characters</p>
+              <p
+                className={
+                  tooShort ? "text-xs text-danger" : "text-xs text-muted"
+                }
+              >
+                At least 6 characters
+              </p>
             </div>
 
-            <div className="flex items-center gap-4">
-              <span className="relative block size-10 shrink-0 overflow-hidden rounded-full bg-surface-alt">
-                {avatar ? (
-                  <Image src={URL.createObjectURL(avatar)} alt="avatar" fill className="object-cover" />
-                ) : (
-                  <User className="absolute inset-0 m-auto size-6 text-muted" />
+            <div className="space-y-1.5">
+              <Label>
+                Profile photo{" "}
+                <span className="font-normal text-muted">(optional)</span>
+              </Label>
+              <div className="flex items-center gap-4">
+                <span className="relative block size-10 shrink-0 overflow-hidden rounded-full bg-surface-alt">
+                  {avatar ? (
+                    <Image
+                      src={URL.createObjectURL(avatar)}
+                      alt="avatar"
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <User className="absolute inset-0 m-auto size-6 text-muted" />
+                  )}
+                </span>
+                <label
+                  htmlFor="file-input"
+                  className="cursor-pointer rounded-DEFAULT border border-border bg-surface px-4 py-2 text-sm font-medium text-muted shadow-sm hover:bg-surface-alt"
+                >
+                  {avatar ? "Change photo" : "Upload a photo"}
+                  <input
+                    type="file"
+                    id="file-input"
+                    accept=".jpg,.jpeg,.png,.webp"
+                    onChange={handleFileInputChange}
+                    className="sr-only"
+                  />
+                </label>
+                {avatar && (
+                  <button
+                    type="button"
+                    onClick={() => setAvatar(null)}
+                    className="text-sm text-muted hover:text-danger"
+                  >
+                    Remove
+                  </button>
                 )}
-              </span>
-              <label
-                htmlFor="file-input"
-                className="cursor-pointer rounded-DEFAULT border border-border bg-surface px-4 py-2 text-sm font-medium text-muted shadow-sm hover:bg-surface-alt"
-              >
-                Upload a file
-                <input
-                  type="file"
-                  id="file-input"
-                  accept=".jpg,.jpeg,.png"
-                  onChange={handleFileInputChange}
-                  className="sr-only"
-                />
-              </label>
+              </div>
             </div>
 
             <Button type="submit" disabled={loading} className="w-full">

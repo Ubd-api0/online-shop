@@ -38,6 +38,7 @@ export const config = {
     "/dashboard-storefront",
     "/dashboard-shipping",
     "/settings",
+    "/settings/:path*",
     "/shop/:id",
     "/order/:id",
   ],

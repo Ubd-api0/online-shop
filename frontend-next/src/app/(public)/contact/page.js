@@ -5,6 +5,7 @@ import { PageHero, PageBody } from "@/components/info/info-page";
 import { ContactForm } from "@/components/info/contact-form";
 import { Card } from "@/components/ui/card";
 import appConfig from "@/config/appConfig";
+import { formatPhone, normalizePhone } from "@/lib/phone";
 
 export const metadata = {
   title: "Contact us",
@@ -36,8 +37,7 @@ export default async function ContactPage() {
   const storefront = await getStorefront();
   const email = appConfig.supportEmail || storefront.email;
   // Hide the seed script's placeholder values until the owner sets real ones.
-  const rawPhone = String(storefront.phoneNumber || "").replace(/^0+/, "");
-  const phone = rawPhone && rawPhone !== "3000000000" ? `0${rawPhone}` : "";
+  const phone = storefront.phoneNumber && normalizePhone(storefront.phoneNumber) !== "03000000000" ? formatPhone(storefront.phoneNumber) : "";
   const address = storefront.address && storefront.address !== "Store address" ? storefront.address : "";
 
   return (
@@ -58,7 +58,7 @@ export default async function ContactPage() {
               </InfoCard>
             )}
             {phone && (
-              <InfoCard icon={Phone} label="Phone" href={`tel:${phone}`}>
+              <InfoCard icon={Phone} label="Phone" href={`tel:${normalizePhone(phone)}`}>
                 {phone}
               </InfoCard>
             )}

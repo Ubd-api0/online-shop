@@ -9,6 +9,7 @@ import { getAllUsers } from "@/redux/slices/user";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { formatPhone } from "@/lib/phone";
 
 export function CustomerList() {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ export function CustomerList() {
             <TableRow key={item._id}>
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.email}</TableCell>
-              <TableCell>{item.phoneNumber || "-"}</TableCell>
+              <TableCell className="tabular-nums">{item.phoneNumber ? formatPhone(item.phoneNumber) : "-"}</TableCell>
               <TableCell>{item.createdAt?.slice(0, 10)}</TableCell>
               <TableCell>
                 <button

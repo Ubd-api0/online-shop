@@ -1,12 +1,13 @@
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ShopSettings } from "@/components/dashboard/shop-settings";
+import { SettingsTabs, StoreInfoSettings } from "@/components/dashboard/shop-settings";
 
-export const metadata = { title: "Settings" };
+export const metadata = { title: "Settings — Store info" };
 
-export default function ShopSettingsPage() {
+export default function StoreInfoSettingsPage() {
   return (
     <DashboardLayout active="settings" title="Settings">
-      <ShopSettings />
+      <SettingsTabs />
+      <StoreInfoSettings />
     </DashboardLayout>
   );
 }

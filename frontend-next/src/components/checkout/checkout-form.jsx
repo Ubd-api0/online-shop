@@ -27,6 +27,7 @@ import { updateUserAddress } from "@/redux/slices/user";
 import { completeCheckout } from "@/redux/slices/cart";
 import { normalizeAddress } from "@/lib/shipping/pakistan";
 import { formatPrice, formatShortDate } from "@/lib/format";
+import { formatPhone } from "@/lib/phone";
 import {
   AddressFields,
   EMPTY_ADDRESS,
@@ -69,7 +70,7 @@ export function CheckoutForm({ mode }) {
         ...EMPTY_ADDRESS,
         ...normalizeAddress(a),
         fullName: a.fullName || user?.name || "",
-        phone: a.phone || (user?.phoneNumber ? `0${user.phoneNumber}`.replace(/^00/, "0") : ""),
+        phone: formatPhone(a.phone || user?.phoneNumber || ""),
       })),
     [user]
   );

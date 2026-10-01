@@ -8,6 +8,7 @@ import api from "@/lib/axios";
 import { formatPrice, formatDateTime, formatShortDate } from "@/lib/format";
 import { stagesFor, STAGE_INFO, CANCELLED, isRefundStatus, REFUND_STAGES } from "@/lib/orders/status";
 import { trackingLink } from "@/lib/shipping/couriers";
+import { formatPhone } from "@/lib/phone";
 import { formatAddressLines } from "@/components/address/address-fields";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -176,7 +177,7 @@ export function AddressCard({ order }) {
     <Card variant="solid" className="p-5">
       <h3 className="mb-2 font-semibold text-content">Delivery address</h3>
       <p className="text-sm font-medium text-content">{a.fullName || order.user?.name}</p>
-      {(a.phone || order.user?.phoneNumber) && <p className="text-sm text-muted">{a.phone || order.user.phoneNumber}</p>}
+      {(a.phone || order.user?.phoneNumber) && <p className="text-sm text-muted">{formatPhone(a.phone || order.user.phoneNumber)}</p>}
       {formatAddressLines(a).map((l) => (
         <p key={l} className="text-sm text-muted">
           {l}

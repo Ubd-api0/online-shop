@@ -17,6 +17,7 @@ import { X } from "lucide-react";
 import api from "@/lib/axios";
 import { effectivePolicy } from "@/lib/paymentPolicy";
 import { formatPrice } from "@/lib/format";
+import { normalizePhone } from "@/lib/phone";
 import { formatAddressLines } from "@/components/address/address-fields";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -151,7 +152,7 @@ export function PaymentForm({ initialConfig }) {
         amount: amountDueNow,
         orderRef,
         customerEmail: user?.email,
-        customerMobile: user?.phoneNumber,
+        customerMobile: normalizePhone(orderData?.shippingAddress?.phone || user?.phoneNumber || ""),
       });
 
       if (data.mock && data.redirectUrl) {

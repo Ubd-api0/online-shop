@@ -1,3 +1,4 @@
+import { normalizePhone, isValidMobile } from "@/lib/phone";
 import connectDB from "@/lib/db/connect";
 import User from "@/lib/db/models/User";
 import { ApiError } from "@/lib/api/errors";
@@ -94,9 +95,13 @@ export async function updateUserInfo(userId, { email, password, phoneNumber, nam
     throw new ApiError("Please provide the correct information", 400);
   }
 
+  if (phoneNumber && !isValidMobile(phoneNumber)) {
+    throw new ApiError("Please enter a valid mobile number, e.g. 0300-1234567", 400);
+  }
+
   user.name = name;
   user.email = email;
-  user.phoneNumber = phoneNumber;
+  user.phoneNumber = phoneNumber ? normalizePhone(phoneNumber) : "";
   await user.save();
   return user;
 }

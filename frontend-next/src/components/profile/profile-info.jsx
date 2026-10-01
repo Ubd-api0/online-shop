@@ -12,6 +12,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { normalizePhone, isValidMobile } from "@/lib/phone";
 
 export function ProfileInfo() {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -43,7 +45,11 @@ export function ProfileInfo() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateUserInformation({ name, email, phoneNumber, password }));
+    if (phoneNumber && !isValidMobile(phoneNumber)) {
+      toast.error("Please enter a valid mobile number, e.g. 0300-1234567");
+      return;
+    }
+    dispatch(updateUserInformation({ name, email, phoneNumber: normalizePhone(phoneNumber), password }));
   };
 
   const handleImage = async (e) => {
@@ -88,7 +94,7 @@ export function ProfileInfo() {
           </div>
           <div>
             <Label className="mb-2 block">Phone Number</Label>
-            <Input type="tel" inputMode="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+            <PhoneInput value={phoneNumber} onChange={setPhoneNumber} />
           </div>
           <div>
             <Label className="mb-2 block">Current password (to confirm)</Label>

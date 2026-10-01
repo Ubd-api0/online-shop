@@ -11,9 +11,9 @@ const shopSchema = new mongoose.Schema({
   email: { type: String },
   description: { type: String },
   address: { type: String },
-  phoneNumber: { type: Number },
+  phoneNumber: { type: String }, // "04235123456" / "03001234567" (lib/phone.js)
   avatar: { type: String },
-  zipCode: { type: Number },
+  zipCode: { type: String },
   // Store-wide payment criteria shown to customers at checkout.
   paymentSettings: {
     codEnabled: { type: Boolean, default: true },
