@@ -12,8 +12,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { GoogleButton, OrDivider } from "@/components/auth/google-button";
 
-export function SignupForm() {
+export function SignupForm({ next }) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -101,6 +102,10 @@ export function SignupForm() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <Card variant="glass" className="p-6 sm:p-10">
+          <div className="mb-6 space-y-6">
+            <GoogleButton next={next} label="Sign up with Google" />
+            <OrDivider />
+          </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-1.5">
               <Label htmlFor="name">Full Name</Label>
@@ -210,7 +215,7 @@ export function SignupForm() {
 
             <div className="flex w-full items-center text-sm text-content">
               <span>Already have an account?</span>
-              <Link href="/login" className="pl-2 text-brand hover:underline">
+              <Link href={next ? `/login?redirect=${encodeURIComponent(next)}` : "/login"} className="pl-2 text-brand hover:underline">
                 Sign In
               </Link>
             </div>

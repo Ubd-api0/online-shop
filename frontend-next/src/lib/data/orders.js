@@ -6,6 +6,7 @@ import { ApiError } from "@/lib/api/errors";
 import { quoteOrder } from "@/lib/data/checkout";
 import { normalizeAddress } from "@/lib/shipping/pakistan";
 import { nextStatusesFor, stagesFor, CANCELLED, CUSTOMER_CANCELLABLE } from "@/lib/orders/status";
+import { notifyOrderPlaced, notifyOrderStatus } from "@/lib/email/send";
 
 // Shared stock / availability check for a cart.
 // Returns { ok, hasMadeToOrder, issues: [{ name }] }.
@@ -139,6 +140,7 @@ export async function createOrder(
     statusHistory: [{ status: "Processing", note: "Order placed", at: new Date() }],
   });
 
+  notifyOrderPlaced(order);
   // Kept as an array: the client and old callers expect `orders`.
   return [order];
 }
@@ -232,6 +234,7 @@ export async function updateOrderStatus(orderId, { status, note, courier } = {},
   }
 
   await order.save({ validateBeforeSave: false });
+  if (changing) notifyOrderStatus(order);
   return order;
 }
 
@@ -247,6 +250,7 @@ export async function cancelOrderByCustomer(orderId, userId, reason) {
   order.cancelReason = clean(reason) || "Cancelled by customer";
   order.statusHistory.push({ status: CANCELLED, note: order.cancelReason, at: new Date() });
   await order.save({ validateBeforeSave: false });
+  notifyOrderStatus(order);
   return order;
 }
 
@@ -271,6 +275,7 @@ export async function requestOrderRefund(orderId, userId) {
   order.status = status;
   order.statusHistory.push({ status, note: "Refund requested by customer", at: new Date() });
   await order.save({ validateBeforeSave: false });
+  notifyOrderStatus(order);
   return order;
 }
 
@@ -285,6 +290,7 @@ export async function acceptOrderRefund(orderId, status) {
   order.status = status;
   order.statusHistory.push({ status, note: "Refund completed", at: new Date() });
   await order.save({ validateBeforeSave: false });
+  notifyOrderStatus(order);
 
   // Put stock back if it was taken off when the parcel shipped. Orders from
   // before the flag existed (no history) were always delivered -> deducted.

@@ -9,12 +9,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { GoogleButton, OrDivider, googleErrorMessage } from "@/components/auth/google-button";
 
 // Single login for everyone. On success we hard-redirect by role:
 //   business_owner -> /dashboard      customer -> /
 // A full reload guarantees the Redux session (loadUser) and the
 // proxy.js route guard both see the fresh cookie.
-export function LoginForm() {
+export function LoginForm({ next, error }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
@@ -27,7 +28,7 @@ export function LoginForm() {
       const { data } = await api.post("/user/login-user", { email, password });
       toast.success("Login successful!");
       const isOwner = data?.user?.role === "business_owner";
-      window.location.assign(isOwner ? "/dashboard" : "/");
+      window.location.assign(next || (isOwner ? "/dashboard" : "/"));
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed, please try again");
       setLoading(false);
@@ -44,6 +45,15 @@ export function LoginForm() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <Card variant="glass" className="p-6 sm:p-10">
+          {googleErrorMessage(error) && (
+            <p role="alert" className="mb-5 rounded-DEFAULT border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
+              {googleErrorMessage(error)}
+            </p>
+          )}
+          <div className="mb-6 space-y-6">
+            <GoogleButton next={next} />
+            <OrDivider />
+          </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
@@ -86,7 +96,7 @@ export function LoginForm() {
 
             <div className="flex w-full items-center text-sm text-content">
               <span>Don&apos;t have an account?</span>
-              <Link href="/sign-up" className="pl-2 text-brand hover:underline">
+              <Link href={next ? `/sign-up?redirect=${encodeURIComponent(next)}` : "/sign-up"} className="pl-2 text-brand hover:underline">
                 Sign Up
               </Link>
             </div>

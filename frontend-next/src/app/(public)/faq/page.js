@@ -23,7 +23,7 @@ export default function FAQPage() {
       <PageBody>
         <FaqAccordion groups={groups} />
         <HelpBanner text={`Our team is here ${appConfig.policies.supportHours}.`}>
-          <Link href="/inbox">
+          <Link href="/profile/inbox">
             <Button>
               <MessageCircle /> Message us
             </Button>

@@ -1,12 +1,7 @@
-import { Suspense } from "react";
-import { UserInbox } from "@/components/chat/user-inbox";
+import { redirect } from "next/navigation";
 
-export const metadata = { title: "Inbox" };
-
-export default function InboxPage() {
-  return (
-    <Suspense fallback={null}>
-      <UserInbox />
-    </Suspense>
-  );
+// The inbox now lives inside the profile layout.
+export default async function InboxRedirect({ searchParams }) {
+  const qs = new URLSearchParams(await searchParams).toString();
+  redirect(`/profile/inbox${qs ? `?${qs}` : ""}`);
 }

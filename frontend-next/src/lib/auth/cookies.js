@@ -4,15 +4,18 @@ import { NextResponse } from "next/server";
 const COOKIE_NAME = "token";
 const MAX_AGE_SECONDS = 90 * 24 * 60 * 60; // mirrors old 90-day expiry
 
+export const AUTH_COOKIE = COOKIE_NAME;
+export const authCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  path: "/",
+  maxAge: MAX_AGE_SECONDS,
+});
+
 export async function setAuthCookie(token) {
   const store = await cookies();
-  store.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: MAX_AGE_SECONDS,
-  });
+  store.set(COOKIE_NAME, token, authCookieOptions());
 }
 
 export async function clearAuthCookie() {

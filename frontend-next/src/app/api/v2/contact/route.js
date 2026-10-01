@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { withErrorHandling, ApiError } from "@/lib/api/errors";
 import { getStorefront } from "@/lib/data/shops";
-import sendMail from "@/lib/email/sendMail";
+import { sendContactEmails } from "@/lib/email/send";
 import appConfig from "@/config/appConfig";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clip = (v, n) => String(v || "").trim().slice(0, n);
-const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
 // Contact form -> email to the store (reply goes straight to the customer).
 export const POST = withErrorHandling(async (request) => {
@@ -28,20 +27,7 @@ export const POST = withErrorHandling(async (request) => {
   const to = appConfig.supportEmail || storefront.email || process.env.SMPT_MAIL;
   if (!to) throw new ApiError("The store hasn't set a contact email yet", 500);
 
-  const lines = [`From: ${name} <${email}>`, `Topic: ${subject}`, orderId && `Order: ${orderId}`, "", message].filter(
-    (l) => l !== false && l !== ""
-  );
-  await sendMail({
-    email: to,
-    replyTo: email,
-    subject: `[Contact] ${subject} — ${name}`,
-    message: lines.join("\n"),
-    html: `<div style="font-family:Arial,sans-serif;max-width:560px;color:#111">
-      <p><strong>From:</strong> ${esc(name)} &lt;${esc(email)}&gt;<br><strong>Topic:</strong> ${esc(subject)}${
-        orderId ? `<br><strong>Order:</strong> ${esc(orderId)}` : ""
-      }</p>
-      <p style="white-space:pre-wrap;line-height:1.5">${esc(message)}</p></div>`,
-  }).catch((err) => {
+  await sendContactEmails({ to, name, email, subject, orderId, message, origin: request.headers.get("origin") }).catch((err) => {
     throw new ApiError(`Sorry, your message couldn't be sent (${err.message}). Please try again later.`, 500);
   });
 

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { loadUser } from "@/redux/slices/user";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import { Card } from "@/components/ui/card";
@@ -9,6 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 export function ChangePassword() {
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  // Accounts created with Google have no password yet — let them create one.
+  const creating = user?.passwordSet === false;
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,7 +29,8 @@ export function ChangePassword() {
         newPassword,
         confirmPassword,
       });
-      toast.success(data?.message || "Password updated");
+      toast.success(creating ? "Password created — you can now also sign in with email" : data?.message || "Password updated");
+      if (creating) dispatch(loadUser());
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -35,10 +42,17 @@ export function ChangePassword() {
   return (
     <Card variant="solid" className="p-5 sm:p-6">
       <form onSubmit={handleSubmit} className="max-w-md space-y-4">
-        <div>
-          <Label className="mb-2 block">Old Password</Label>
-          <Input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-        </div>
+        {!creating && (
+          <div>
+            <Label className="mb-2 block">Old Password</Label>
+            <Input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
+          </div>
+        )}
+        {creating && (
+          <p className="rounded-DEFAULT bg-surface-alt px-3 py-2 text-sm text-muted">
+            You signed up with Google. Create a password to also sign in with your email.
+          </p>
+        )}
         <div>
           <Label className="mb-2 block">New Password</Label>
           <Input type="password" minLength={6} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
@@ -53,7 +67,7 @@ export function ChangePassword() {
           />
         </div>
         <Button type="submit" className="w-full sm:w-auto">
-          Update Password
+          {creating ? "Create password" : "Update Password"}
         </Button>
       </form>
     </Card>

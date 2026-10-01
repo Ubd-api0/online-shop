@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { format } from "timeago.js";
-import { Send, Image as ImageIcon, ArrowRight, User } from "lucide-react";
+import { Send, Image as ImageIcon, ArrowLeft, User, MessageCircle } from "lucide-react";
 import api from "@/lib/axios";
 import { getSocket } from "@/lib/socket";
 import Cloudinary from "@/lib/cloudinary";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 // Shared shell for both the customer Inbox and the seller Dashboard
 // Messages page — the two were ~250 lines of near-identical code in the
@@ -155,42 +156,81 @@ export function ChatShell({
   };
 
   return (
-    <div className="w-full">
-      {!open && (
-        <div className="divide-y divide-border">
+    <div
+      className={cn(
+        "grid h-[calc(100dvh-230px)] min-h-[480px] w-full overflow-hidden rounded-lg border border-border bg-surface",
+        "lg:grid-cols-[320px_minmax(0,1fr)]"
+      )}
+    >
+      {/* conversation list — always visible on large screens */}
+      <aside className={cn("min-h-0 flex-col border-border lg:flex lg:border-r", open ? "hidden" : "flex")}>
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="font-semibold text-content">Conversations</h2>
+          <p className="text-xs text-muted">{conversations.length} chat{conversations.length === 1 ? "" : "s"}</p>
+        </div>
+        <div className="min-h-0 flex-1 divide-y divide-border overflow-y-auto">
           {conversations.map((item) => (
             <ConversationRow
               key={item._id}
               data={item}
               meId={meId}
               online={onlineCheck(item)}
+              active={currentChat?._id === item._id}
               resolveOtherParty={resolveOtherParty}
               onSelect={() => selectChat(item)}
             />
           ))}
-          {conversations.length === 0 && <p className="py-10 text-center text-muted">No conversations yet.</p>}
+          {conversations.length === 0 && (
+            <div className="flex flex-col items-center gap-2 px-6 py-14 text-center">
+              <MessageCircle className="size-10 text-muted" strokeWidth={1.5} />
+              <p className="text-sm text-muted">No conversations yet. Tap &ldquo;Chat&rdquo; on any product to ask us a question.</p>
+            </div>
+          )}
         </div>
-      )}
+      </aside>
 
-      {open && currentChat && (
-        <ChatThread
-          setOpen={setOpen}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          sendMessageHandler={sendMessageHandler}
-          messages={messages}
-          meId={meId}
-          userData={userData}
-          activeStatus={activeStatus}
-          scrollRef={scrollRef}
-          handleImageUpload={handleImageUpload}
-        />
+      {/* thread */}
+      <section className={cn("min-h-0 flex-col lg:flex", open ? "flex" : "hidden")}>
+        {open && currentChat ? (
+          <ChatThread
+            setOpen={setOpen}
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            sendMessageHandler={sendMessageHandler}
+            messages={messages}
+            meId={meId}
+            userData={userData}
+            activeStatus={activeStatus}
+            scrollRef={scrollRef}
+            handleImageUpload={handleImageUpload}
+          />
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
+            <span className="flex size-16 items-center justify-center rounded-full bg-brand/10">
+              <MessageCircle className="size-8 text-brand" strokeWidth={1.5} />
+            </span>
+            <p className="font-medium text-content">Select a conversation</p>
+            <p className="max-w-xs text-sm text-muted">Pick a chat on the left to read and reply to messages.</p>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function Avatar({ src, size = 44 }) {
+  return (
+    <div className="relative shrink-0 overflow-hidden rounded-full bg-surface-alt" style={{ width: size, height: size }}>
+      {src ? (
+        <Image src={src} alt="" fill className="object-cover" />
+      ) : (
+        <User className="absolute inset-0 m-auto size-1/2 text-muted" />
       )}
     </div>
   );
 }
 
-function ConversationRow({ data, meId, online, resolveOtherParty, onSelect }) {
+function ConversationRow({ data, meId, online, active, resolveOtherParty, onSelect }) {
   const [other, setOther] = useState(null);
 
   useEffect(() => {
@@ -201,23 +241,32 @@ function ConversationRow({ data, meId, online, resolveOtherParty, onSelect }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  const mine = data.lastMessageId === meId;
+
   return (
-    <button onClick={onSelect} className="flex w-full items-center gap-3 p-3 text-left hover:bg-surface-alt">
+    <button
+      onClick={onSelect}
+      className={cn(
+        "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors",
+        active ? "bg-brand/10" : "hover:bg-surface-alt"
+      )}
+    >
       <div className="relative">
-        <div className="relative size-[50px] overflow-hidden rounded-full bg-surface-alt">
-          {other?.avatar ? (
-            <Image src={other.avatar} alt="" fill className="object-cover" />
-          ) : (
-            <User className="absolute inset-0 m-auto size-6 text-muted" />
+        <Avatar src={other?.avatar} />
+        <span
+          className={cn(
+            "absolute bottom-0 right-0 size-3 rounded-full border-2 border-surface",
+            online ? "bg-success" : "bg-border"
           )}
-        </div>
-        <div className={`absolute right-0 top-0 size-3 rounded-full ${online ? "bg-green-400" : "bg-muted"}`} />
+        />
       </div>
-      <div className="min-w-0">
-        <h4 className="truncate text-content">{other?.name || "…"}</h4>
-        <p className="truncate text-sm text-muted">
-          {data.lastMessageId !== other?._id ? "You: " : `${other?.name?.split(" ")[0] || ""}: `}
-          {data.lastMessage}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-2">
+          <h4 className={cn("truncate text-sm font-medium", active ? "text-brand-hover" : "text-content")}>{other?.name || "…"}</h4>
+          {data.updatedAt && <span className="shrink-0 text-[11px] text-muted">{format(data.updatedAt)}</span>}
+        </div>
+        <p className="truncate text-xs text-muted">
+          {data.lastMessage ? `${mine ? "You: " : ""}${data.lastMessage}` : "No messages yet"}
         </p>
       </div>
     </button>
@@ -226,63 +275,75 @@ function ConversationRow({ data, meId, online, resolveOtherParty, onSelect }) {
 
 function ChatThread({ setOpen, newMessage, setNewMessage, sendMessageHandler, messages, meId, userData, activeStatus, scrollRef, handleImageUpload }) {
   return (
-    <div className="flex h-[75vh] w-full flex-col justify-between">
-      <div className="glass-surface flex items-center justify-between border-x-0 border-t-0 p-3">
-        <div className="flex items-center gap-3">
-          <div className="relative size-[50px] overflow-hidden rounded-full bg-surface-alt">
-            {userData?.avatar ? (
-              <Image src={userData.avatar} alt="" fill className="object-cover" />
-            ) : (
-              <User className="absolute inset-0 m-auto size-6 text-muted" />
-            )}
-          </div>
-          <div>
-            <h4 className="font-semibold text-content">{userData?.name}</h4>
-            {activeStatus && <span className="text-sm text-success">Active Now</span>}
-          </div>
-        </div>
-        <button onClick={() => setOpen(false)} aria-label="Back">
-          <ArrowRight className="size-5 text-content" />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex items-center gap-3 border-b border-border px-3 py-2.5">
+        <button
+          onClick={() => setOpen(false)}
+          className="flex size-9 items-center justify-center rounded-full text-content hover:bg-surface-alt lg:hidden"
+          aria-label="Back to conversations"
+        >
+          <ArrowLeft className="size-5" />
         </button>
+        <Avatar src={userData?.avatar} size={40} />
+        <div className="min-w-0">
+          <h4 className="truncate font-semibold text-content">{userData?.name || "…"}</h4>
+          <span className={cn("text-xs", activeStatus ? "text-success" : "text-muted")}>
+            {activeStatus ? "Active now" : "Offline — we'll reply soon"}
+          </span>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-3">
-        {messages.map((item, index) => (
-          <div key={index} ref={scrollRef} className={`my-2 flex w-full ${item.sender === meId ? "justify-end" : "justify-start"}`}>
-            {item.images && (
-              <div className="relative mb-2 mr-2 size-[220px] overflow-hidden rounded-DEFAULT">
-                <Image src={item.images} alt="" fill className="object-cover" />
-              </div>
-            )}
-            {item.text ? (
-              <div>
-                <div className={`w-max max-w-[70vw] rounded-DEFAULT p-2 text-white ${item.sender === meId ? "bg-brand" : "bg-neutral-600"}`}>
-                  <p>{item.text}</p>
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto bg-surface-alt/50 px-3 py-4">
+        {messages.length === 0 && <p className="py-10 text-center text-sm text-muted">Say hello 👋</p>}
+        {messages.map((item, index) => {
+          const mine = item.sender === meId;
+          return (
+            <div key={index} ref={scrollRef} className={cn("flex w-full flex-col", mine ? "items-end" : "items-start")}>
+              {item.images && (
+                <div className="relative mb-1 size-[200px] overflow-hidden rounded-lg border border-border">
+                  <Image src={item.images} alt="" fill className="object-cover" />
                 </div>
-                {item.createdAt && <p className="pt-1 text-xs text-muted">{format(item.createdAt)}</p>}
-              </div>
-            ) : null}
-          </div>
-        ))}
+              )}
+              {item.text ? (
+                <div
+                  className={cn(
+                    "max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed sm:max-w-[65%]",
+                    mine ? "rounded-br-md bg-brand text-white" : "rounded-bl-md border border-border bg-surface text-content"
+                  )}
+                >
+                  {item.text}
+                </div>
+              ) : null}
+              {item.createdAt && <p className="px-1 pt-0.5 text-[11px] text-muted">{format(item.createdAt)}</p>}
+            </div>
+          );
+        })}
       </div>
 
-      <form onSubmit={sendMessageHandler} className="flex items-center gap-3 p-3">
+      <form onSubmit={sendMessageHandler} className="flex items-center gap-2 border-t border-border p-3">
         <input type="file" id="chat-image" className="hidden" onChange={handleImageUpload} accept="image/*" />
-        <label htmlFor="chat-image" className="cursor-pointer text-muted hover:text-brand">
+        <label
+          htmlFor="chat-image"
+          className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-brand"
+          title="Send a photo"
+        >
           <ImageIcon className="size-5" />
         </label>
-        <div className="relative flex-1">
-          <Input
-            required
-            placeholder="Enter your message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            className="pr-10"
-          />
-          <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-brand">
-            <Send className="size-4" />
-          </button>
-        </div>
+        <Input
+          required
+          placeholder="Type a message…"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          className="flex-1 rounded-full"
+        />
+        <button
+          type="submit"
+          disabled={!newMessage.trim()}
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-white transition-opacity disabled:opacity-40"
+          aria-label="Send"
+        >
+          <Send className="size-4" />
+        </button>
       </form>
     </div>
   );

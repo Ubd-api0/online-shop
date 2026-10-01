@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema({
   // false until the emailed activation link is opened. Defaults to true so
   // accounts created before verification existed keep working.
   isVerified: { type: Boolean, default: true },
+  // Google account id ("sub") when the user signed in with Google.
+  googleId: { type: String, index: true, sparse: true },
+  // false for accounts created via Google that never chose a password —
+  // Change Password then lets them set one without the "old password".
+  passwordSet: { type: Boolean, default: true },
   password: {
     type: String,
     required: [true, "Please enter your password"],

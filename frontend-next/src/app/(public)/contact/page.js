@@ -73,7 +73,7 @@ export default async function ContactPage() {
 
             <Card variant="flat" className="space-y-1 p-5">
               <p className="mb-2 text-sm font-semibold text-content">Faster answers</p>
-              <Link href="/inbox" className="flex items-center gap-2 py-1.5 text-sm text-content hover:text-brand">
+              <Link href="/profile/inbox" className="flex items-center gap-2 py-1.5 text-sm text-content hover:text-brand">
                 <MessageCircle className="size-4 text-brand" /> Chat with us from your account
               </Link>
               <Link href="/profile/track" className="flex items-center gap-2 py-1.5 text-sm text-content hover:text-brand">

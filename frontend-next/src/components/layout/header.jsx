@@ -285,7 +285,7 @@ export function Header({ categories = [] }) {
             </span>
           )}
         </button>
-        <Link href="/inbox" className="flex flex-col items-center text-xs text-content">
+        <Link href="/profile/inbox" className="flex flex-col items-center text-xs text-content">
           <MessageCircle className="size-5" />
           Inbox
         </Link>

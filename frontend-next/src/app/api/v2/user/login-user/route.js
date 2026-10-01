@@ -1,7 +1,7 @@
 import { withErrorHandling, ApiError } from "@/lib/api/errors";
 import { verifyUserCredentials } from "@/lib/data/users";
 import { issueAuthResponse } from "@/lib/auth/cookies";
-import { sendActivationEmail } from "@/lib/email/activation";
+import { sendVerificationEmail } from "@/lib/email/send";
 
 export const POST = withErrorHandling(async (request) => {
   const { email, password } = await request.json();
@@ -16,7 +16,7 @@ export const POST = withErrorHandling(async (request) => {
   } catch (err) {
     // Correct password but email not verified yet: send a fresh link.
     if (err.unverifiedUser) {
-      await sendActivationEmail(err.unverifiedUser, request.headers.get("origin")).catch(() => {});
+      await sendVerificationEmail(err.unverifiedUser, request.headers.get("origin")).catch(() => {});
     }
     throw err;
   }

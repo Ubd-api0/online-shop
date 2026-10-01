@@ -63,7 +63,7 @@ export function ProductDetails({ data, allProducts = [] }) {
         userId: user._id,
         sellerId: data.shop._id,
       });
-      router.push(`/inbox?conversation=${res.conversation._id}`);
+      router.push(`/profile/inbox?conversation=${res.conversation._id}`);
     } catch (err) {
       toast.error(err.response?.data?.message);
     }

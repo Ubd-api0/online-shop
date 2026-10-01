@@ -1,4 +1,5 @@
 import { normalizePhone, isValidMobile } from "@/lib/phone";
+import crypto from "node:crypto";
 import connectDB from "@/lib/db/connect";
 import User from "@/lib/db/models/User";
 import { ApiError } from "@/lib/api/errors";
@@ -25,6 +26,35 @@ export async function findUserById(id, { withPassword = false } = {}) {
   await connectDB();
   const query = User.findById(id);
   return withPassword ? query.select("+password") : query;
+}
+
+// Google sign-in: find the account by Google id or email, or create it.
+// Google has already verified the email, so the account is verified too.
+export async function findOrCreateGoogleUser({ sub, email, name, picture }) {
+  await connectDB();
+  let user = await User.findOne({ googleId: sub });
+  if (!user) user = await findUserByEmail(email);
+
+  if (user) {
+    let changed = false;
+    if (!user.googleId) (user.googleId = sub), (changed = true);
+    if (user.isVerified === false) (user.isVerified = true), (changed = true);
+    if (!user.avatar && picture) (user.avatar = picture), (changed = true);
+    if (changed) await user.save({ validateBeforeSave: false });
+    return { user, created: false };
+  }
+
+  const created = await User.create({
+    name: name || email.split("@")[0],
+    email,
+    // never used to sign in — Google users can set a real one later
+    password: crypto.randomBytes(24).toString("base64url"),
+    passwordSet: false,
+    avatar: picture || "",
+    googleId: sub,
+    isVerified: true,
+  });
+  return { user: created, created: true };
 }
 
 // Signup: creates the account unverified (or refreshes a still-unverified
@@ -59,13 +89,17 @@ export async function verifyUserAccount(userId) {
   if (user.isVerified === false) {
     user.isVerified = true;
     await user.save({ validateBeforeSave: false });
+    user.justVerified = true; // lets the route send a welcome email once
   }
   return user;
 }
 
 export async function verifyUserCredentials(email, password) {
   const user = await findUserByEmail(email, { withPassword: true });
-  if (!user) throw new ApiError("user doesn't exists", 400);
+  if (!user) throw new ApiError("No account found with this email", 400);
+  if (user.passwordSet === false) {
+    throw new ApiError("This account uses Google sign-in — tap “Continue with Google”", 400);
+  }
 
   const isPasswordValid = await user.comparePassword(password);
   if (!isPasswordValid) {
@@ -145,15 +179,20 @@ export async function updateUserPassword(userId, { oldPassword, newPassword, con
   await connectDB();
   const user = await User.findById(userId).select("+password");
 
-  const isPasswordMatched = await user.comparePassword(oldPassword);
-  if (!isPasswordMatched) throw new ApiError("Old password is incorrect!", 400);
+  // Google-created accounts have no password the user knows yet: let them
+  // set one without the old password.
+  if (user.passwordSet !== false) {
+    const isPasswordMatched = await user.comparePassword(oldPassword || "");
+    if (!isPasswordMatched) throw new ApiError("Current password is incorrect", 400);
+  }
 
   assertPassword(newPassword);
   if (newPassword !== confirmPassword) {
-    throw new ApiError("Password doesn't matched with each other!", 400);
+    throw new ApiError("New passwords don't match", 400);
   }
 
   user.password = newPassword;
+  user.passwordSet = true;
   await user.save();
 }
 

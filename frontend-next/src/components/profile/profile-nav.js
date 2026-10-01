@@ -15,7 +15,7 @@ export const PROFILE_NAV = [
   { href: "/profile/orders", label: "My Orders", icon: ShoppingBag },
   { href: "/profile/track", label: "Track Order", icon: Truck },
   { href: "/profile/refunds", label: "Returns & Refunds", icon: RotateCcw },
-  { href: "/inbox", label: "Messages", icon: MessageCircle },
+  { href: "/profile/inbox", label: "Messages", icon: MessageCircle },
   { href: "/profile/addresses", label: "Address Book", icon: BookUser },
   { href: "/profile/info", label: "Edit Profile", icon: UserPen },
   { href: "/profile/password", label: "Change Password", icon: KeyRound },
