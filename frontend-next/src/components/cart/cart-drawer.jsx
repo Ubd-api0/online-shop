@@ -86,7 +86,7 @@ export function CartDrawer({ open, onOpenChange }) {
               {selected.length > 0 && (
                 <button
                   onClick={() => dispatch(removeManyFromCart(selected.map((i) => i._id)))}
-                  className="flex items-center gap-1 text-xs font-medium text-red-500 hover:underline"
+                  className="flex items-center gap-1 text-xs font-medium text-danger hover:underline"
                 >
                   <Trash2 className="size-3.5" /> Delete ({selected.length})
                 </button>
@@ -108,7 +108,7 @@ export function CartDrawer({ open, onOpenChange }) {
                   <span className="text-lg font-bold text-content">{formatPrice(subtotal)}</span>
                 </div>
                 {savings > 0 && (
-                  <div className="flex justify-between text-emerald-600">
+                  <div className="flex justify-between text-success">
                     <span>You save</span>
                     <span className="font-medium">{formatPrice(savings)}</span>
                   </div>
@@ -165,13 +165,13 @@ function CartItem({ item, dispatch, onNavigate }) {
           {item.name}
         </Link>
         {madeToOrder ? (
-          <span className="mt-0.5 text-xs text-sky-600 dark:text-sky-400">
+          <span className="mt-0.5 text-xs text-info">
             Made to order{item.leadTimeDays ? ` · ships in ~${item.leadTimeDays} days` : ""}
           </span>
         ) : short ? (
-          <span className="mt-0.5 text-xs font-medium text-red-500">Only {item.stock || 0} left — reduce quantity</span>
+          <span className="mt-0.5 text-xs font-medium text-danger">Only {item.stock || 0} left — reduce quantity</span>
         ) : lowStock ? (
-          <span className="mt-0.5 text-xs text-amber-600">Only {item.stock} left</span>
+          <span className="mt-0.5 text-xs text-warning">Only {item.stock} left</span>
         ) : null}
 
         <div className="mt-1">
@@ -183,7 +183,7 @@ function CartItem({ item, dispatch, onNavigate }) {
           <div className="flex items-center gap-1">
             <button
               onClick={moveToWishlist}
-              className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-red-500"
+              className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-danger"
               aria-label="Move to wishlist"
               title="Move to wishlist"
             >
@@ -191,7 +191,7 @@ function CartItem({ item, dispatch, onNavigate }) {
             </button>
             <button
               onClick={() => dispatch(removeFromCart(item._id))}
-              className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-red-500"
+              className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-danger"
               aria-label="Remove from cart"
               title="Remove"
             >

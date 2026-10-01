@@ -99,7 +99,7 @@ export function CategoryManager() {
             <button onClick={() => edit(c)} className="p-2 text-muted hover:text-brand">
               <Pencil className="size-4" />
             </button>
-            <button onClick={() => remove(c)} className="p-2 text-muted hover:text-red-500">
+            <button onClick={() => remove(c)} className="p-2 text-muted hover:text-danger">
               <Trash2 className="size-4" />
             </button>
           </div>

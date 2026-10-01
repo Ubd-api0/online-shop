@@ -69,7 +69,7 @@ export function WishlistDrawer({ open, onOpenChange }) {
                       <div className="mt-1">
                         <PriceLine item={item} />
                       </div>
-                      {!available && <span className="mt-0.5 text-xs font-medium text-red-500">Out of stock</span>}
+                      {!available && <span className="mt-0.5 text-xs font-medium text-danger">Out of stock</span>}
 
                       <div className="mt-2 flex items-center justify-between gap-2">
                         {available ? (
@@ -88,7 +88,7 @@ export function WishlistDrawer({ open, onOpenChange }) {
                         )}
                         <button
                           onClick={() => dispatch(removeFromWishlist(item._id))}
-                          className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-red-500"
+                          className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-surface-alt hover:text-danger"
                           aria-label="Remove from wishlist"
                           title="Remove"
                         >

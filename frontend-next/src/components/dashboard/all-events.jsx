@@ -44,7 +44,7 @@ export function AllEvents() {
                 <Link href={`/product/${item._id}?isEvent=true`} className="text-content hover:text-brand">
                   <Eye className="size-[18px]" />
                 </Link>
-                <button onClick={() => handleDelete(item._id)} className="text-red-500 hover:text-red-600">
+                <button onClick={() => handleDelete(item._id)} className="text-danger hover:text-danger">
                   <Trash2 className="size-[18px]" />
                 </button>
               </div>

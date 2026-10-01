@@ -57,13 +57,13 @@ export function ProfileAddress() {
                     {l}
                   </p>
                 ))}
-                {addressError(item) && <p className="mt-1 text-xs text-amber-600">Incomplete — edit to add missing details</p>}
+                {addressError(item) && <p className="mt-1 text-xs text-warning">Incomplete — edit to add missing details</p>}
               </div>
               <div className="flex shrink-0 flex-col gap-3">
                 <button onClick={() => setDraft({ ...item })} aria-label="Edit address" className="text-muted hover:text-brand">
                   <Pencil className="size-[18px]" />
                 </button>
-                <button onClick={() => dispatch(deleteUserAddress(item._id))} aria-label="Delete address" className="text-red-500">
+                <button onClick={() => dispatch(deleteUserAddress(item._id))} aria-label="Delete address" className="text-danger">
                   <Trash2 className="size-[18px]" />
                 </button>
               </div>

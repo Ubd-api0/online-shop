@@ -57,10 +57,10 @@ export function EventCard({ data }) {
             ) : null}
             <span className="text-2xl font-bold text-brand">{formatPrice(data.discountPrice)}</span>
             {discountPct > 0 && (
-              <span className="text-sm font-medium text-green-600">{discountPct}% OFF</span>
+              <span className="text-sm font-medium text-success">{discountPct}% OFF</span>
             )}
           </div>
-          <p className="mt-1 text-sm text-green-600">{data.sold_out} sold</p>
+          <p className="mt-1 text-sm text-success">{data.sold_out} sold</p>
         </div>
 
         <div className="mt-3 rounded-DEFAULT bg-surface-alt p-3">

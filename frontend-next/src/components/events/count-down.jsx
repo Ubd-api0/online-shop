@@ -50,7 +50,7 @@ export function CountDown({ data }) {
           </span>
         ))
       ) : (
-        <span className="text-[25px] text-red-500">Time&apos;s Up</span>
+        <span className="text-[25px] text-danger">Time&apos;s Up</span>
       )}
     </div>
   );

@@ -11,7 +11,7 @@ export default async function OrderSuccessPage({ searchParams }) {
   return (
     <div className="flex justify-center px-4 py-12">
       <Card variant="solid" className="w-full max-w-lg p-8 text-center">
-        <CheckCircle2 className="mx-auto size-20 text-emerald-500" strokeWidth={1.5} />
+        <CheckCircle2 className="mx-auto size-20 text-success" strokeWidth={1.5} />
         <h1 className="mt-4 font-display text-2xl font-semibold text-content">Thank you! Your order is placed.</h1>
         {id && (
           <p className="mt-2 text-muted">

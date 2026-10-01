@@ -57,7 +57,7 @@ export function CustomerList() {
                     setUserId(item._id);
                     setOpen(true);
                   }}
-                  className="text-red-500 hover:text-red-600"
+                  className="text-danger hover:text-danger"
                 >
                   <Trash2 className="size-[18px]" />
                 </button>

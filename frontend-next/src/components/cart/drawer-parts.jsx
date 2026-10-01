@@ -65,7 +65,7 @@ export function PriceLine({ item, qty = 1 }) {
       {off > 0 && (
         <>
           <span className="text-xs text-muted line-through">{formatPrice(item.originalPrice * qty)}</span>
-          <span className="text-xs font-medium text-emerald-600">-{off}%</span>
+          <span className="text-xs font-medium text-success">-{off}%</span>
         </>
       )}
     </div>

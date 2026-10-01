@@ -138,7 +138,7 @@ export function ShipmentCard({ order }) {
           Estimated delivery {formatShortDate(order.delivery.etaFrom)} – {formatShortDate(order.delivery.etaTo)}
         </p>
       )}
-      {order.deliveredAt && <p className="mt-2 text-sm text-emerald-600">Delivered {formatDateTime(order.deliveredAt)}</p>}
+      {order.deliveredAt && <p className="mt-2 text-sm text-success">Delivered {formatDateTime(order.deliveredAt)}</p>}
 
       {c?.trackingNumber || c?.name ? (
         <div className="mt-4 rounded-DEFAULT bg-surface-alt p-3">

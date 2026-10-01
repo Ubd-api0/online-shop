@@ -98,7 +98,7 @@ export function ProfileOverview() {
 
       <button
         onClick={logout}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface py-3 text-sm font-medium text-red-500 800px:hidden"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface py-3 text-sm font-medium text-danger 800px:hidden"
       >
         <LogOut className="size-4" /> Log out
       </button>

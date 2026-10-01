@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, User } from "lucide-react";
+import { Eye, EyeOff, User, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import Cloudinary from "@/lib/cloudinary";
@@ -21,6 +21,8 @@ export function SignupForm() {
   const [visible, setVisible] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [sentTo, setSentTo] = useState(null); // email the activation link went to
+  const tooShort = password.length > 0 && password.length < 6;
 
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
@@ -29,6 +31,10 @@ export function SignupForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
     setLoading(true);
     try {
       let imageUrl = null;
@@ -47,13 +53,35 @@ export function SignupForm() {
       });
 
       toast.success(data.message);
-      router.push("/login");
+      setSentTo(email.trim());
     } catch (error) {
       toast.error(error.response?.data?.message || "Error");
     } finally {
       setLoading(false);
     }
   };
+
+  if (sentTo) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <Card variant="solid" className="w-full max-w-md p-8 text-center">
+          <MailCheck className="mx-auto size-16 text-brand" strokeWidth={1.5} />
+          <h1 className="mt-4 text-xl font-semibold text-content">Check your inbox</h1>
+          <p className="mt-2 text-sm text-muted">
+            We sent an activation link to <span className="font-medium text-content">{sentTo}</span>. Open it to verify
+            your email — you&apos;ll be signed in automatically. The link is valid for 24 hours.
+          </p>
+          <p className="mt-4 text-xs text-muted">Didn&apos;t get it? Check spam, or simply log in — we&apos;ll send a fresh link.</p>
+          <div className="mt-6 flex justify-center gap-3">
+            <Button onClick={() => router.push("/login")}>Go to login</Button>
+            <Button variant="outline" onClick={() => setSentTo(null)}>
+              Use another email
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -98,7 +126,8 @@ export function SignupForm() {
                   type={visible ? "text" : "password"}
                   autoComplete="new-password"
                   required
-                  minLength={4}
+                  minLength={6}
+                  aria-invalid={tooShort}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pr-10"
@@ -111,6 +140,7 @@ export function SignupForm() {
                   {visible ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
                 </button>
               </div>
+              <p className={tooShort ? "text-xs text-danger" : "text-xs text-muted"}>At least 6 characters</p>
             </div>
 
             <div className="flex items-center gap-4">

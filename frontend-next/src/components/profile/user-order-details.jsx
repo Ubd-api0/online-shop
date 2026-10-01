@@ -151,7 +151,7 @@ export function UserOrderDetails({ orderId }) {
               {CUSTOMER_CANCELLABLE.includes(order.status) ? (
                 <>
                   <p className="text-sm text-muted">You can cancel this order until it&apos;s handed to the courier.</p>
-                  <Button variant="outline" onClick={() => setCancelOpen(true)} className="text-red-500">
+                  <Button variant="outline" onClick={() => setCancelOpen(true)} className="text-danger">
                     Cancel order
                   </Button>
                 </>

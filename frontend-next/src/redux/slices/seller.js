@@ -1,16 +1,9 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "@/lib/axios";
+import { createSlice } from "@reduxjs/toolkit";
+import { loadUser } from "./user";
 
-// Holds the single store's config document (loaded for the business owner).
-export const loadSeller = createAsyncThunk("seller/load", async (_, { rejectWithValue }) => {
-  try {
-    const { data } = await api.get("/shop/getSeller");
-    return data.seller;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || "Not a business owner");
-  }
-});
-
+// The single store's config document, for the business owner. There is no
+// separate request for it: it arrives with the session (GET /user/getuser)
+// and is filled in here from loadUser — dispatch loadUser() to refresh it.
 const sellerSlice = createSlice({
   name: "seller",
   initialState: { isLoading: true },
@@ -21,17 +14,17 @@ const sellerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loadSeller.pending, (state) => {
+      .addCase(loadUser.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(loadSeller.fulfilled, (state, action) => {
-        state.isSeller = true;
+      .addCase(loadUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.seller = action.payload;
+        state.seller = action.payload.shop || undefined;
+        state.isSeller = !!action.payload.shop;
       })
-      .addCase(loadSeller.rejected, (state, action) => {
+      .addCase(loadUser.rejected, (state) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.seller = undefined;
         state.isSeller = false;
       });
   },

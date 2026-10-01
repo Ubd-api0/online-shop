@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 // Single login for everyone. On success we hard-redirect by role:
 //   business_owner -> /dashboard      customer -> /
-// A full reload guarantees the Redux session (loadUser/loadSeller) and the
+// A full reload guarantees the Redux session (loadUser) and the
 // proxy.js route guard both see the fresh cookie.
 export function LoginForm() {
   const [email, setEmail] = useState("");

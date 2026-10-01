@@ -397,19 +397,19 @@ function OrderTotals({ orderData, method, advancePercent, advanceAmount, remaini
         value={orderData?.delivery?.free ? "FREE" : formatPrice(orderData?.shippingFee)}
       />
       {orderData?.codFee > 0 && <Row label="COD fee" value={formatPrice(orderData.codFee)} />}
-      {orderData?.discount > 0 && <Row label="Voucher discount" value={`− ${formatPrice(orderData.discount)}`} accent="text-green-600" />}
+      {orderData?.discount > 0 && <Row label="Voucher discount" value={`− ${formatPrice(orderData.discount)}`} accent="text-success" />}
       <div className="my-2 border-t border-border" />
       <Row label="Total" value={formatPrice(orderData?.totalPrice)} />
       <div className="my-2 border-t border-border" />
       <Row label="Payment method" value={METHOD_LABEL[method] || method} />
       {method === "partial_advance" && (
         <>
-          <Row label={`Pay now (${advancePercent}%)`} value={formatPrice(advanceAmount)} accent="text-green-600" />
-          <Row label="Pay on delivery" value={formatPrice(remainingAmount)} accent="text-red-500" />
+          <Row label={`Pay now (${advancePercent}%)`} value={formatPrice(advanceAmount)} accent="text-success" />
+          <Row label="Pay on delivery" value={formatPrice(remainingAmount)} accent="text-danger" />
         </>
       )}
-      {method === "online_full" && <Row label="Pay now" value={formatPrice(amountDueNow)} accent="text-green-600" />}
-      {method === "cod" && <Row label="Pay on delivery" value={formatPrice(remainingAmount)} accent="text-red-500" />}
+      {method === "online_full" && <Row label="Pay now" value={formatPrice(amountDueNow)} accent="text-success" />}
+      {method === "cod" && <Row label="Pay on delivery" value={formatPrice(remainingAmount)} accent="text-danger" />}
       {orderData?.shippingAddress && (
         <div className="mt-3 border-t border-border pt-3 text-sm">
           <p className="mb-1 font-medium text-content">Deliver to</p>

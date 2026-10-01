@@ -10,11 +10,16 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, "Please enter your email!"],
+    trim: true,
+    lowercase: true,
   },
+  // false until the emailed activation link is opened. Defaults to true so
+  // accounts created before verification existed keep working.
+  isVerified: { type: Boolean, default: true },
   password: {
     type: String,
     required: [true, "Please enter your password"],
-    minLength: [4, "Password should be greater than 4 characters"],
+    minLength: [6, "Password must be at least 6 characters"],
     select: false,
   },
   phoneNumber: {

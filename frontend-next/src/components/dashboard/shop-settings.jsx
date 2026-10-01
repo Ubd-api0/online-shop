@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Camera } from "lucide-react";
 import api from "@/lib/axios";
 import Cloudinary from "@/lib/cloudinary";
-import { loadSeller } from "@/redux/slices/seller";
+import { loadUser } from "@/redux/slices/user";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +32,7 @@ export function ShopSettings() {
     try {
       const imageUrl = await Cloudinary.upload(file, "shop-avatar");
       await api.put("/shop/update-shop-avatar", { image: imageUrl });
-      dispatch(loadSeller());
+      dispatch(loadUser());
       toast.success("Avatar updated successfully!");
     } catch (error) {
       toast.error(error.response?.data?.message || "Error");
@@ -44,7 +44,7 @@ export function ShopSettings() {
     try {
       await api.put("/shop/update-seller-info", { name, email, address, zipCode, phoneNumber, description });
       toast.success("Shop info updated successfully!");
-      dispatch(loadSeller());
+      dispatch(loadUser());
     } catch (error) {
       toast.error(error.response?.data?.message);
     }
@@ -101,7 +101,7 @@ export function ShopSettings() {
         </form>
 
         <div className="mt-8">
-          <PaymentSettingsPanel seller={seller} onSaved={() => dispatch(loadSeller())} />
+          <PaymentSettingsPanel seller={seller} onSaved={() => dispatch(loadUser())} />
         </div>
       </div>
     </div>

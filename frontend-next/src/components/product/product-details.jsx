@@ -108,7 +108,7 @@ export function ProductDetails({ data, allProducts = [] }) {
               className="absolute right-0 top-0"
               aria-label="Toggle wishlist"
             >
-              <Heart className={click ? "size-[26px] fill-red-500 text-red-500" : "size-[26px] text-content"} />
+              <Heart className={click ? "size-[26px] fill-red-500 text-danger" : "size-[26px] text-content"} />
             </button>
 
             <h1 className="text-lg font-semibold md:text-2xl">{data.name}</h1>
@@ -120,14 +120,14 @@ export function ProductDetails({ data, allProducts = [] }) {
             <div className="mt-4 rounded-DEFAULT bg-surface-alt p-3">
               <div className="flex items-center gap-3">
                 {data.originalPrice ? (
-                  <span className="text-red-500 line-through">{formatPrice(data.originalPrice)}</span>
+                  <span className="text-danger line-through">{formatPrice(data.originalPrice)}</span>
                 ) : null}
-                <span className="text-2xl font-bold text-green-600">{formatPrice(data.discountPrice)}</span>
+                <span className="text-2xl font-bold text-success">{formatPrice(data.discountPrice)}</span>
               </div>
               <p className="mt-1 text-sm text-muted">{data.sold_out} sold</p>
               <p
                 className={`mt-1 text-sm font-medium ${
-                  isMadeToOrder(data) ? "text-blue-600" : isAvailable(data) ? "text-green-600" : "text-red-500"
+                  isMadeToOrder(data) ? "text-info" : isAvailable(data) ? "text-success" : "text-danger"
                 }`}
               >
                 {availabilityLabel(data)}
@@ -263,7 +263,7 @@ export function ProductDetails({ data, allProducts = [] }) {
       {/* mobile sticky bar — sits above the header's mobile bottom nav */}
       <div className="fixed bottom-[56px] left-0 z-sticky flex w-full border-t border-border bg-surface lg:hidden 800px:bottom-0">
         <button onClick={toggleWishlist} className="flex w-1/5 justify-center py-3">
-          <Heart className={click ? "size-6 fill-red-500 text-red-500" : "size-6 text-content"} />
+          <Heart className={click ? "size-6 fill-red-500 text-danger" : "size-6 text-content"} />
         </button>
         <button onClick={handleMessageSubmit} className="w-1/5 py-3 text-sm font-semibold text-content">
           Chat

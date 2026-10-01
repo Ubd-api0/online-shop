@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/lib/axios";
 
+// Resolves to { user, shop } — `shop` is set only for the business owner and
+// is picked up by the seller slice (see slices/seller.js).
 export const loadUser = createAsyncThunk("user/load", async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.get("/user/getuser");
-    return data.user;
+    return { user: data.user, shop: data.shop || null };
   } catch (error) {
     return rejectWithValue(error.response?.data?.message);
   }
@@ -90,7 +92,7 @@ const userSlice = createSlice({
       .addCase(loadUser.fulfilled, (state, action) => {
         state.isAuthenticated = true;
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
       })
       .addCase(loadUser.rejected, (state, action) => {
         state.loading = false;

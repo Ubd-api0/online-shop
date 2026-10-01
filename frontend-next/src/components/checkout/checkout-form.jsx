@@ -312,7 +312,7 @@ export function CheckoutForm({ mode }) {
                         o.free ? (
                           <span className="text-right">
                             <span className="block text-xs text-muted line-through">{formatPrice(o.baseFee)}</span>
-                            <span className="font-semibold text-emerald-600">FREE</span>
+                            <span className="font-semibold text-success">FREE</span>
                           </span>
                         ) : (
                           <span className="font-semibold text-content">{formatPrice(o.fee)}</span>
@@ -325,7 +325,7 @@ export function CheckoutForm({ mode }) {
                 </div>
               )}
               {quote?.hasMadeToOrder && (
-                <p className="mt-3 text-xs text-blue-600">
+                <p className="mt-3 text-xs text-info">
                   Includes made-to-order items — the delivery estimate includes production time.
                 </p>
               )}
@@ -354,12 +354,12 @@ export function CheckoutForm({ mode }) {
                       <div className="min-w-0 flex-1">
                         <p className="line-clamp-2 text-sm text-content">{item.name}</p>
                         {item.fulfillment === "made_to_order" && (
-                          <p className="mt-0.5 text-xs text-blue-600">
+                          <p className="mt-0.5 text-xs text-info">
                             Made to order{item.leadTimeDays ? ` · ~${item.leadTimeDays} days` : ""}
                           </p>
                         )}
                         {issue && (
-                          <p className="mt-1 flex items-center gap-1 text-xs font-medium text-red-500">
+                          <p className="mt-1 flex items-center gap-1 text-xs font-medium text-danger">
                             <AlertTriangle className="size-3.5" /> {issue.reason}
                           </p>
                         )}
@@ -419,7 +419,7 @@ export function CheckoutForm({ mode }) {
               <h2 className="mb-4 text-lg font-semibold text-content">Order summary</h2>
 
               {quote?.freeShippingRemaining > 0 && (
-                <div className="mb-4 rounded-DEFAULT bg-emerald-500/10 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">
+                <div className="mb-4 rounded-DEFAULT bg-emerald-500/10 px-3 py-2 text-xs text-success">
                   Add {formatPrice(quote.freeShippingRemaining)} more for <strong>free standard delivery</strong>.
                 </div>
               )}
@@ -467,11 +467,11 @@ export function CheckoutForm({ mode }) {
                           ? "FREE"
                           : formatPrice(quote.shippingFee)
                   }
-                  valueClass={quote?.selectedDelivery?.free ? "text-emerald-600" : undefined}
+                  valueClass={quote?.selectedDelivery?.free ? "text-success" : undefined}
                 />
                 {quote?.codFee > 0 && <SummaryRow label="COD fee" value={formatPrice(quote.codFee)} />}
                 {quote?.discount > 0 && (
-                  <SummaryRow label="Voucher discount" value={`− ${formatPrice(quote.discount)}`} valueClass="text-emerald-600" />
+                  <SummaryRow label="Voucher discount" value={`− ${formatPrice(quote.discount)}`} valueClass="text-success" />
                 )}
               </dl>
 
@@ -554,7 +554,7 @@ function AddressCard({ address, selected, onSelect, onEdit }) {
           {l}
         </p>
       ))}
-      {incomplete && <p className="mt-1 text-xs font-medium text-amber-600">Missing details — tap edit to complete</p>}
+      {incomplete && <p className="mt-1 text-xs font-medium text-warning">Missing details — tap edit to complete</p>}
       <button
         type="button"
         onClick={(e) => {

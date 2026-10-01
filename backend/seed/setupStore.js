@@ -23,8 +23,8 @@ const Category = require('../model/category');
 
 const {
   STORE_NAME = 'Shop',
-  STORE_EMAIL = 'admin@shop.com',
-  STORE_PASSWORD = 'Password@123',
+  STORE_EMAIL = 'admin@yopmail.com',
+  STORE_PASSWORD = 'Admin@123',
   STORE_PHONE = '3000000000',
   STORE_ADDRESS = 'Store address',
   STORE_ZIPCODE = '00000',
@@ -34,7 +34,7 @@ const PLACEHOLDER_AVATAR =
   'https://res.cloudinary.com/demo/image/upload/v1/samples/people/boy-snow-hoodie.jpg';
 
 const DEFAULT_TILES = [
-  { title: 'Free Shipping', description: 'From all orders over 100$', icon: 'truck' },
+  { title: 'Free Shipping', description: 'On orders over Rs. 5,000', icon: 'truck' },
   { title: 'Daily Surprise Offers', description: 'Save up to 25% off', icon: 'gift' },
   { title: 'Affordable Prices', description: 'Get factory direct price', icon: 'tag' },
   { title: 'Secure Payments', description: '100% protected payments', icon: 'shield' },

@@ -84,7 +84,7 @@ export function ProfileShell({ children }) {
             )}
             <button
               onClick={logout}
-              className="flex w-full items-center gap-3 rounded-DEFAULT px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10"
+              className="flex w-full items-center gap-3 rounded-DEFAULT px-3 py-2.5 text-sm text-danger hover:bg-red-500/10"
             >
               <LogOut className="size-[18px]" /> Logout
             </button>

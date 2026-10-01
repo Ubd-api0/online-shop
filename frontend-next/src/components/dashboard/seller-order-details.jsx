@@ -122,7 +122,7 @@ export function SellerOrderDetails({ orderId }) {
                 <Truck className="size-5 text-brand" /> Update order
               </h2>
               {order.hasMadeToOrder && (
-                <p className="mb-3 text-sm text-blue-600">This order contains made-to-order items.</p>
+                <p className="mb-3 text-sm text-info">This order contains made-to-order items.</p>
               )}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">

@@ -15,6 +15,8 @@ export function ChangePassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (newPassword.length < 6) return toast.error("New password must be at least 6 characters");
+    if (newPassword !== confirmPassword) return toast.error("Passwords don't match");
     try {
       const { data } = await api.put("/user/update-user-password", {
         oldPassword,
@@ -39,7 +41,8 @@ export function ChangePassword() {
         </div>
         <div>
           <Label className="mb-2 block">New Password</Label>
-          <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+          <Input type="password" minLength={6} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+          <p className="mt-1 text-xs text-muted">At least 6 characters</p>
         </div>
         <div>
           <Label className="mb-2 block">Confirm Password</Label>

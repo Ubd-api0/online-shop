@@ -238,7 +238,7 @@ function ChatThread({ setOpen, newMessage, setNewMessage, sendMessageHandler, me
           </div>
           <div>
             <h4 className="font-semibold text-content">{userData?.name}</h4>
-            {activeStatus && <span className="text-sm text-green-500">Active Now</span>}
+            {activeStatus && <span className="text-sm text-success">Active Now</span>}
           </div>
         </div>
         <button onClick={() => setOpen(false)} aria-label="Back">

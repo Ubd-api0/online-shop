@@ -99,21 +99,21 @@ export function CreateProductForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <Label className="mb-2 block">
-            Name <span className="text-red-500">*</span>
+            Name <span className="text-danger">*</span>
           </Label>
           <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your product name..." />
         </div>
 
         <div>
           <Label className="mb-2 block">
-            Description <span className="text-red-500">*</span>
+            Description <span className="text-danger">*</span>
           </Label>
           <Textarea required rows={8} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter your product description..." />
         </div>
 
         <div>
           <Label className="mb-2 block">
-            Category <span className="text-red-500">*</span>
+            Category <span className="text-danger">*</span>
           </Label>
           <select
             required
@@ -129,7 +129,7 @@ export function CreateProductForm() {
             ))}
           </select>
           {(categories || []).length === 0 && (
-            <p className="mt-1 text-xs text-red-500">No categories yet — add them under Dashboard → Categories.</p>
+            <p className="mt-1 text-xs text-danger">No categories yet — add them under Dashboard → Categories.</p>
           )}
         </div>
 
@@ -145,14 +145,14 @@ export function CreateProductForm() {
 
         <div>
           <Label className="mb-2 block">
-            Price (With Discount) <span className="text-red-500">*</span>
+            Price (With Discount) <span className="text-danger">*</span>
           </Label>
           <Input required type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} placeholder="Enter your product price with discount..." />
         </div>
 
         <div>
           <Label className="mb-2 block">
-            Fulfillment <span className="text-red-500">*</span>
+            Fulfillment <span className="text-danger">*</span>
           </Label>
           <select
             className="h-11 w-full rounded-DEFAULT border border-border bg-surface px-3 text-content outline-none focus:border-brand"
@@ -177,7 +177,7 @@ export function CreateProductForm() {
         ) : (
           <div>
             <Label className="mb-2 block">
-              Product Stock <span className="text-red-500">*</span>
+              Product Stock <span className="text-danger">*</span>
             </Label>
             <Input required type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Enter your product stock..." />
           </div>
@@ -251,7 +251,7 @@ export function CreateProductForm() {
 
         <div>
           <Label className="mb-2 block">
-            Upload Images <span className="text-red-500">*</span>
+            Upload Images <span className="text-danger">*</span>
           </Label>
           <input type="file" id="upload" className="hidden" multiple onChange={handleImageChange} accept="image/*" />
           <div className="flex flex-wrap items-center gap-2">

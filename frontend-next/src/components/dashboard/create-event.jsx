@@ -93,21 +93,21 @@ export function CreateEventForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <Label className="mb-2 block">
-            Name <span className="text-red-500">*</span>
+            Name <span className="text-danger">*</span>
           </Label>
           <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your event product name..." />
         </div>
 
         <div>
           <Label className="mb-2 block">
-            Description <span className="text-red-500">*</span>
+            Description <span className="text-danger">*</span>
           </Label>
           <Textarea required rows={8} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter your event product description..." />
         </div>
 
         <div>
           <Label className="mb-2 block">
-            Category <span className="text-red-500">*</span>
+            Category <span className="text-danger">*</span>
           </Label>
           <select
             required
@@ -136,21 +136,21 @@ export function CreateEventForm() {
 
         <div>
           <Label className="mb-2 block">
-            Price (With Discount) <span className="text-red-500">*</span>
+            Price (With Discount) <span className="text-danger">*</span>
           </Label>
           <Input required type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} placeholder="Enter your event product price with discount..." />
         </div>
 
         <div>
           <Label className="mb-2 block">
-            Product Stock <span className="text-red-500">*</span>
+            Product Stock <span className="text-danger">*</span>
           </Label>
           <Input required type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Enter your event product stock..." />
         </div>
 
         <div>
           <Label className="mb-2 block">
-            Event Start Date <span className="text-red-500">*</span>
+            Event Start Date <span className="text-danger">*</span>
           </Label>
           <Input
             type="date"
@@ -162,7 +162,7 @@ export function CreateEventForm() {
 
         <div>
           <Label className="mb-2 block">
-            Event End Date <span className="text-red-500">*</span>
+            Event End Date <span className="text-danger">*</span>
           </Label>
           <Input
             type="date"
@@ -174,7 +174,7 @@ export function CreateEventForm() {
 
         <div>
           <Label className="mb-2 block">
-            Upload Images <span className="text-red-500">*</span>
+            Upload Images <span className="text-danger">*</span>
           </Label>
           <input type="file" id="event-upload" className="hidden" multiple onChange={handleImageChange} accept="image/*" />
           <div className="flex flex-wrap items-center gap-2">

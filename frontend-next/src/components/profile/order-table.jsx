@@ -61,7 +61,7 @@ export function OrderTable({ orders, emptyText = "You haven't placed any orders 
                 </p>
                 <p className="text-xs text-muted">{qty} item(s)</p>
                 {open && order.delivery?.etaTo && (
-                  <p className="text-xs text-sky-600 dark:text-sky-400">
+                  <p className="text-xs text-info">
                     Expected {formatShortDate(order.delivery.etaFrom)} – {formatShortDate(order.delivery.etaTo)}
                   </p>
                 )}

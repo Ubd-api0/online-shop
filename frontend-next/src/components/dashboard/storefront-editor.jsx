@@ -88,7 +88,7 @@ export function StorefrontEditor() {
                   </option>
                 ))}
               </select>
-              <button onClick={() => removeTile(i)} className="ml-auto text-muted hover:text-red-500">
+              <button onClick={() => removeTile(i)} className="ml-auto text-muted hover:text-danger">
                 <Trash2 className="size-4" />
               </button>
             </div>

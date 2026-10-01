@@ -88,7 +88,7 @@ export function AllCoupons() {
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.value}%</TableCell>
               <TableCell>
-                <button onClick={() => handleDelete(item._id)} className="text-red-500 hover:text-red-600">
+                <button onClick={() => handleDelete(item._id)} className="text-danger hover:text-danger">
                   <Trash2 className="size-[18px]" />
                 </button>
               </TableCell>
@@ -116,13 +116,13 @@ export function AllCoupons() {
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <Label className="mb-1 block">
-                  Name <span className="text-red-500">*</span>
+                  Name <span className="text-danger">*</span>
                 </Label>
                 <Input required value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div>
                 <Label className="mb-1 block">
-                  Discount Percentage <span className="text-red-500">*</span>
+                  Discount Percentage <span className="text-danger">*</span>
                 </Label>
                 <Input required type="number" value={value} onChange={(e) => setValue(e.target.value)} />
               </div>

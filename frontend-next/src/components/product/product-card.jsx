@@ -51,7 +51,7 @@ export function ProductCard({ data }) {
         aria-pressed={liked}
         className="absolute right-2 top-2 z-10 flex size-8 items-center justify-center rounded-full bg-surface/90 shadow-sm"
       >
-        <Heart className={liked ? "size-4 fill-red-500 text-red-500" : "size-4 text-content"} />
+        <Heart className={liked ? "size-4 fill-red-500 text-danger" : "size-4 text-content"} />
       </button>
 
       {(badge || off > 0) && (
