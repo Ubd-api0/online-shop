@@ -1,201 +1,258 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import { PackageCheck, X, Star } from "lucide-react";
+import { ArrowLeft, X, Star, Loader2 } from "lucide-react";
 import api from "@/lib/axios";
-import { getAllOrdersOfUser } from "@/redux/slices/order";
+import { formatPrice, formatDateTime, shortOrderId } from "@/lib/format";
+import { CUSTOMER_CANCELLABLE, STAGE_INFO, statusTone } from "@/lib/orders/status";
+import {
+  useOrder,
+  OrderTimeline,
+  ShipmentCard,
+  AddressCard,
+  PriceBreakdown,
+  OrderItems,
+} from "@/components/orders/order-parts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 
+const CANCEL_REASONS = [
+  "Changed my mind",
+  "Found a better price elsewhere",
+  "Ordered by mistake",
+  "Delivery takes too long",
+  "Need to change address / items",
+];
+
 export function UserOrderDetails({ orderId }) {
-  const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
-  const [open, setOpen] = useState(false);
+  const { order, setOrder, error, loading, reload } = useOrder(orderId);
+
+  const [reviewItem, setReviewItem] = useState(null);
+  const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [rating, setRating] = useState(1);
-
-  useEffect(() => {
-    if (user?._id) dispatch(getAllOrdersOfUser(user._id));
-  }, [dispatch, user]);
-
-  const data = orders?.find((item) => item._id === orderId);
-
-  const reviewHandler = async (type) => {
-    const endpoint = type === "product" ? "/product/create-new-review" : "/event/create-new-review-event";
-    return api.put(endpoint, {
-      user,
-      rating,
-      comment,
-      productId: selectedItem?._id,
-      orderId,
-    });
-  };
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState(CANCEL_REASONS[0]);
+  const [busy, setBusy] = useState(false);
 
   const submitReview = async () => {
-    if (rating <= 1) return;
     try {
-      const res = await reviewHandler("product");
-      toast.success(res.data.message);
-      dispatch(getAllOrdersOfUser(user._id));
-      setComment("");
-      setRating(1);
-      setOpen(false);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "An error occurred. Please try again.");
-    }
-  };
-
-  const refundHandler = async () => {
-    try {
-      const { data: res } = await api.put(`/order/order-refund/${orderId}`, {
-        status: "Processing refund",
+      const res = await api.put("/product/create-new-review", {
+        user,
+        rating,
+        comment,
+        productId: reviewItem?._id,
+        orderId,
       });
-      toast.success(res.message);
-      dispatch(getAllOrdersOfUser(user._id));
-    } catch (error) {
-      toast.error(error.response?.data?.message);
+      toast.success(res.data.message);
+      setReviewItem(null);
+      setComment("");
+      setRating(5);
+      reload();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not submit review");
     }
   };
 
-  if (!data) return null;
+  const cancelOrder = async () => {
+    setBusy(true);
+    try {
+      const { data } = await api.put(`/order/cancel/${orderId}`, { reason: cancelReason });
+      setOrder(data.order);
+      setCancelOpen(false);
+      toast.success("Your order has been cancelled");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not cancel this order");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const requestRefund = async () => {
+    setBusy(true);
+    try {
+      const { data } = await api.put(`/order/order-refund/${orderId}`);
+      setOrder(data.order);
+      toast.success("Refund requested");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not request a refund");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-24">
+        <Loader2 className="size-8 animate-spin text-brand" />
+      </div>
+    );
+  }
+  if (error || !order) {
+    return (
+      <div className="px-4 py-20 text-center">
+        <p className="mb-4 text-content">{error || "Order not found"}</p>
+        <Link href="/profile">
+          <Button variant="outline">Back to my orders</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const info = STAGE_INFO[order.status] || { title: order.status };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 800px:px-6">
-      <div className="flex items-center">
-        <PackageCheck className="size-8 text-brand" />
-        <h1 className="pl-2 text-2xl font-semibold text-content">Order Details</h1>
+    <div className="mx-auto max-w-6xl px-3 py-6 lg:px-5">
+      <Link href="/profile" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-content">
+        <ArrowLeft className="size-4" /> My orders
+      </Link>
+
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="flex items-center gap-3 text-2xl font-semibold text-content">
+            Order <span className="font-mono">{shortOrderId(order._id)}</span>
+          </h1>
+          <p className="mt-1 text-sm text-muted">Placed {formatDateTime(order.createdAt)}</p>
+        </div>
+        <Badge variant={statusTone(order.status)} className="px-3 py-1.5 text-sm">
+          {info.title}
+        </Badge>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-6">
-        <h5 className="text-muted">
-          Order ID: <span className="font-mono">#{data._id?.slice(0, 8)}</span>
-        </h5>
-        <h5 className="text-muted">Placed On: {data.createdAt?.slice(0, 10)}</h5>
-      </div>
-
-      <div className="mt-8 space-y-4">
-        {data.cart.map((item, index) => (
-          <div key={index} className="flex items-start gap-3">
-            <div className="relative size-20 shrink-0 overflow-hidden rounded-DEFAULT bg-surface-alt">
-              {item.images?.[0] && <Image src={item.images[0]} alt={item.name} fill className="object-cover" />}
-            </div>
-            <div className="flex-1">
-              <h5 className="text-lg text-content">{item.name}</h5>
-              <h5 className="text-muted">
-                US${item.discountPrice} x {item.qty}
-              </h5>
-            </div>
-            {!item.isReviewed && data.status === "Delivered" ? (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setOpen(true);
-                  setSelectedItem(item);
-                }}
-              >
-                Write a review
-              </Button>
-            ) : null}
-          </div>
-        ))}
-      </div>
-
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <Card variant="glass" className="max-h-[90vh] w-full max-w-lg overflow-y-auto p-5">
-            <div className="flex justify-end">
-              <button onClick={() => setOpen(false)} aria-label="Close">
-                <X className="size-6 text-content" />
-              </button>
-            </div>
-            <h2 className="text-center font-display text-2xl font-medium text-content">Give a Review</h2>
-
-            <div className="mt-6 flex items-center gap-3">
-              <div className="relative size-20 shrink-0 overflow-hidden rounded-DEFAULT bg-surface-alt">
-                {selectedItem?.images?.[0] && (
-                  <Image src={selectedItem.images[0]} alt="" fill className="object-cover" />
-                )}
-              </div>
-              <div>
-                <div className="text-lg text-content">{selectedItem?.name}</div>
-                <h4 className="text-content">
-                  US${selectedItem?.discountPrice} x {selectedItem?.qty}
-                </h4>
-              </div>
-            </div>
-
-            <h5 className="mt-6 font-medium text-content">
-              Give a Rating <span className="text-red-500">*</span>
-            </h5>
-            <div className="mt-2 flex gap-1">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <button key={i} onClick={() => setRating(i)} aria-label={`${i} stars`}>
-                  <Star className={rating >= i ? "size-6 fill-amber-400 text-amber-400" : "size-6 text-amber-400"} />
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-4">
-              <label className="font-medium text-content">
-                Write a Comment <span className="text-sm text-muted">(Optional)</span>
-              </label>
-              <Textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="How was your product? Write your expression about it!"
-                className="mt-2"
-              />
-            </div>
-
-            <Button onClick={submitReview} disabled={rating <= 1} className="mt-4 w-full">
-              Submit
-            </Button>
+      <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
+        <div className="min-w-0 space-y-5">
+          <Card variant="solid" className="p-5">
+            <h2 className="mb-5 font-semibold text-content">Tracking</h2>
+            <OrderTimeline order={order} />
           </Card>
-        </div>
-      )}
 
-      <div className="mt-6 border-t border-border pt-2 text-right">
-        <h5 className="text-content">
-          Total Price: <strong>US${data.totalPrice}</strong>
-        </h5>
-      </div>
+          <Card variant="solid" className="p-5">
+            <h2 className="mb-4 font-semibold text-content">Items</h2>
+            <OrderItems
+              order={order}
+              renderAction={(item) =>
+                order.status === "Delivered" && !item.isReviewed ? (
+                  <Button size="sm" variant="outline" onClick={() => setReviewItem(item)}>
+                    Write a review
+                  </Button>
+                ) : null
+              }
+            />
+          </Card>
 
-      <div className="mt-8 items-start gap-6 800px:flex">
-        <div className="w-full 800px:w-[60%]">
-          <h4 className="pt-3 text-lg font-semibold text-content">Shipping Address:</h4>
-          <p className="pt-2 text-content">
-            {data.shippingAddress?.address1} {data.shippingAddress?.address2}
-          </p>
-          <p className="text-content">{data.shippingAddress?.country}</p>
-          <p className="text-content">{data.shippingAddress?.city}</p>
-          <p className="text-content">{data.user?.phoneNumber}</p>
-        </div>
-
-        <div className="mt-6 w-full 800px:mt-0 800px:w-[40%]">
-          <h4 className="pt-3 text-lg text-content">Payment Info:</h4>
-          <div className="mt-1 flex items-center gap-2">
-            Status: <Badge variant="muted">{data.paymentInfo?.status || "Not Paid"}</Badge>
-          </div>
-          {data.status === "Delivered" && (
-            <Button onClick={refundHandler} variant="outline" className="mt-4">
-              Give a Refund
-            </Button>
+          {(CUSTOMER_CANCELLABLE.includes(order.status) || order.status === "Delivered") && (
+            <Card variant="solid" className="flex flex-wrap items-center justify-between gap-3 p-5">
+              {CUSTOMER_CANCELLABLE.includes(order.status) ? (
+                <>
+                  <p className="text-sm text-muted">You can cancel this order until it&apos;s handed to the courier.</p>
+                  <Button variant="outline" onClick={() => setCancelOpen(true)} className="text-red-500">
+                    Cancel order
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted">Something wrong with your order?</p>
+                  <Button variant="outline" onClick={requestRefund} disabled={busy}>
+                    Request a refund
+                  </Button>
+                </>
+              )}
+            </Card>
           )}
         </div>
+
+        <div className="space-y-5">
+          <ShipmentCard order={order} />
+          <AddressCard order={order} />
+          <PriceBreakdown order={order} />
+        </div>
       </div>
 
-      <Link href="/" className="mt-6 inline-block">
-        <Button variant="outline">Continue shopping</Button>
-      </Link>
+      {cancelOpen && (
+        <Modal onClose={() => setCancelOpen(false)} title="Cancel this order?">
+          <p className="mb-3 text-sm text-muted">Tell us why — it helps us improve.</p>
+          <div className="space-y-2">
+            {CANCEL_REASONS.map((r) => (
+              <label key={r} className="flex cursor-pointer items-center gap-2 text-sm text-content">
+                <input
+                  type="radio"
+                  name="cancel-reason"
+                  className="accent-brand"
+                  checked={cancelReason === r}
+                  onChange={() => setCancelReason(r)}
+                />
+                {r}
+              </label>
+            ))}
+          </div>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setCancelOpen(false)}>
+              Keep order
+            </Button>
+            <Button variant="destructive" onClick={cancelOrder} disabled={busy}>
+              {busy && <Loader2 className="animate-spin" />} Cancel order
+            </Button>
+          </div>
+        </Modal>
+      )}
+
+      {reviewItem && (
+        <Modal onClose={() => setReviewItem(null)} title="Rate your product">
+          <div className="flex items-center gap-3">
+            <div className="relative size-16 shrink-0 overflow-hidden rounded-DEFAULT bg-surface-alt">
+              {reviewItem.images?.[0] && <Image src={reviewItem.images[0]} alt="" fill className="object-contain" />}
+            </div>
+            <div>
+              <p className="text-content">{reviewItem.name}</p>
+              <p className="text-sm text-muted">
+                {formatPrice(reviewItem.discountPrice)} × {reviewItem.qty}
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 flex gap-1">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <button key={i} onClick={() => setRating(i)} aria-label={`${i} stars`}>
+                <Star className={rating >= i ? "size-7 fill-amber-400 text-amber-400" : "size-7 text-amber-400"} />
+              </button>
+            ))}
+          </div>
+          <Textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="What did you like or dislike? (optional)"
+            className="mt-4"
+          />
+          <Button onClick={submitReview} className="mt-4 w-full">
+            Submit review
+          </Button>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <Card
+        variant="solid"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto p-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-content">{title}</h2>
+          <button onClick={onClose} aria-label="Close">
+            <X className="size-5 text-muted hover:text-content" />
+          </button>
+        </div>
+        {children}
+      </Card>
     </div>
   );
 }

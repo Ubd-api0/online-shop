@@ -1,3 +1,5 @@
+import { resolveShippingSettings, DEFAULT_SHIPPING, ZONES } from "@/lib/shipping/rates";
+import { PROVINCES } from "@/lib/shipping/pakistan";
 import connectDB from "@/lib/db/connect";
 import Shop from "@/lib/db/models/Shop";
 import Category from "@/lib/db/models/Category";
@@ -105,4 +107,57 @@ export async function updatePaymentSettings(shopId, paymentSettings) {
   };
   await shop.save();
   return shop;
+}
+
+const num = (v, { min = 0, max = 1e7, fallback = 0 } = {}) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
+};
+
+export async function getShippingSettings(shopId) {
+  await connectDB();
+  const shop = await Shop.findById(shopId).lean();
+  return resolveShippingSettings(shop?.shippingSettings);
+}
+
+export async function updateShippingSettings(shopId, input) {
+  await connectDB();
+  if (!input) throw new ApiError("shippingSettings is required", 400);
+  if (!PROVINCES.some((p) => p.code === input.originProvince)) {
+    throw new ApiError("Choose the province you ship from", 400);
+  }
+  if (!String(input.originCity || "").trim()) throw new ApiError("Choose the city you ship from", 400);
+
+  const d = DEFAULT_SHIPPING;
+  const rates = {};
+  for (const { key } of ZONES) {
+    const r = input.rates?.[key] || {};
+    const etaMin = num(r.etaMin, { min: 0, max: 60, fallback: d.rates[key].etaMin });
+    rates[key] = {
+      firstHalfKg: num(r.firstHalfKg, { fallback: d.rates[key].firstHalfKg }),
+      extraHalfKg: num(r.extraHalfKg, { fallback: d.rates[key].extraHalfKg }),
+      etaMin,
+      etaMax: Math.max(etaMin, num(r.etaMax, { min: 0, max: 60, fallback: d.rates[key].etaMax })),
+    };
+  }
+  const exMin = num(input.express?.etaMin, { min: 0, max: 60, fallback: d.express.etaMin });
+
+  const settings = {
+    originProvince: input.originProvince,
+    originCity: String(input.originCity).trim(),
+    defaultWeightKg: num(input.defaultWeightKg, { min: 0.1, max: 500, fallback: d.defaultWeightKg }),
+    remoteProvinces: (input.remoteProvinces || []).filter((c) => PROVINCES.some((p) => p.code === c)),
+    rates,
+    express: {
+      enabled: !!input.express?.enabled,
+      multiplier: num(input.express?.multiplier, { min: 1, max: 10, fallback: d.express.multiplier }),
+      etaMin: exMin,
+      etaMax: Math.max(exMin, num(input.express?.etaMax, { min: 0, max: 60, fallback: d.express.etaMax })),
+    },
+    freeShippingThreshold: num(input.freeShippingThreshold),
+    codFee: num(input.codFee, { max: 100000 }),
+  };
+
+  await Shop.findByIdAndUpdate(shopId, { shippingSettings: settings });
+  return resolveShippingSettings(settings);
 }

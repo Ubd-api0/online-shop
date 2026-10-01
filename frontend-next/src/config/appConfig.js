@@ -29,6 +29,10 @@ const appConfig = {
   // Optional support email for the Contact page. Leave "" to fall back to the
   // shop email stored in the database (Dashboard → Settings).
   supportEmail: "",
+
+  // Currency every price in the storefront and dashboard is shown in.
+  // `symbol` is prefixed to amounts; `locale` controls digit grouping.
+  currency: { code: "PKR", symbol: "Rs.", locale: "en-PK" },
 };
 
 export default appConfig;

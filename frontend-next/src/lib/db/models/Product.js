@@ -33,6 +33,8 @@ const productSchema = new mongoose.Schema({
   },
   // Estimated days to manufacture + dispatch a made_to_order product (0 = not shown).
   leadTimeDays: { type: Number, default: 0 },
+  // Packed weight in kg — drives the delivery fee. Empty = store default.
+  weightKg: { type: Number },
   images: [{ type: String }],
   reviews: [
     {

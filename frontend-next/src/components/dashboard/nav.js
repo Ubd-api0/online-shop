@@ -12,6 +12,7 @@ import {
   LayoutGrid,
   Store,
   Settings,
+  Truck,
 } from "lucide-react";
 
 export const NAV = [
@@ -26,6 +27,7 @@ export const NAV = [
   { key: "refunds", label: "Refunds", to: "/dashboard-refunds", icon: RotateCcw },
   { key: "customers", label: "Customers", to: "/dashboard-customers", icon: Users },
   { key: "categories", label: "Categories", to: "/dashboard-categories", icon: LayoutGrid },
+  { key: "shipping", label: "Shipping", to: "/dashboard-shipping", icon: Truck },
   { key: "storefront", label: "Storefront", to: "/dashboard-storefront", icon: Store },
   { key: "settings", label: "Settings", to: "/settings", icon: Settings },
 ];

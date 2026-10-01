@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { X } from "lucide-react";
 import api from "@/lib/axios";
 import { effectivePolicy } from "@/lib/paymentPolicy";
+import { formatPrice } from "@/lib/format";
+import { formatAddressLines } from "@/components/address/address-fields";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,17 +73,17 @@ export function PaymentForm({ initialConfig }) {
   const orderRef = useMemo(() => `ORD-${Date.now()}`, []);
 
   const placeOrder = async (paymentInfo) => {
-    await api.post("/order/create-order", {
-      cart: orderData?.cart,
+    const { data } = await api.post("/order/create-order", {
+      items: orderData?.items || orderData?.cart,
       shippingAddress: orderData?.shippingAddress,
-      user,
-      totalPrice,
+      deliveryOption: orderData?.deliveryOption,
+      couponCode: orderData?.couponCode,
       paymentMethod: method,
       paymentInfo,
     });
     dispatch(completeCheckout(orderData));
     toast.success("Order placed successfully!");
-    window.location.assign("/order/success");
+    window.location.assign(`/order/success?id=${data.orders?.[0]?._id || ""}`);
   };
 
   const codHandler = async (e) => {
@@ -201,7 +203,7 @@ export function PaymentForm({ initialConfig }) {
             <Card variant="solid" className="p-6">
               <h4 className="mb-2 text-[18px] font-semibold text-content">Cash on Delivery</h4>
               <p className="mb-5 text-sm text-muted">
-                You will pay Rs. {remainingAmount} in cash when your order is delivered. No online
+                You will pay {formatPrice(remainingAmount)} in cash when your order is delivered. No online
                 payment is required now.
               </p>
               <Button onClick={codHandler} className="w-full">
@@ -217,8 +219,8 @@ export function PaymentForm({ initialConfig }) {
               paypalClientId={config?.paypalClientId}
               amountLabel={
                 method === "partial_advance"
-                  ? `Pay ${advancePercent}% advance (Rs. ${advanceAmount})`
-                  : `Pay Rs. ${amountDueNow}`
+                  ? `Pay ${advancePercent}% advance (${formatPrice(advanceAmount)})`
+                  : `Pay ${formatPrice(amountDueNow)}`
               }
               stripeHandler={stripeHandler}
               onApprove={onPaypalApprove}
@@ -389,21 +391,38 @@ function Row({ label, value, accent }) {
 function OrderTotals({ orderData, method, advancePercent, advanceAmount, remainingAmount, amountDueNow }) {
   return (
     <Card variant="solid" className="p-5">
-      <Row label="Subtotal" value={`Rs. ${orderData?.subTotalPrice ?? "-"}`} />
-      <Row label="Shipping" value={`Rs. ${Number(orderData?.shipping || 0).toFixed(2)}`} />
-      <Row label="Discount" value={orderData?.discountPrice ? `Rs. ${orderData.discountPrice}` : "-"} />
+      <Row label="Items total" value={formatPrice(orderData?.subTotal)} />
+      <Row
+        label={orderData?.delivery?.label || "Delivery fee"}
+        value={orderData?.delivery?.free ? "FREE" : formatPrice(orderData?.shippingFee)}
+      />
+      {orderData?.codFee > 0 && <Row label="COD fee" value={formatPrice(orderData.codFee)} />}
+      {orderData?.discount > 0 && <Row label="Voucher discount" value={`− ${formatPrice(orderData.discount)}`} accent="text-green-600" />}
       <div className="my-2 border-t border-border" />
-      <Row label="Total" value={`Rs. ${orderData?.totalPrice}`} />
+      <Row label="Total" value={formatPrice(orderData?.totalPrice)} />
       <div className="my-2 border-t border-border" />
       <Row label="Payment method" value={METHOD_LABEL[method] || method} />
       {method === "partial_advance" && (
         <>
-          <Row label={`Pay now (${advancePercent}%)`} value={`Rs. ${advanceAmount}`} accent="text-green-600" />
-          <Row label="Pay on delivery" value={`Rs. ${remainingAmount}`} accent="text-red-500" />
+          <Row label={`Pay now (${advancePercent}%)`} value={formatPrice(advanceAmount)} accent="text-green-600" />
+          <Row label="Pay on delivery" value={formatPrice(remainingAmount)} accent="text-red-500" />
         </>
       )}
-      {method === "online_full" && <Row label="Pay now" value={`Rs. ${amountDueNow}`} accent="text-green-600" />}
-      {method === "cod" && <Row label="Pay on delivery" value={`Rs. ${remainingAmount}`} accent="text-red-500" />}
+      {method === "online_full" && <Row label="Pay now" value={formatPrice(amountDueNow)} accent="text-green-600" />}
+      {method === "cod" && <Row label="Pay on delivery" value={formatPrice(remainingAmount)} accent="text-red-500" />}
+      {orderData?.shippingAddress && (
+        <div className="mt-3 border-t border-border pt-3 text-sm">
+          <p className="mb-1 font-medium text-content">Deliver to</p>
+          <p className="text-muted">
+            {orderData.shippingAddress.fullName} · {orderData.shippingAddress.phone}
+          </p>
+          {formatAddressLines(orderData.shippingAddress).map((l) => (
+            <p key={l} className="text-muted">
+              {l}
+            </p>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }

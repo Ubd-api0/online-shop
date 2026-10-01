@@ -15,6 +15,7 @@ import {
 } from "@/redux/slices/cart";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/format";
 
 const checkboxClass = "size-4 shrink-0 cursor-pointer accent-brand";
 
@@ -85,7 +86,7 @@ export function CartDrawer({ open, onOpenChange }) {
                 <span className="text-muted">
                   Selected: {selected.length} of {cart.length}
                 </span>
-                <span className="text-base font-bold text-content">${selectedTotal.toFixed(2)}</span>
+                <span className="text-base font-bold text-content">{formatPrice(selectedTotal)}</span>
               </div>
               <Button className="w-full" onClick={checkout} disabled={selected.length === 0}>
                 {selected.length === 0
@@ -163,9 +164,9 @@ function CartItem({ data, dispatch }) {
           <p className="text-xs text-red-500">Not enough stock</p>
         ) : null}
         <p className="text-xs text-muted">
-          ${data.discountPrice} × {value}
+          {formatPrice(data.discountPrice)} × {value}
         </p>
-        <p className="font-bold text-brand">${totalPrice}</p>
+        <p className="font-bold text-brand">{formatPrice(totalPrice)}</p>
       </div>
 
       <button

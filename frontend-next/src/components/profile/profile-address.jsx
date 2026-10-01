@@ -1,146 +1,91 @@
 "use client";
 
 import { useState } from "react";
-import { Country, State } from "country-state-city";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil, Plus, MapPin } from "lucide-react";
 import { updateUserAddress, deleteUserAddress } from "@/redux/slices/user";
+import { normalizeAddress } from "@/lib/shipping/pakistan";
+import { AddressFields, EMPTY_ADDRESS, addressError, formatAddressLines } from "@/components/address/address-fields";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function ProfileAddress() {
-  const [open, setOpen] = useState(false);
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [addressType, setAddressType] = useState("");
-
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [draft, setDraft] = useState(null); // address being added / edited
 
-  const handleSubmit = (e) => {
+  const addresses = (user?.addresses || []).map((a) => ({ ...EMPTY_ADDRESS, ...normalizeAddress(a) }));
+
+  const save = async (e) => {
     e.preventDefault();
-    if (!country || !city || !address1 || !zipCode || !addressType) {
-      toast.error("Please fill all fields");
-      return;
-    }
-    dispatch(updateUserAddress({ country, city, address1, address2, zipCode, addressType }));
-    setOpen(false);
-    setCountry("");
-    setCity("");
-    setZipCode("");
-    setAddress1("");
-    setAddress2("");
-    setAddressType("");
-  };
-
-  const handleDelete = (item) => {
-    dispatch(deleteUserAddress(item._id));
+    const err = addressError(draft);
+    if (err) return toast.error(err);
+    const res = await dispatch(updateUserAddress(draft));
+    if (res.error) return toast.error(res.payload || "Could not save address");
+    toast.success("Address saved");
+    setDraft(null);
   };
 
   return (
     <div className="w-full">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="font-display text-2xl font-semibold text-content">My Addresses</h2>
-        <Button onClick={() => setOpen(true)}>Add New</Button>
+        <Button onClick={() => setDraft({ ...EMPTY_ADDRESS, fullName: user?.name || "" })}>
+          <Plus /> Add new
+        </Button>
       </div>
 
-      <div className="space-y-4">
-        {(user?.addresses || []).map((item) => (
-          <Card
-            key={item._id}
-            variant="solid"
-            className="flex flex-col justify-between gap-4 p-4 md:flex-row md:items-center"
-          >
-            <div>
-              <h4 className="font-semibold text-content">{item.addressType}</h4>
-              <p className="text-sm text-muted">
-                {item.address1} {item.address2}
-              </p>
-              <p className="text-sm text-muted">{user?.phoneNumber}</p>
-            </div>
-            <button onClick={() => handleDelete(item)} aria-label="Delete address">
-              <Trash2 className="size-[22px] text-red-500" />
-            </button>
-          </Card>
-        ))}
-      </div>
-
-      {(user?.addresses || []).length === 0 && (
-        <p className="mt-10 text-center text-muted">No saved addresses</p>
+      {addresses.length === 0 ? (
+        <Card variant="solid" className="flex flex-col items-center gap-2 p-10 text-center">
+          <MapPin className="size-10 text-muted" />
+          <p className="text-muted">No saved addresses yet. Add one to check out faster.</p>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {addresses.map((item) => (
+            <Card key={item._id} variant="solid" className="flex justify-between gap-4 p-4">
+              <div className="min-w-0">
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="font-semibold text-content">{item.fullName || user?.name}</span>
+                  <Badge variant="muted">{item.addressType}</Badge>
+                </div>
+                {item.phone && <p className="text-sm text-muted">{item.phone}</p>}
+                {formatAddressLines(item).map((l) => (
+                  <p key={l} className="text-sm text-muted">
+                    {l}
+                  </p>
+                ))}
+                {addressError(item) && <p className="mt-1 text-xs text-amber-600">Incomplete — edit to add missing details</p>}
+              </div>
+              <div className="flex shrink-0 flex-col gap-3">
+                <button onClick={() => setDraft({ ...item })} aria-label="Edit address" className="text-muted hover:text-brand">
+                  <Pencil className="size-[18px]" />
+                </button>
+                <button onClick={() => dispatch(deleteUserAddress(item._id))} aria-label="Delete address" className="text-red-500">
+                  <Trash2 className="size-[18px]" />
+                </button>
+              </div>
+            </Card>
+          ))}
+        </div>
       )}
 
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={!!draft} onOpenChange={(o) => !o && setDraft(null)}>
         <SheetContent side="right">
           <SheetHeader>
-            <SheetTitle>Add Address</SheetTitle>
+            <SheetTitle>{draft?._id ? "Edit address" : "Add address"}</SheetTitle>
           </SheetHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto p-5">
-            <div>
-              <Label className="mb-2 block">Country</Label>
-              <select
-                className="h-[45px] w-full rounded-DEFAULT border border-border bg-surface px-3 text-content outline-none focus:border-brand"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-              >
-                <option value="">Select Country</option>
-                {Country.getAllCountries().map((item) => (
-                  <option key={item.isoCode} value={item.isoCode}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label className="mb-2 block">State</Label>
-              <select
-                className="h-[45px] w-full rounded-DEFAULT border border-border bg-surface px-3 text-content outline-none focus:border-brand"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              >
-                <option value="">Select State</option>
-                {State.getStatesOfCountry(country).map((item) => (
-                  <option key={item.isoCode} value={item.isoCode}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label className="mb-2 block">Address 1</Label>
-              <Input value={address1} onChange={(e) => setAddress1(e.target.value)} />
-            </div>
-            <div>
-              <Label className="mb-2 block">Address 2</Label>
-              <Input value={address2} onChange={(e) => setAddress2(e.target.value)} />
-            </div>
-            <div>
-              <Label className="mb-2 block">Zip Code</Label>
-              <Input type="number" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
-            </div>
-            <div>
-              <Label className="mb-2 block">Address Type</Label>
-              <select
-                className="h-[45px] w-full rounded-DEFAULT border border-border bg-surface px-3 text-content outline-none focus:border-brand"
-                value={addressType}
-                onChange={(e) => setAddressType(e.target.value)}
-              >
-                <option value="">Select Type</option>
-                <option value="Home">Home</option>
-                <option value="Office">Office</option>
-                <option value="Default">Default</option>
-              </select>
-            </div>
-            <Button type="submit" className="w-full">
-              Save Address
-            </Button>
-          </form>
+          {draft && (
+            <form onSubmit={save} className="space-y-5 overflow-y-auto p-5">
+              <AddressFields value={draft} onChange={setDraft} compact />
+              <Button type="submit" className="w-full">
+                Save address
+              </Button>
+            </form>
+          )}
         </SheetContent>
       </Sheet>
     </div>

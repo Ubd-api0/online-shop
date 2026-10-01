@@ -9,6 +9,7 @@ import { getAllProductsShop } from "@/redux/slices/products";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { formatPrice } from "@/lib/format";
 
 export function DashboardHero() {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export function DashboardHero() {
             <Wallet className="size-[26px]" />
             <h3>Total Revenue</h3>
           </div>
-          <h5 className="mt-2 pl-9 text-2xl font-medium text-content">${availableBalance}</h5>
+          <h5 className="mt-2 pl-9 text-2xl font-medium text-content">{formatPrice(availableBalance)}</h5>
           <p className="mt-3 pl-1 text-sm text-muted">from delivered orders</p>
         </Card>
 
@@ -80,7 +81,7 @@ export function DashboardHero() {
                 <Badge variant={item.status === "Delivered" ? "success" : "warning"}>{item.status}</Badge>
               </TableCell>
               <TableCell>{item.cart.reduce((acc, c) => acc + c.qty, 0)}</TableCell>
-              <TableCell>US$ {item.totalPrice}</TableCell>
+              <TableCell>{formatPrice(item.totalPrice)}</TableCell>
               <TableCell>
                 <Link href={`/order/${item._id}`} className="inline-flex text-brand hover:text-brand-hover">
                   <ArrowRight className="size-[18px]" />

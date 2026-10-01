@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeFromWishlist } from "@/redux/slices/wishlist";
 import { addToCart } from "@/redux/slices/cart";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { formatPrice } from "@/lib/format";
 
 export function WishlistDrawer({ open, onOpenChange }) {
   const wishlist = useSelector((state) => state.wishlist.wishlist);
@@ -41,7 +42,7 @@ export function WishlistDrawer({ open, onOpenChange }) {
                 </div>
                 <div className="flex-1">
                   <p className="line-clamp-1 text-sm text-content">{item.name}</p>
-                  <p className="font-bold text-brand">${item.discountPrice}</p>
+                  <p className="font-bold text-brand">{formatPrice(item.discountPrice)}</p>
                 </div>
                 <div className="flex flex-col gap-2">
                   <button

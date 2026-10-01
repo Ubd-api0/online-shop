@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { formatPrice } from "@/lib/format";
 import { completeCheckout } from "@/redux/slices/cart";
 import { toast } from "sonner";
 import api from "@/lib/axios";
@@ -15,7 +16,6 @@ export function PaymentMockContent() {
   const params = useSearchParams();
   const router = useRouter();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
 
   const gateway = params.get("gateway") || "gateway";
@@ -39,11 +39,11 @@ export function PaymentMockContent() {
     try {
       await api.post("/payment/gateway/verify", { gateway, orderRef });
       const method = orderData.paymentMethod || "online_full";
-      await api.post("/order/create-order", {
-        cart: orderData.cart,
+      const { data } = await api.post("/order/create-order", {
+        items: orderData.items || orderData.cart,
         shippingAddress: orderData.shippingAddress,
-        user,
-        totalPrice: orderData.totalPrice,
+        deliveryOption: orderData.deliveryOption,
+        couponCode: orderData.couponCode,
         paymentMethod: method,
         paymentInfo: {
           id: `${gateway}-${orderRef}`,
@@ -53,7 +53,7 @@ export function PaymentMockContent() {
       });
       dispatch(completeCheckout(orderData));
       toast.success("Payment successful!");
-      window.location.assign("/order/success");
+      window.location.assign(`/order/success?id=${data.orders?.[0]?._id || ""}`);
     } catch (err) {
       toast.error(err.response?.data?.message || "Could not complete order");
     } finally {
@@ -74,7 +74,7 @@ export function PaymentMockContent() {
         <div className="mb-6 rounded-DEFAULT bg-surface-alt p-4 text-left text-sm">
           <div className="flex justify-between py-1">
             <span className="text-muted">Amount</span>
-            <span className="font-semibold text-content">Rs. {amount}</span>
+            <span className="font-semibold text-content">{formatPrice(amount)}</span>
           </div>
           <div className="flex justify-between py-1">
             <span className="text-muted">Reference</span>

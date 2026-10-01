@@ -27,6 +27,9 @@ const shopSchema = new mongoose.Schema({
       jazzcash: { type: Boolean, default: false },
     },
   },
+  // Delivery pricing (Dashboard -> Shipping). Missing fields fall back to
+  // DEFAULT_SHIPPING in lib/shipping/rates.js, so it's stored loosely.
+  shippingSettings: { type: mongoose.Schema.Types.Mixed },
   // Owner-editable storefront content (home page).
   storefront: {
     hero: {

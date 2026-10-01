@@ -10,6 +10,7 @@ import { CountDown } from "@/components/events/count-down";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/lib/format";
 
 export function EventCard({ data }) {
   const cart = useSelector((state) => state.cart.cart);
@@ -52,9 +53,9 @@ export function EventCard({ data }) {
         <div className="mt-4">
           <div className="flex flex-wrap items-center gap-3">
             {data.originalPrice ? (
-              <span className="text-sm text-muted line-through">${data.originalPrice}</span>
+              <span className="text-sm text-muted line-through">{formatPrice(data.originalPrice)}</span>
             ) : null}
-            <span className="text-2xl font-bold text-brand">${data.discountPrice}</span>
+            <span className="text-2xl font-bold text-brand">{formatPrice(data.discountPrice)}</span>
             {discountPct > 0 && (
               <span className="text-sm font-medium text-green-600">{discountPct}% OFF</span>
             )}

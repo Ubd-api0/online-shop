@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Eye, Trash2 } from "lucide-react";
 import { getAllEventsShop, deleteEvent } from "@/redux/slices/events";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { formatPrice } from "@/lib/format";
 
 export function AllEvents() {
   const { events } = useSelector((state) => state.events);
@@ -35,7 +36,7 @@ export function AllEvents() {
         {(events || []).map((item) => (
           <TableRow key={item._id}>
             <TableCell className="max-w-[220px] truncate">{item.name}</TableCell>
-            <TableCell>US$ {item.discountPrice}</TableCell>
+            <TableCell>{formatPrice(item.discountPrice)}</TableCell>
             <TableCell>{item.stock}</TableCell>
             <TableCell>{item.sold_out}</TableCell>
             <TableCell>

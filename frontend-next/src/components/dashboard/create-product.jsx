@@ -30,6 +30,7 @@ export function CreateProductForm() {
   const [stock, setStock] = useState("");
   const [fulfillment, setFulfillment] = useState("in_stock");
   const [leadTimeDays, setLeadTimeDays] = useState("");
+  const [weightKg, setWeightKg] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const madeToOrder = fulfillment === "made_to_order";
   const [override, setOverride] = useState({
@@ -73,6 +74,7 @@ export function CreateProductForm() {
           stock: madeToOrder ? 0 : stock,
           fulfillment,
           leadTimeDays: madeToOrder ? Number(leadTimeDays) || 0 : 0,
+          ...(Number(weightKg) > 0 ? { weightKg: Number(weightKg) } : {}),
           shopId: seller._id,
           paymentOverride: override.enabled
             ? {
@@ -180,6 +182,18 @@ export function CreateProductForm() {
             <Input required type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Enter your product stock..." />
           </div>
         )}
+
+        <div>
+          <Label className="mb-2 block">Packed weight (kg)</Label>
+          <Input
+            type="number"
+            step="0.1"
+            min="0"
+            value={weightKg}
+            onChange={(e) => setWeightKg(e.target.value)}
+            placeholder="e.g. 1.5 — used to calculate delivery charges"
+          />
+        </div>
 
         <div className="rounded-DEFAULT border border-border p-3">
           <label className="flex items-center gap-2 font-medium text-content">

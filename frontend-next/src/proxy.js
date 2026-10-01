@@ -35,6 +35,7 @@ export const config = {
     "/dashboard-messages",
     "/dashboard-categories",
     "/dashboard-storefront",
+    "/dashboard-shipping",
     "/settings",
     "/shop/:id",
     "/order/:id",

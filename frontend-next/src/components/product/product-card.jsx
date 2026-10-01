@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { isAvailable, isMadeToOrder, availabilityBadge } from "@/lib/productAvailability";
+import { formatPrice } from "@/lib/format";
 
 export function ProductCard({ data }) {
   const wishlist = useSelector((state) => state.wishlist.wishlist);
@@ -78,9 +79,9 @@ export function ProductCard({ data }) {
       <h4 className="line-clamp-2 text-sm font-medium text-content">{data.name}</h4>
 
       <div className="mt-1 flex items-center gap-2">
-        <span className="font-bold text-brand">${data.discountPrice}</span>
+        <span className="font-bold text-brand">{formatPrice(data.discountPrice)}</span>
         {data.originalPrice ? (
-          <span className="text-xs text-muted line-through">${data.originalPrice}</span>
+          <span className="text-xs text-muted line-through">{formatPrice(data.originalPrice)}</span>
         ) : null}
       </div>
 

@@ -22,7 +22,10 @@ const userSchema = new mongoose.Schema({
   },
   addresses: [
     {
+      fullName: { type: String },
+      phone: { type: String },
       country: { type: String },
+      province: { type: String },
       city: { type: String },
       address1: { type: String },
       address2: { type: String },
@@ -52,10 +55,10 @@ const userSchema = new mongoose.Schema({
   resetPasswordTime: Date,
 });
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
+// Mongoose 9: async hooks get no `next` — returning resolves the hook.
+// Only hash when the password actually changed, never re-hash a hash.
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
 

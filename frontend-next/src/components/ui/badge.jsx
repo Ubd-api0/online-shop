@@ -9,6 +9,7 @@ export const badgeVariants = cva(
         brand: "bg-brand/15 text-brand",
         muted: "bg-surface-alt text-muted border border-border",
         success: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+        info: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
         warning: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
         destructive: "bg-red-500/15 text-red-600 dark:text-red-400",
         glass: "glass-surface text-content",

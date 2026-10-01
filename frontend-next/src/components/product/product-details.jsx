@@ -14,6 +14,7 @@ import api from "@/lib/axios";
 import { Ratings } from "@/components/product/ratings";
 import { Button } from "@/components/ui/button";
 import { isMadeToOrder, isAvailable, maxQty, availabilityLabel } from "@/lib/productAvailability";
+import { formatPrice } from "@/lib/format";
 
 export function ProductDetails({ data, allProducts = [] }) {
   const cart = useSelector((state) => state.cart.cart);
@@ -119,9 +120,9 @@ export function ProductDetails({ data, allProducts = [] }) {
             <div className="mt-4 rounded-DEFAULT bg-surface-alt p-3">
               <div className="flex items-center gap-3">
                 {data.originalPrice ? (
-                  <span className="text-red-500 line-through">${data.originalPrice}</span>
+                  <span className="text-red-500 line-through">{formatPrice(data.originalPrice)}</span>
                 ) : null}
-                <span className="text-2xl font-bold text-green-600">${data.discountPrice}</span>
+                <span className="text-2xl font-bold text-green-600">{formatPrice(data.discountPrice)}</span>
               </div>
               <p className="mt-1 text-sm text-muted">{data.sold_out} sold</p>
               <p

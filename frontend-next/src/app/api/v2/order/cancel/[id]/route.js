@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import { withErrorHandling } from "@/lib/api/errors";
 import { requireAuth } from "@/lib/auth/session";
-import { requestOrderRefund } from "@/lib/data/orders";
+import { cancelOrderByCustomer } from "@/lib/data/orders";
 
 export const PUT = withErrorHandling(async (request, { params }) => {
   const user = await requireAuth();
   const { id } = await params;
-  const order = await requestOrderRefund(id, user._id);
-  return NextResponse.json({
-    success: true,
-    order,
-    message: "Order Refund Request successfully!",
-  });
+  const { reason } = await request.json().catch(() => ({}));
+  const order = await cancelOrderByCustomer(id, user._id, reason);
+  return NextResponse.json({ success: true, order, message: "Order cancelled" });
 });

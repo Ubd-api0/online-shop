@@ -4,15 +4,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllOrdersOfUser } from "@/redux/slices/order";
 import { OrderTable } from "@/components/profile/order-table";
-
-function toRows(orders) {
-  return (orders || []).map((item) => ({
-    id: item._id,
-    status: item.status,
-    itemsQty: item.cart.length,
-    total: `US$ ${item.totalPrice}`,
-  }));
-}
+import { CANCELLED, REFUND_STAGES } from "@/lib/orders/status";
 
 export function ProfileOrders() {
   const { user } = useSelector((state) => state.user);
@@ -23,7 +15,7 @@ export function ProfileOrders() {
     if (user?._id) dispatch(getAllOrdersOfUser(user._id));
   }, [dispatch, user]);
 
-  return <OrderTable rows={toRows(orders)} />;
+  return <OrderTable orders={orders} />;
 }
 
 export function ProfileRefunds() {
@@ -35,8 +27,8 @@ export function ProfileRefunds() {
     if (user?._id) dispatch(getAllOrdersOfUser(user._id));
   }, [dispatch, user]);
 
-  const refundOrders = (orders || []).filter((item) => item.status === "Processing refund");
-  return <OrderTable rows={toRows(refundOrders)} />;
+  const refundOrders = orders && orders.filter((item) => REFUND_STAGES.includes(item.status));
+  return <OrderTable orders={refundOrders} emptyText="No refund requests." />;
 }
 
 export function ProfileTrackOrders() {
@@ -48,5 +40,7 @@ export function ProfileTrackOrders() {
     if (user?._id) dispatch(getAllOrdersOfUser(user._id));
   }, [dispatch, user]);
 
-  return <OrderTable rows={toRows(orders)} track />;
+  // Only orders still on their way.
+  const active = orders && orders.filter((o) => ![CANCELLED, "Delivered", ...REFUND_STAGES].includes(o.status));
+  return <OrderTable orders={active} emptyText="No orders on the way right now." />;
 }

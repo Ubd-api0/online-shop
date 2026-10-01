@@ -29,10 +29,13 @@ export const updateUserInformation = createAsyncThunk(
 
 export const updateUserAddress = createAsyncThunk(
   "user/updateAddress",
-  async ({ country, city, address1, address2, zipCode, addressType, _id }, { rejectWithValue }) => {
+  async ({ fullName, phone, country, province, city, address1, address2, zipCode, addressType, _id }, { rejectWithValue }) => {
     try {
       const { data } = await api.put("/user/update-user-addresses", {
-        country,
+        fullName,
+        phone,
+        country: country || "PK",
+        province,
         city,
         address1,
         address2,

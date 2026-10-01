@@ -1,46 +1,91 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, MapPin } from "lucide-react";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import Image from "next/image";
+import { Package, MapPin } from "lucide-react";
+import { formatPrice, formatDateTime, formatShortDate, shortOrderId } from "@/lib/format";
+import { STAGE_INFO, statusTone, CANCELLED, REFUND_STAGES } from "@/lib/orders/status";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-export function OrderTable({ rows, track = false }) {
-  if (rows.length === 0) {
-    return <p className="py-10 text-center text-muted">No orders yet.</p>;
+// `orders` is undefined until the first fetch lands — show a skeleton, not "empty".
+export function OrderTable({ orders, emptyText = "You haven't placed any orders yet." }) {
+  if (orders === undefined) {
+    return (
+      <div className="space-y-4">
+        {[0, 1].map((i) => (
+          <div key={i} className="h-[130px] animate-pulse rounded-lg bg-surface-alt" />
+        ))}
+      </div>
+    );
+  }
+  if (!orders.length) {
+    return (
+      <Card variant="solid" className="flex flex-col items-center gap-3 p-10 text-center">
+        <Package className="size-10 text-muted" />
+        <p className="text-muted">{emptyText}</p>
+        <Link href="/products">
+          <Button size="sm">Start shopping</Button>
+        </Link>
+      </Card>
+    );
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Order ID</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Items</TableHead>
-          <TableHead>Total</TableHead>
-          <TableHead>Action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((row) => (
-          <TableRow key={row.id}>
-            <TableCell className="font-mono text-xs">#{row.id.slice(0, 8)}</TableCell>
-            <TableCell>
-              <Badge variant={row.status === "Delivered" ? "success" : "muted"}>{row.status}</Badge>
-            </TableCell>
-            <TableCell>{row.itemsQty}</TableCell>
-            <TableCell>{row.total}</TableCell>
-            <TableCell>
-              <Link
-                href={track ? `/user/track/order/${row.id}` : `/user/order/${row.id}`}
-                className="inline-flex text-brand hover:text-brand-hover"
-              >
-                {track ? <MapPin className="size-[18px]" /> : <ArrowRight className="size-[18px]" />}
-              </Link>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="space-y-4">
+      {orders.map((order) => {
+        const open = ![CANCELLED, "Delivered", ...REFUND_STAGES].includes(order.status);
+        const qty = order.cart.reduce((s, i) => s + (i.qty || 1), 0);
+        return (
+          <Card key={order._id} variant="solid" className="overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-alt/60 px-4 py-3">
+              <div className="text-sm">
+                <span className="font-mono font-semibold text-content">{shortOrderId(order._id)}</span>
+                <span className="ml-2 text-muted">{formatDateTime(order.createdAt)}</span>
+              </div>
+              <Badge variant={statusTone(order.status)}>{STAGE_INFO[order.status]?.title || order.status}</Badge>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 px-4 py-3">
+              <div className="flex -space-x-3">
+                {order.cart.slice(0, 4).map((item, i) => (
+                  <div key={i} className="relative size-14 overflow-hidden rounded-DEFAULT border-2 border-surface bg-surface-alt">
+                    {item.images?.[0] && <Image src={item.images[0]} alt={item.name} fill className="object-contain" />}
+                  </div>
+                ))}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="line-clamp-1 text-sm text-content">
+                  {order.cart[0]?.name}
+                  {order.cart.length > 1 ? ` + ${order.cart.length - 1} more` : ""}
+                </p>
+                <p className="text-xs text-muted">
+                  {qty} item(s) · {formatPrice(order.totalPrice)}
+                </p>
+                {open && order.delivery?.etaTo && (
+                  <p className="text-xs text-brand">
+                    Expected {formatShortDate(order.delivery.etaFrom)} – {formatShortDate(order.delivery.etaTo)}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Link href={`/user/order/${order._id}`}>
+                  <Button size="sm" variant="outline">
+                    Details
+                  </Button>
+                </Link>
+                {open && (
+                  <Link href={`/user/track/order/${order._id}`}>
+                    <Button size="sm">
+                      <MapPin /> Track
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

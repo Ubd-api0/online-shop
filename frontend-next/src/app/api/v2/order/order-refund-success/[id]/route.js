@@ -7,6 +7,6 @@ export const PUT = withErrorHandling(async (request, { params }) => {
   await requireSeller();
   const { id } = await params;
   const { status } = await request.json();
-  await acceptOrderRefund(id, status);
-  return NextResponse.json({ success: true, message: "Order Refund successfull!" });
+  const order = await acceptOrderRefund(id, status);
+  return NextResponse.json({ success: true, order, message: "Order Refund successfull!" });
 });
