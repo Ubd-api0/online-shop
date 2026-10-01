@@ -78,6 +78,9 @@ const userSlice = createSlice({
     clearErrors: (state) => {
       state.error = null;
     },
+    clearMessages: (state) => {
+      state.successMessage = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -143,5 +146,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { clearErrors } = userSlice.actions;
+export const { clearErrors, clearMessages } = userSlice.actions;
 export default userSlice.reducer;

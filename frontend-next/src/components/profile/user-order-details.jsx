@@ -98,7 +98,7 @@ export function UserOrderDetails({ orderId }) {
     return (
       <div className="px-4 py-20 text-center">
         <p className="mb-4 text-content">{error || "Order not found"}</p>
-        <Link href="/profile">
+        <Link href="/profile/orders">
           <Button variant="outline">Back to my orders</Button>
         </Link>
       </div>
@@ -109,7 +109,7 @@ export function UserOrderDetails({ orderId }) {
 
   return (
     <div className="mx-auto max-w-6xl px-3 py-6 lg:px-5">
-      <Link href="/profile" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-content">
+      <Link href="/profile/orders" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-content">
         <ArrowLeft className="size-4" /> My orders
       </Link>
 

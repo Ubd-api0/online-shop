@@ -31,11 +31,8 @@ export function ChangePassword() {
   };
 
   return (
-    <Card variant="solid" className="p-5">
-      <h2 className="mb-6 text-center font-display text-2xl font-semibold text-content">
-        Change Password
-      </h2>
-      <form onSubmit={handleSubmit} className="mx-auto max-w-xl space-y-4">
+    <Card variant="solid" className="p-5 sm:p-6">
+      <form onSubmit={handleSubmit} className="max-w-md space-y-4">
         <div>
           <Label className="mb-2 block">Old Password</Label>
           <Input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
@@ -52,7 +49,7 @@ export function ChangePassword() {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </div>
-        <Button type="submit" variant="outline" className="w-full">
+        <Button type="submit" className="w-full sm:w-auto">
           Update Password
         </Button>
       </form>

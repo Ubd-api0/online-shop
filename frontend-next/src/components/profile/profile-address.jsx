@@ -31,8 +31,7 @@ export function ProfileAddress() {
 
   return (
     <div className="w-full">
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className="font-display text-2xl font-semibold text-content">My Addresses</h2>
+      <div className="mb-4 flex justify-end">
         <Button onClick={() => setDraft({ ...EMPTY_ADDRESS, fullName: user?.name || "" })}>
           <Plus /> Add new
         </Button>

@@ -42,46 +42,45 @@ export function OrderTable({ orders, emptyText = "You haven't placed any orders 
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-alt/60 px-4 py-3">
               <div className="text-sm">
                 <span className="font-mono font-semibold text-content">{shortOrderId(order._id)}</span>
-                <span className="ml-2 text-muted">{formatDateTime(order.createdAt)}</span>
+                <span className="block text-xs text-muted sm:ml-2 sm:inline sm:text-sm">{formatDateTime(order.createdAt)}</span>
               </div>
               <Badge variant={statusTone(order.status)}>{STAGE_INFO[order.status]?.title || order.status}</Badge>
             </div>
-            <div className="flex flex-wrap items-center gap-4 px-4 py-3">
-              <div className="flex -space-x-3">
-                {order.cart.slice(0, 4).map((item, i) => (
+            <div className="flex items-center gap-3 px-4 py-3">
+              <div className="flex shrink-0 -space-x-3">
+                {order.cart.slice(0, 3).map((item, i) => (
                   <div key={i} className="relative size-14 overflow-hidden rounded-DEFAULT border-2 border-surface bg-surface-alt">
                     {item.images?.[0] && <Image src={item.images[0]} alt={item.name} fill className="object-contain" />}
                   </div>
                 ))}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="line-clamp-1 text-sm text-content">
+                <p className="line-clamp-1 text-sm font-medium text-content">
                   {order.cart[0]?.name}
                   {order.cart.length > 1 ? ` + ${order.cart.length - 1} more` : ""}
                 </p>
-                <p className="text-xs text-muted">
-                  {qty} item(s) · {formatPrice(order.totalPrice)}
-                </p>
+                <p className="text-xs text-muted">{qty} item(s)</p>
                 {open && order.delivery?.etaTo && (
-                  <p className="text-xs text-brand">
+                  <p className="text-xs text-sky-600 dark:text-sky-400">
                     Expected {formatShortDate(order.delivery.etaFrom)} – {formatShortDate(order.delivery.etaTo)}
                   </p>
                 )}
               </div>
-              <div className="flex gap-2">
-                <Link href={`/user/order/${order._id}`}>
-                  <Button size="sm" variant="outline">
-                    Details
+              <span className="shrink-0 text-sm font-semibold text-content">{formatPrice(order.totalPrice)}</span>
+            </div>
+            <div className="flex justify-end gap-2 border-t border-border px-4 py-2.5">
+              <Link href={`/user/order/${order._id}`}>
+                <Button size="sm" variant="outline">
+                  Details
+                </Button>
+              </Link>
+              {open && (
+                <Link href={`/user/track/order/${order._id}`}>
+                  <Button size="sm">
+                    <MapPin /> Track
                   </Button>
                 </Link>
-                {open && (
-                  <Link href={`/user/track/order/${order._id}`}>
-                    <Button size="sm">
-                      <MapPin /> Track
-                    </Button>
-                  </Link>
-                )}
-              </div>
+              )}
             </div>
           </Card>
         );

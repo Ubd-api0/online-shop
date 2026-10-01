@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Camera } from "lucide-react";
 import api from "@/lib/axios";
 import Cloudinary from "@/lib/cloudinary";
-import { loadUser, updateUserInformation, clearErrors } from "@/redux/slices/user";
+import { loadUser, updateUserInformation, clearErrors, clearMessages } from "@/redux/slices/user";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,14 @@ export function ProfileInfo() {
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [password, setPassword] = useState("");
 
+  // Opened directly by URL, the user record may arrive after first render.
+  useEffect(() => {
+    if (!user) return;
+    setName((v) => v || user.name || "");
+    setEmail((v) => v || user.email || "");
+    setPhoneNumber((v) => v || user.phoneNumber || "");
+  }, [user]);
+
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -29,6 +37,7 @@ export function ProfileInfo() {
     }
     if (successMessage) {
       toast.success(successMessage);
+      dispatch(clearMessages());
     }
   }, [error, successMessage, dispatch]);
 
@@ -51,10 +60,10 @@ export function ProfileInfo() {
   };
 
   return (
-    <Card variant="solid" className="p-5">
+    <Card variant="solid" className="p-5 sm:p-6">
       <div className="flex justify-center">
         <div className="relative">
-          <div className="relative size-[140px] overflow-hidden rounded-full border-4 border-green-500 bg-surface-alt">
+          <div className="relative size-24 overflow-hidden rounded-full border-4 border-brand/30 bg-surface-alt sm:size-28">
             {user?.avatar && <Image src={user.avatar} alt="avatar" fill className="object-cover" />}
           </div>
           <label
@@ -67,7 +76,7 @@ export function ProfileInfo() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-8">
+      <form onSubmit={handleSubmit} className="mt-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <Label className="mb-2 block">Full Name</Label>
@@ -79,15 +88,15 @@ export function ProfileInfo() {
           </div>
           <div>
             <Label className="mb-2 block">Phone Number</Label>
-            <Input type="number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+            <Input type="tel" inputMode="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
           </div>
           <div>
-            <Label className="mb-2 block">Password</Label>
+            <Label className="mb-2 block">Current password (to confirm)</Label>
             <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
         </div>
 
-        <Button type="submit" variant="outline" className="mt-6">
+        <Button type="submit" className="mt-6 w-full sm:w-auto">
           Update Profile
         </Button>
       </form>

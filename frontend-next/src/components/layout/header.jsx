@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Heart, ShoppingCart, User, ChevronDown, Home, LayoutGrid, Search } from "lucide-react";
+import { Heart, ShoppingCart, User, ChevronDown, Home, LayoutGrid, Search, MessageCircle } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "@/lib/axios";
 import appConfig from "@/config/appConfig";
@@ -238,9 +238,6 @@ export function Header({ categories = [] }) {
           <LayoutGrid className="size-5" />
           Category
         </button>
-        <div className="flex flex-col items-center text-xs text-content">
-          <ThemeToggle />
-        </div>
         <button onClick={() => setOpenCart(true)} className="relative flex flex-col items-center text-xs text-content">
           <ShoppingCart className="size-5" />
           Cart
@@ -259,6 +256,10 @@ export function Header({ categories = [] }) {
             </span>
           )}
         </button>
+        <Link href="/inbox" className="flex flex-col items-center text-xs text-content">
+          <MessageCircle className="size-5" />
+          Inbox
+        </Link>
         {isAuthenticated ? (
           <Link href="/profile" className="flex flex-col items-center text-xs text-content">
             {user?.avatar ? (

@@ -29,7 +29,7 @@ export default async function OrderSuccessPage({ searchParams }) {
               </Button>
             </Link>
           ) : (
-            <Link href="/profile">
+            <Link href="/profile/orders">
               <Button className="w-full">
                 <Package /> View orders
               </Button>
