@@ -33,6 +33,17 @@ const appConfig = {
   // Currency every price in the storefront and dashboard is shown in.
   // `symbol` is prefixed to amounts; `locale` controls digit grouping.
   currency: { code: "PKR", symbol: "Rs.", locale: "en-PK" },
+
+  // Store policies quoted on the FAQ, Shipping & Returns, Terms and Contact
+  // pages — edit here and every page stays consistent. Delivery prices and
+  // times are NOT here: they come live from Dashboard -> Shipping.
+  policies: {
+    returnWindowDays: 30, // days after delivery a return/refund can be requested
+    refundProcessingDays: "5–7 business days",
+    processingDays: "1–2 business days", // time to pack & hand over in-stock orders
+    supportHours: "Monday – Saturday, 10:00 am – 7:00 pm",
+    lastUpdated: "2026-10-01", // shown on the legal pages
+  },
 };
 
 export default appConfig;

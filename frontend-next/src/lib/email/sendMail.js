@@ -20,6 +20,7 @@ export default async function sendMail(options) {
     subject: options.subject,
     text: options.message,
     ...(options.html ? { html: options.html } : {}),
+    ...(options.replyTo ? { replyTo: options.replyTo } : {}),
   };
 
   await transporter.sendMail(mailOptions);

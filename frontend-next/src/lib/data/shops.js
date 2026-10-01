@@ -120,6 +120,14 @@ export async function getShippingSettings(shopId) {
   return resolveShippingSettings(shop?.shippingSettings);
 }
 
+// Public read for the Shipping & Returns page (no auth): the single store's
+// delivery settings merged over the defaults.
+export async function getPublicShippingSettings() {
+  await connectDB();
+  const shop = await Shop.findOne().select("shippingSettings").lean();
+  return resolveShippingSettings(shop?.shippingSettings);
+}
+
 export async function updateShippingSettings(shopId, input) {
   await connectDB();
   if (!input) throw new ApiError("shippingSettings is required", 400);
