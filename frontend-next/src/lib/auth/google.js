@@ -9,7 +9,7 @@ export const googleConfigured = () => !!(process.env.GOOGLE_CLIENT_ID && process
 // Must exactly match an "Authorized redirect URI" on the Google OAuth client.
 export function googleRedirectUri(request) {
   if (process.env.GOOGLE_REDIRECT_URI) return process.env.GOOGLE_REDIRECT_URI;
-  return `${request.nextUrl.origin}/api/v2/auth/google/callback`;
+  return `${request.nextUrl.origin}/auth/callback`;
 }
 
 // Only same-site paths — never an absolute URL (open-redirect protection).
@@ -17,7 +17,7 @@ export function safeNext(next) {
   if (typeof next !== "string" || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/api/")) {
     return null;
   }
-  if (["/login", "/sign-up"].some((p) => next === p || next.startsWith(`${p}?`))) return null;
+  if (["/login", "/sign-up", "/auth/callback"].some((p) => next === p || next.startsWith(`${p}?`))) return null;
   return next;
 }
 

@@ -4,7 +4,8 @@ import { findOrCreateGoogleUser } from "@/lib/data/users";
 import { AUTH_COOKIE, authCookieOptions } from "@/lib/auth/cookies";
 import { sendWelcomeEmail } from "@/lib/email/send";
 
-// Step 2: Google redirects back here (same tab). Verify state, exchange the
+// Step 2: Google redirects back here — /auth/callback, the URI registered on
+// the Google OAuth client (same tab). Verify state, exchange the
 // code, sign the user in and send them back where they started.
 export async function GET(request) {
   const url = request.nextUrl;
