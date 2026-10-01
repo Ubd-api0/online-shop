@@ -41,7 +41,7 @@ export default function EmailPreviews() {
       province: "SD",
       zipCode: "75300",
     },
-    delivery: { etaFrom: new Date(Date.now() + 3 * 864e5), etaTo: new Date(Date.now() + 5 * 864e5) },
+    delivery: { etaFrom: "2026-10-04T09:00:00Z", etaTo: "2026-10-06T09:00:00Z" }, // fixed sample dates
     courier: { name: "TCS", trackingNumber: "TCS88812345" },
     statusHistory: [{ status: "On the way", note: "Rider assigned: Bilal" }],
     cancelReason: "Changed my mind",
