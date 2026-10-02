@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:local": "node scripts/local-db.mjs",
-    "seed:demo": "node scripts/seed-demo.mjs"
+    "seed:demo": "node scripts/seed-demo.mjs",
+    "seed:store": "node scripts/setup-store.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

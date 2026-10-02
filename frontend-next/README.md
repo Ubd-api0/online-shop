@@ -25,9 +25,10 @@ No MongoDB handy? `npm run db:local` starts a local database (keep it running) â
 
 ### First-time setup
 
-The store record, the owner login and default categories are created by the store seed script (from the original backend), and demo data can be added with:
+On a fresh database, set `STORE_EMAIL` and `STORE_PASSWORD` in `.env.local`, then create the store record, the owner login and default categories (safe to re-run). Demo data is optional:
 
 ```bash
+npm run seed:store           # store + owner login + default categories
 npm run seed:demo            # 56 products + 22 events (tagged demo-seed)
 npm run seed:demo -- --clean # remove them again
 ```
@@ -58,4 +59,5 @@ Public pages (home, about, best selling, events, contact) are pre-rendered and r
 | `npm run build` / `npm start` | Production build / server |
 | `npm run lint` | ESLint |
 | `npm run db:local` | Local MongoDB for development |
+| `npm run seed:store` | Store, owner login, default categories |
 | `npm run seed:demo` | Demo products & events |
