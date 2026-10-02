@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { PlusCircle } from "lucide-react";
+import { CreditCard, Images, Package, Tag } from "lucide-react";
 import Cloudinary from "@/lib/cloudinary";
 import { createProduct, clearErrors } from "@/redux/slices/products";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { DASHBOARD_FORM_WIDTH, SectionCard, selectClass } from "@/components/dashboard/section-card";
+import { ImagePicker } from "@/components/dashboard/image-picker";
 
 export function CreateProductForm() {
   const { seller } = useSelector((state) => state.seller);
@@ -52,11 +53,6 @@ export function CreateProductForm() {
     }
   }, [error, success, dispatch, router]);
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages((prev) => [...prev, ...files]);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -95,120 +91,120 @@ export function CreateProductForm() {
   };
 
   return (
-    <Card variant="solid" className="w-full max-w-3xl p-4 sm:p-6">
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <Label className="mb-2 block">
-            Name <span className="text-danger">*</span>
-          </Label>
-          <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your product name..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Description <span className="text-danger">*</span>
-          </Label>
-          <Textarea required rows={8} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter your product description..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Category <span className="text-danger">*</span>
-          </Label>
-          <select
-            required
-            className="h-11 w-full rounded-DEFAULT border border-border bg-surface px-3 text-content outline-none focus:border-brand"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Choose a category</option>
-            {(categories || []).map((c) => (
-              <option value={c.name} key={c._id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          {(categories || []).length === 0 && (
-            <p className="mt-1 text-xs text-danger">No categories yet — add them under Dashboard → Categories.</p>
-          )}
-        </div>
-
-        <div>
-          <Label className="mb-2 block">Tags</Label>
-          <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Enter your product tags..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">Original Price</Label>
-          <Input type="number" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="Enter your product price..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Price (With Discount) <span className="text-danger">*</span>
-          </Label>
-          <Input required type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} placeholder="Enter your product price with discount..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Fulfillment <span className="text-danger">*</span>
-          </Label>
-          <select
-            className="h-11 w-full rounded-DEFAULT border border-border bg-surface px-3 text-content outline-none focus:border-brand"
-            value={fulfillment}
-            onChange={(e) => setFulfillment(e.target.value)}
-          >
-            <option value="in_stock">In stock (sell from inventory)</option>
-            <option value="made_to_order">Made to order (manufacture after purchase)</option>
-          </select>
-          <p className="mt-1 text-xs text-muted">
-            {madeToOrder
-              ? "Customers can always order; the item is produced per order and stock is not tracked."
-              : 'Customers see "Currently unavailable" once stock reaches 0.'}
-          </p>
-        </div>
-
-        {madeToOrder ? (
-          <div>
-            <Label className="mb-2 block">Lead time (days)</Label>
-            <Input type="number" min={0} value={leadTimeDays} onChange={(e) => setLeadTimeDays(e.target.value)} placeholder='e.g. 7 — shown to customers as "ships in ~7 days"' />
-          </div>
-        ) : (
-          <div>
-            <Label className="mb-2 block">
-              Product Stock <span className="text-danger">*</span>
+    <form onSubmit={handleSubmit} className={DASHBOARD_FORM_WIDTH}>
+      <SectionCard icon={Package} title="Product details" description="What customers see on the product page.">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>
+              Name <span className="text-danger">*</span>
             </Label>
-            <Input required type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Enter your product stock..." />
+            <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your product name..." />
           </div>
-        )}
 
-        <div>
-          <Label className="mb-2 block">Packed weight (kg)</Label>
-          <Input
-            type="number"
-            step="0.1"
-            min="0"
-            value={weightKg}
-            onChange={(e) => setWeightKg(e.target.value)}
-            placeholder="e.g. 1.5 — used to calculate delivery charges"
-          />
+          <div className="space-y-2">
+            <Label>
+              Description <span className="text-danger">*</span>
+            </Label>
+            <Textarea required rows={6} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter your product description..." />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>
+                Category <span className="text-danger">*</span>
+              </Label>
+              <select required className={selectClass} value={category} onChange={(e) => setCategory(e.target.value)}>
+                <option value="">Choose a category</option>
+                {(categories || []).map((c) => (
+                  <option value={c.name} key={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              {(categories || []).length === 0 && (
+                <p className="text-xs text-danger">No categories yet — add them under Dashboard → Categories.</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>Tags</Label>
+              <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g. sofa, velvet, living room" />
+            </div>
+          </div>
         </div>
+      </SectionCard>
 
-        <div className="rounded-DEFAULT border border-border p-3">
-          <label className="flex items-center gap-2 font-medium text-content">
-            <input
-              type="checkbox"
-              checked={override.enabled}
-              onChange={(e) => setOverride((o) => ({ ...o, enabled: e.target.checked }))}
-            />
-            Custom payment rules for this product
-          </label>
-          {override.enabled && (
-            <div className="mt-3 space-y-2 pl-1 text-sm text-content">
-              <p className="text-muted">
-                Unchecked options are blocked for any cart containing this product (intersected with the store settings).
+      <SectionCard icon={Tag} title="Pricing & inventory" description="Prices are in PKR. Weight is used to calculate delivery charges.">
+        <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Original price</Label>
+              <Input type="number" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="Before discount" />
+            </div>
+            <div className="space-y-2">
+              <Label>
+                Price (with discount) <span className="text-danger">*</span>
+              </Label>
+              <Input required type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} placeholder="What the customer pays" />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-2">
+              <Label>
+                Fulfillment <span className="text-danger">*</span>
+              </Label>
+              <select className={selectClass} value={fulfillment} onChange={(e) => setFulfillment(e.target.value)}>
+                <option value="in_stock">In stock (sell from inventory)</option>
+                <option value="made_to_order">Made to order (manufacture after purchase)</option>
+              </select>
+              <p className="text-xs text-muted">
+                {madeToOrder
+                  ? "Customers can always order; the item is produced per order and stock is not tracked."
+                  : 'Customers see "Currently unavailable" once stock reaches 0.'}
               </p>
+            </div>
+
+            {madeToOrder ? (
+              <div className="space-y-2">
+                <Label>Lead time (days)</Label>
+                <Input type="number" min={0} value={leadTimeDays} onChange={(e) => setLeadTimeDays(e.target.value)} placeholder='e.g. 7 — "ships in ~7 days"' />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label>
+                  Stock <span className="text-danger">*</span>
+                </Label>
+                <Input required type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Units available" />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Packed weight (kg)</Label>
+              <Input type="number" step="0.1" min="0" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="e.g. 1.5" />
+            </div>
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard icon={Images} title="Images" description="The first image is the main photo.">
+        <ImagePicker id="upload" files={images} onChange={setImages} />
+      </SectionCard>
+
+      <SectionCard icon={CreditCard} title="Payment rules" description="Optional — limit how customers can pay for this product.">
+        <label className="flex items-center gap-2 font-medium text-content">
+          <input
+            type="checkbox"
+            checked={override.enabled}
+            onChange={(e) => setOverride((o) => ({ ...o, enabled: e.target.checked }))}
+          />
+          Custom payment rules for this product
+        </label>
+        {override.enabled && (
+          <div className="mt-3 space-y-3 text-sm text-content">
+            <p className="text-muted">
+              Unchecked options are blocked for any cart containing this product (intersected with the store settings).
+            </p>
+            <div className="grid gap-2 sm:grid-cols-3">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -233,42 +229,28 @@ export function CreateProductForm() {
                 />
                 Allow partial advance
               </label>
-              <div className="flex items-center gap-2">
-                <span>Minimum advance %</span>
-                <Input
-                  type="number"
-                  min={1}
-                  max={100}
-                  placeholder="store default"
-                  value={override.advancePercent}
-                  onChange={(e) => setOverride((o) => ({ ...o, advancePercent: e.target.value }))}
-                  className="w-[110px]"
-                />
-              </div>
             </div>
-          )}
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Upload Images <span className="text-danger">*</span>
-          </Label>
-          <input type="file" id="upload" className="hidden" multiple onChange={handleImageChange} accept="image/*" />
-          <div className="flex flex-wrap items-center gap-2">
-            <label htmlFor="upload" className="cursor-pointer text-muted hover:text-brand">
-              <PlusCircle className="size-8" />
-            </label>
-            {images.map((img, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={i} src={URL.createObjectURL(img)} alt="" className="size-[100px] rounded-DEFAULT object-cover" />
-            ))}
+            <div className="flex flex-wrap items-center gap-2">
+              <span>Minimum advance %</span>
+              <Input
+                type="number"
+                min={1}
+                max={100}
+                placeholder="store default"
+                value={override.advancePercent}
+                onChange={(e) => setOverride((o) => ({ ...o, advancePercent: e.target.value }))}
+                className="w-[130px]"
+              />
+            </div>
           </div>
-        </div>
+        )}
+      </SectionCard>
 
-        <Button type="submit" disabled={submitting} className="w-full">
-          {submitting ? "Creating…" : "Create"}
+      <div className="flex justify-end">
+        <Button type="submit" disabled={submitting} className="w-full sm:w-auto sm:min-w-[180px]">
+          {submitting ? "Creating…" : "Create product"}
         </Button>
-      </form>
-    </Card>
+      </div>
+    </form>
   );
 }

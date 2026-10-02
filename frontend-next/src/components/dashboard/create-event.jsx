@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { PlusCircle } from "lucide-react";
+import { CalendarDays, Images, Package, Tag } from "lucide-react";
 import Cloudinary from "@/lib/cloudinary";
 import { createEvent, clearErrors } from "@/redux/slices/events";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { DASHBOARD_FORM_WIDTH, SectionCard, selectClass } from "@/components/dashboard/section-card";
+import { ImagePicker } from "@/components/dashboard/image-picker";
 
 export function CreateEventForm() {
   const { seller } = useSelector((state) => state.seller);
@@ -53,10 +54,6 @@ export function CreateEventForm() {
     }
   }, [error, success, dispatch, router]);
 
-  const handleImageChange = (e) => {
-    setImages((prev) => [...prev, ...Array.from(e.target.files)]);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!startDate || !endDate) {
@@ -89,109 +86,103 @@ export function CreateEventForm() {
   };
 
   return (
-    <Card variant="solid" className="w-full max-w-3xl p-4 sm:p-6">
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <Label className="mb-2 block">
-            Name <span className="text-danger">*</span>
-          </Label>
-          <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your event product name..." />
-        </div>
+    <form onSubmit={handleSubmit} className={DASHBOARD_FORM_WIDTH}>
+      <SectionCard icon={Package} title="Event details" description="The product featured in this time-limited sale.">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>
+              Name <span className="text-danger">*</span>
+            </Label>
+            <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your event product name..." />
+          </div>
 
-        <div>
-          <Label className="mb-2 block">
-            Description <span className="text-danger">*</span>
-          </Label>
-          <Textarea required rows={8} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter your event product description..." />
-        </div>
+          <div className="space-y-2">
+            <Label>
+              Description <span className="text-danger">*</span>
+            </Label>
+            <Textarea required rows={6} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter your event product description..." />
+          </div>
 
-        <div>
-          <Label className="mb-2 block">
-            Category <span className="text-danger">*</span>
-          </Label>
-          <select
-            required
-            className="h-11 w-full rounded-DEFAULT border border-border bg-surface px-3 text-content outline-none focus:border-brand"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Choose a category</option>
-            {(categories || []).map((c) => (
-              <option value={c.name} key={c._id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label className="mb-2 block">Tags</Label>
-          <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Enter your event product tags..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">Original Price</Label>
-          <Input type="number" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="Enter your event product price..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Price (With Discount) <span className="text-danger">*</span>
-          </Label>
-          <Input required type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} placeholder="Enter your event product price with discount..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Product Stock <span className="text-danger">*</span>
-          </Label>
-          <Input required type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Enter your event product stock..." />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Event Start Date <span className="text-danger">*</span>
-          </Label>
-          <Input
-            type="date"
-            value={startDate ? startDate.toISOString().slice(0, 10) : ""}
-            onChange={handleStartDateChange}
-            min={today}
-          />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Event End Date <span className="text-danger">*</span>
-          </Label>
-          <Input
-            type="date"
-            value={endDate ? endDate.toISOString().slice(0, 10) : ""}
-            onChange={(e) => setEndDate(new Date(e.target.value))}
-            min={minEndDate}
-          />
-        </div>
-
-        <div>
-          <Label className="mb-2 block">
-            Upload Images <span className="text-danger">*</span>
-          </Label>
-          <input type="file" id="event-upload" className="hidden" multiple onChange={handleImageChange} accept="image/*" />
-          <div className="flex flex-wrap items-center gap-2">
-            <label htmlFor="event-upload" className="cursor-pointer text-muted hover:text-brand">
-              <PlusCircle className="size-8" />
-            </label>
-            {images.map((img, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={i} src={URL.createObjectURL(img)} alt="" className="size-[100px] rounded-DEFAULT object-cover" />
-            ))}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>
+                Category <span className="text-danger">*</span>
+              </Label>
+              <select required className={selectClass} value={category} onChange={(e) => setCategory(e.target.value)}>
+                <option value="">Choose a category</option>
+                {(categories || []).map((c) => (
+                  <option value={c.name} key={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label>Tags</Label>
+              <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g. sale, sofa, eid" />
+            </div>
           </div>
         </div>
+      </SectionCard>
 
-        <Button type="submit" disabled={submitting} className="w-full">
-          {submitting ? "Creating…" : "Create"}
+      <SectionCard icon={Tag} title="Pricing & stock" description="Prices are in PKR.">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <Label>Original price</Label>
+            <Input type="number" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="Before discount" />
+          </div>
+          <div className="space-y-2">
+            <Label>
+              Price (with discount) <span className="text-danger">*</span>
+            </Label>
+            <Input required type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} placeholder="Event price" />
+          </div>
+          <div className="space-y-2">
+            <Label>
+              Stock <span className="text-danger">*</span>
+            </Label>
+            <Input required type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Units available" />
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard icon={CalendarDays} title="Schedule" description="An event runs for at least 3 days.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>
+              Start date <span className="text-danger">*</span>
+            </Label>
+            <Input
+              type="date"
+              value={startDate ? startDate.toISOString().slice(0, 10) : ""}
+              onChange={handleStartDateChange}
+              min={today}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>
+              End date <span className="text-danger">*</span>
+            </Label>
+            <Input
+              type="date"
+              value={endDate ? endDate.toISOString().slice(0, 10) : ""}
+              onChange={(e) => setEndDate(new Date(e.target.value))}
+              min={minEndDate}
+              disabled={!startDate}
+            />
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard icon={Images} title="Images" description="The first image is the main photo.">
+        <ImagePicker id="event-upload" files={images} onChange={setImages} />
+      </SectionCard>
+
+      <div className="flex justify-end">
+        <Button type="submit" disabled={submitting} className="w-full sm:w-auto sm:min-w-[180px]">
+          {submitting ? "Creating…" : "Create event"}
         </Button>
-      </form>
-    </Card>
+      </div>
+    </form>
   );
 }
