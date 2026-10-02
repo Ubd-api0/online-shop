@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { publicEnv } from "@/lib/env";
 
 const ERRORS = {
   google_cancelled: "Google sign-in was cancelled.",
@@ -26,7 +27,7 @@ function GoogleLogo() {
 // no new tab. `next` is where to land after signing in.
 export function GoogleButton({ next, label = "Continue with Google" }) {
   const [busy, setBusy] = useState(false);
-  const href = `/api/v2/auth/google${next ? `?next=${encodeURIComponent(next)}` : ""}`;
+  const href = `${publicEnv.apiUrl}/auth/google${next ? `?next=${encodeURIComponent(next)}` : ""}`;
   return (
     <a
       href={href}

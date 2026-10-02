@@ -6,6 +6,7 @@ import {
   contactToStoreTemplate,
   contactReceiptTemplate,
 } from "@/lib/email/templates";
+import { serverEnv } from "@/lib/env";
 
 export const metadata = { title: "Email previews" };
 
@@ -14,7 +15,7 @@ export const metadata = { title: "Email previews" };
 export default function EmailPreviews() {
   if (process.env.NODE_ENV === "production") notFound();
 
-  const origin = "http://localhost:3000";
+  const origin = serverEnv.frontendUrl;
   const user = { _id: "u1", name: "Ayesha Khan", email: "ayesha@example.com" };
   const img = (id) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=200`;
   const order = {

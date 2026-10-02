@@ -2,6 +2,8 @@
 // redirects (no popup, no new tab): /login -> Google -> our callback -> back
 // to the page the user started from, all in the same tab.
 
+import { serverEnv } from "@/lib/env";
+
 export const GOOGLE_STATE_COOKIE = "g_oauth";
 
 export const googleConfigured = () => !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
@@ -31,11 +33,11 @@ export function googleAuthUrl({ redirectUri, state }) {
     prompt: "select_account",
     access_type: "online",
   });
-  return `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+  return `${serverEnv.googleAuthUrl}?${params}`;
 }
 
 export async function exchangeCodeForProfile({ code, redirectUri }) {
-  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+  const tokenRes = await fetch(serverEnv.googleTokenUrl, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -51,7 +53,7 @@ export async function exchangeCodeForProfile({ code, redirectUri }) {
     throw new Error(tokens.error_description || tokens.error || "Token exchange failed");
   }
 
-  const profileRes = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+  const profileRes = await fetch(serverEnv.googleUserInfoUrl, {
     headers: { Authorization: `Bearer ${tokens.access_token}` },
   });
   const profile = await profileRes.json();

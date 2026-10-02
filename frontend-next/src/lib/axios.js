@@ -1,9 +1,10 @@
 import axios from "axios";
+import { publicEnv } from "@/lib/env";
 
-// Same-origin now that the API lives inside this app — relative baseURL,
-// cookies attach automatically (no CORS/withCredentials juggling needed).
+// API base comes from NEXT_PUBLIC_API_URL ("/api/v2" for the Route Handlers
+// in this app). Same-origin, so cookies attach automatically.
 const api = axios.create({
-  baseURL: "/api/v2",
+  baseURL: publicEnv.apiUrl,
   withCredentials: true,
 });
 

@@ -9,6 +9,12 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
+// Must match NEXT_PUBLIC_SOCKET_PATH on the frontend (e.g. /socket.io).
+const SOCKET_PATH = process.env.SOCKET_PATH;
+if (!SOCKET_PATH) {
+  throw new Error('Missing environment variable SOCKET_PATH — set it in .env (see .env.example).');
+}
+
 // CLIENT_URL is a comma-separated allow-list; empty -> allow any origin.
 const allowedOrigins = (process.env.CLIENT_URL || '')
   .split(',')
@@ -20,6 +26,7 @@ const corsOrigin = allowedOrigins.length ? allowedOrigins : true;
 // Socket.io v4 needs its own CORS config for the handshake (express cors is
 // not enough).
 const io = socketIO(server, {
+  path: SOCKET_PATH,
   cors: { origin: corsOrigin, credentials: true },
 });
 

@@ -35,7 +35,7 @@ npm run seed:demo -- --clean # remove them again
 ### Configuration
 
 - **Branding & policies** — `src/config/appConfig.js` (store name, logo, currency, return window, support hours)
-- **Environment** — see `.env.example`
+- **Environment** — every key, API path and socket URL/path is read from env (`src/lib/env.js`); see `.env.example`. Required values fail with a clear "Missing environment variable" error.
 - **Google sign-in** — add `<your-site>/auth/callback` as an Authorized redirect URI on your Google OAuth client
 - **Real-time chat** — requires the separate socket server (`NEXT_PUBLIC_SOCKET_URL`)
 
@@ -45,7 +45,7 @@ npm run seed:demo -- --clean # remove them again
 2. **Environment variables** — add everything from `.env.example` (Project → Settings → Environment Variables). Set `FRONTEND_URL` to your Vercel URL, e.g. `https://your-shop.vercel.app` (used in email links).
 3. **MongoDB Atlas → Network Access** — allow `0.0.0.0/0`. Vercel functions don't have fixed IPs, so an IP allow-list blocks them.
 4. **Google sign-in** — add `https://your-domain/auth/callback` to the OAuth client's *Authorized redirect URIs* (keep the localhost one for development).
-5. **Chat** — the socket server can't run on Vercel; host it elsewhere (Render, Railway, a VPS) and set `NEXT_PUBLIC_SOCKET_URL`. Everything else works without it.
+5. **Chat** — the socket server can't run on Vercel; host it elsewhere (Render, Railway, a VPS) and set `NEXT_PUBLIC_SOCKET_URL` plus `NEXT_PUBLIC_SOCKET_PATH` (same value as the socket server's `SOCKET_PATH`). Everything else works without it.
 6. **Payments** — update the EasyPaisa / JazzCash callback URLs to your domain.
 
 Public pages (home, about, best selling, events, contact) are pre-rendered and refreshed every 60 s, and immediately after you change products, events, categories or store info in the dashboard.

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { backend_url, server, socketServer } from '../../server';
+import { backend_url, server, socketServer, socketPath } from '../../server';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineArrowRight, AiOutlineSend } from 'react-icons/ai';
@@ -10,7 +10,7 @@ import { TfiGallery } from 'react-icons/tfi';
 import socketIO from 'socket.io-client';
 import { format } from 'timeago.js';
 import Cloudinary from '../../cloudinary';
-const socketId = socketIO(socketServer, { transports: ['websocket', 'polling'] });
+const socketId = socketIO(socketServer, { path: socketPath, transports: ['websocket', 'polling'] });
 
 const DashboardMessages = () => {
   const { seller } = useSelector((state) => state.seller);

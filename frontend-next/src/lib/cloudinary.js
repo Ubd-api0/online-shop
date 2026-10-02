@@ -1,19 +1,15 @@
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dobivtrqy";
-const UPLOAD_PRESET =
-  process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "modern-interior-and-furnitures";
-const UPLOAD_FOLDER =
-  process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER || "modern-interior-and-furnitures";
+import { publicEnv } from "@/lib/env";
 
 const Cloudinary = {
   upload: async (imageFile, folder = "products", { width, height } = {}) => {
     const formData = new FormData();
     formData.append("file", imageFile);
-    formData.append("upload_preset", UPLOAD_PRESET);
-    formData.append("folder", `${UPLOAD_FOLDER}/${folder}`);
+    formData.append("upload_preset", publicEnv.cloudinaryUploadPreset);
+    formData.append("folder", `${publicEnv.cloudinaryFolder}/${folder}`);
     if (width) formData.append("width", width);
     if (height) formData.append("height", height);
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+    const res = await fetch(`${publicEnv.cloudinaryApiUrl}/${publicEnv.cloudinaryCloudName}/image/upload`, {
       method: "POST",
       body: formData,
     });

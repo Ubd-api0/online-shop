@@ -9,11 +9,12 @@ import {
   NOTIFY_STATUSES,
 } from "@/lib/email/templates";
 import { createActivationToken } from "@/lib/email/activation";
+import { serverEnv } from "@/lib/env";
 
 // One place that turns app events into emails. Order notifications are
 // best-effort: a mail-server hiccup must never fail an order or a status change.
 
-const siteOrigin = (origin) => origin || process.env.FRONTEND_URL || "http://localhost:3000";
+const siteOrigin = (origin) => origin || serverEnv.frontendUrl;
 
 const deliver = (to, { subject, html, text }, extra = {}) => sendMail({ email: to, subject, html, message: text, ...extra });
 

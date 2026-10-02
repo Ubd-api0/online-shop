@@ -20,10 +20,11 @@ Free tiers on those support WebSockets.
 | var          | example                          | notes                                    |
 | ------------ | -------------------------------- | ---------------------------------------- |
 | `PORT`       | `4000`                           | host usually injects this                |
+| `SOCKET_PATH`| `/socket.io`                     | required; must match the frontend's `NEXT_PUBLIC_SOCKET_PATH` |
 | `CLIENT_URL` | `https://my-shop.vercel.app`     | comma-separated; empty = allow any origin |
 
 ## Wiring the frontend
 
-Set `REACT_APP_SOCKET_URL` on the Vercel frontend project to this server's URL
-(e.g. `https://my-socket.onrender.com`). Local dev falls back to
-`http://localhost:4000`.
+Set `NEXT_PUBLIC_SOCKET_URL` on the Vercel frontend project to this server's URL
+(e.g. `https://my-socket.onrender.com`) and `NEXT_PUBLIC_SOCKET_PATH` to the same
+value as `SOCKET_PATH` here. Nothing falls back to localhost — both are required.

@@ -10,7 +10,7 @@ dotenv.config();
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3030';
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 // helper: are the env credentials for a gateway actually filled in?
 const hasEasypaisaKeys = () =>

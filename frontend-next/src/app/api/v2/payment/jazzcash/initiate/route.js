@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { withErrorHandling } from "@/lib/api/errors";
-
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3030";
+import { serverEnv } from "@/lib/env";
 
 const hasJazzcashKeys = () =>
   !!(
@@ -13,7 +12,7 @@ const hasJazzcashKeys = () =>
   );
 
 const mockRedirect = (gateway, { amount, orderRef }) =>
-  `${FRONTEND_URL}/payment/mock?gateway=${gateway}` +
+  `${serverEnv.frontendUrl}/payment/mock?gateway=${gateway}` +
   `&orderRef=${encodeURIComponent(orderRef || Date.now())}` +
   `&amount=${encodeURIComponent(amount || 0)}`;
 

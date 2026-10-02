@@ -1,22 +1,19 @@
-// API + socket endpoints.
+// API + socket endpoints — read from env only (see frontend/.env.example).
 //
-// Local dev  -> talks directly to the local backend / socket servers.
-// Production -> defaults to a same-origin "/api/v2" path so the auth cookie
-//               stays first-party (see frontend/vercel.json, which rewrites
-//               /api/* to the deployed backend). Override with env vars if you
-//               prefer a direct cross-origin call.
-//
-//   REACT_APP_API_URL     e.g. https://my-backend.vercel.app/api/v2
+//   REACT_APP_API_URL     e.g. /api/v2 (vercel.json proxy) or https://my-backend.vercel.app/api/v2
 //   REACT_APP_SOCKET_URL  e.g. https://my-socket.onrender.com
+//   REACT_APP_SOCKET_PATH must match SOCKET_PATH on the socket server
 
-const isProd = process.env.NODE_ENV === "production";
+const required = (name, value) => {
+  if (!value) throw new Error(`Missing environment variable ${name} — set it in frontend/.env`);
+  return value;
+};
 
-export const server =
-  process.env.REACT_APP_API_URL ||
-  (isProd ? "/api/v2" : "http://localhost:8000/api/v2");
+export const server = required("REACT_APP_API_URL", process.env.REACT_APP_API_URL);
 
-export const socketServer =
-  process.env.REACT_APP_SOCKET_URL || "http://localhost:4000";
+export const socketServer = required("REACT_APP_SOCKET_URL", process.env.REACT_APP_SOCKET_URL);
+
+export const socketPath = required("REACT_APP_SOCKET_PATH", process.env.REACT_APP_SOCKET_PATH);
 
 // Legacy: image paths are stored as absolute Cloudinary URLs, so this stays "".
 export const backend_url = process.env.REACT_APP_BACKEND_URL || "";

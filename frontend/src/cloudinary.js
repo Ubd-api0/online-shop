@@ -1,10 +1,8 @@
-const CLOUD_NAME =
-  process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'dobivtrqy';
-const UPLOAD_PRESET =
-  process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET ||
-  'modern-interior-and-furnitures';
-const UPLOAD_FOLDER =
-  process.env.REACT_APP_CLOUDINARY_FOLDER || 'modern-interior-and-furnitures';
+const CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+const UPLOAD_FOLDER = process.env.REACT_APP_CLOUDINARY_FOLDER;
+const CLOUDINARY_API_URL =
+  process.env.REACT_APP_CLOUDINARY_API_URL || 'https://api.cloudinary.com/v1_1';
 
 const Cloudinary = {
   upload: async (imageFile, folder = 'products', { width, height } = {}) => {
@@ -19,7 +17,7 @@ const Cloudinary = {
     if (height) formData.append('height', height);
 
     const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+      `${CLOUDINARY_API_URL}/${CLOUD_NAME}/image/upload`,
       {
         method: 'POST',
         body: formData,
