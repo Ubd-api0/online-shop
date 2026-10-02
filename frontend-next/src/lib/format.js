@@ -15,6 +15,12 @@ export function formatShortDate(value) {
   return new Date(value).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
 }
 
+// "7 Oct 2026"
+export function formatDate(value) {
+  if (!value) return "";
+  return new Date(value).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
 // "7 Oct 2026, 3:42 pm"
 export function formatDateTime(value) {
   if (!value) return "";

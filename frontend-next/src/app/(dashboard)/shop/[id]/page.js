@@ -1,42 +1,7 @@
-import { notFound } from "next/navigation";
-import { findShopById } from "@/lib/data/shops";
-import { listProductsByShop } from "@/lib/data/products";
-import { listEventsByShop } from "@/lib/data/events";
-import { serialize } from "@/lib/serialize";
-import { ShopInfo } from "@/components/shop/shop-info";
-import { ShopProfileData } from "@/components/shop/shop-profile-data";
+import { redirect } from "next/navigation";
 
-export default async function ShopHomePage({ params }) {
-  const { id } = await params;
-  const [shop, products, events] = await Promise.all([
-    findShopById(id),
-    listProductsByShop(id),
-    listEventsByShop(id),
-  ]);
-
-  if (!shop) notFound();
-
-  const plainShop = serialize(shop);
-  const plainProducts = serialize(products);
-  const plainEvents = serialize(events);
-
-  const totalReviewsLength = plainProducts.reduce((acc, p) => acc + (p.reviews?.length || 0), 0);
-  const totalRatings = plainProducts.reduce(
-    (acc, p) => acc + (p.reviews?.reduce((sum, r) => sum + r.rating, 0) || 0),
-    0
-  );
-  const averageRating = (totalRatings / totalReviewsLength || 0).toFixed(1);
-
-  return (
-    <div className="min-h-screen bg-surface-alt">
-      <div className="mx-auto flex max-w-7xl flex-col justify-between px-4 py-10 800px:flex-row 800px:px-6">
-        <div className="rounded-DEFAULT bg-surface shadow-sm 800px:sticky 800px:top-10 800px:h-[90vh] 800px:w-[25%] 800px:overflow-y-auto">
-          <ShopInfo shop={plainShop} productsCount={plainProducts.length} averageRating={averageRating} isOwner />
-        </div>
-        <div className="mt-5 rounded-DEFAULT 800px:mt-0 800px:w-[72%]">
-          <ShopProfileData products={plainProducts} events={plainEvents} isOwner />
-        </div>
-      </div>
-    </div>
-  );
+// Old admin URL for the store's own profile — now lives in the dashboard.
+// (The public shop page is /shop/preview/[id].)
+export default function LegacyShopPage() {
+  redirect("/dashboard-store");
 }

@@ -117,6 +117,26 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
+/* Browser autofill (Chrome/Edge/Safari paint a light blue/yellow fill and
+   dark text). Keep our own colors in both themes: the text colour is forced
+   back to the theme's, and the UA background is held off with an effectively
+   infinite transition — no inset box-shadow, so focus rings still show. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--content);
+  caret-color: var(--content);
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
+}
+input:autofill {
+  color: var(--content);
+}
+
 /* Reusable glass-surface utility for anything that isn't a `ui/` primitive
    (page backgrounds, decorative panels) — primitives define their own via cva. */
 .glass-surface {

@@ -41,7 +41,7 @@ export function DashboardHeader({ onMenuClick }) {
           View store
         </Link>
         {avatar && (
-          <Link href={seller?._id ? `/shop/${seller._id}` : "/profile"}>
+          <Link href={seller?._id ? "/dashboard-store" : "/profile"} aria-label="Store profile">
             <div className="relative size-9 overflow-hidden rounded-full border border-border">
               <Image src={avatar} alt="" fill className="object-cover" />
             </div>
